@@ -54,8 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: const Column(
-        children: [
+      body: Column(
+        children: const [
           Text('Data'),
         ],
       ),
