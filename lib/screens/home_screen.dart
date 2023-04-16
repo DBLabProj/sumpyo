@@ -11,6 +11,49 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   CalendarFormat calFormat = CalendarFormat.month;
+  final GlobalKey _mainCalKey = GlobalKey();
+  final GlobalKey contentKey = GlobalKey();
+  var slidingMaxHeight = 500.0;
+  var slidingMinHeight = 100.0;
+  Size? calWeekSize;
+  Size? calMonthSize;
+  Size? contentSize;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      calMonthSize = getMonthCalSize();
+      calWeekSize = getWeekCalSize();
+      contentSize = getContentSize();
+      // getContentSize();
+    });
+  }
+
+  Size? getWeekCalSize() {
+    calFormat = CalendarFormat.week;
+    RenderBox calBox =
+        _mainCalKey.currentContext!.findRenderObject() as RenderBox;
+    Size calWeekSize = calBox.size;
+    setState(() {});
+    return calWeekSize;
+  }
+
+  Size? getMonthCalSize() {
+    calFormat = CalendarFormat.month;
+    RenderBox calBox =
+        _mainCalKey.currentContext!.findRenderObject() as RenderBox;
+    Size size = calBox.size;
+    setState(() {});
+    return size;
+  }
+
+  Size? getContentSize() {
+    RenderBox calBox =
+        contentKey.currentContext!.findRenderObject() as RenderBox;
+    Size size = calBox.size;
+    return size;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,30 +62,43 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(),
       ),
       bottomNavigationBar: const bottomNav(),
-      body: SlidingUpPanel(
-        onPanelOpened: () {
-          calFormat = CalendarFormat.week;
-          setState(() {});
-        },
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
-        panelBuilder: () {
-          return const diaryContainer();
-        },
-        body: GestureDetector(
-          onDoubleTap: () {
-            print('double Taped');
-            setState(
-              () {
-                calFormat = CalendarFormat.month;
-              },
-            );
+      body: SafeArea(
+        child: SlidingUpPanel(
+          onPanelOpened: () {
+            calFormat = CalendarFormat.week;
+            setState(() {});
           },
-          child: Column(
-            children: [
-              mainCalendar(
-                calendarFormat: calFormat,
-              ),
-            ],
+          onPanelClosed: () {
+            calFormat = CalendarFormat.month;
+            setState(() {});
+          },
+          // minHeight: _mainCalendarState().getCalSize()!.height,
+          // maxHeight: MediaQuery.of(context).size.height * 0.65,
+          maxHeight: slidingMaxHeight,
+          minHeight: slidingMinHeight,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
+          panelBuilder: () {
+            return const diaryContainer();
+          },
+          body: GestureDetector(
+            onDoubleTap: () {
+              print(calMonthSize);
+              print(calWeekSize);
+              slidingMaxHeight = getContentSize()!.height * 0.65;
+              slidingMinHeight = getContentSize()!.height * 0.35;
+              setState(
+                () {},
+              );
+            },
+            child: Column(
+              key: contentKey,
+              children: [
+                mainCalendar(
+                  calendarFormat: calFormat,
+                  mainCalKey: _mainCalKey,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -87,9 +143,11 @@ class topAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 class mainCalendar extends StatefulWidget {
   CalendarFormat calendarFormat;
+  GlobalKey mainCalKey;
   mainCalendar({
     super.key,
     required this.calendarFormat,
+    required this.mainCalKey,
   });
 
   @override
@@ -99,9 +157,12 @@ class mainCalendar extends StatefulWidget {
 class _mainCalendarState extends State<mainCalendar> {
   DateTime? selectedDay;
   DateTime focusedDay = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
+      // rowHeight: MediaQuery.of(context).size.height * 0.8,
+      key: widget.mainCalKey,
       locale: 'ko_KR',
       focusedDay: focusedDay,
       firstDay: DateTime.utc(2000, 1, 1),
@@ -181,6 +242,7 @@ class _diaryContainerState extends State<diaryContainer> {
             height: 20,
           ),
           Text('오늘 아침에 연구실에 출근하자마자 물통을 떨어뜨려서 바닥이 물범벅이 됐다. 물통 만 오천원이더 ...'),
+          // Text('${widget.?}')
         ],
       ),
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:sumpyo/screens/home_screen.dart';
+import 'package:sumpyo/screens/login_screen.dart';
 
 void main() async {
   await initializeDateFormatting();
@@ -21,7 +21,8 @@ class _AppState extends State<App> {
       theme: ThemeData(
         primaryColor: const Color(0xFF8AA9DE),
       ),
-      home: const HomeScreen(),
+      // home: const HomeScreen(),
+      home: const loginPage(),
     );
   }
 }
