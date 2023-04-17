@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sumpyo/screens/home_screen.dart';
+import 'package:sumpyo/screens/signup_screen.dart';
+import 'package:sumpyo/widgets/loginWidget.dart';
 
 class loginPage extends StatefulWidget {
   const loginPage({super.key});
@@ -12,44 +15,22 @@ class _loginPageState extends State<loginPage> {
   Widget build(BuildContext context) {
     double areaWidth = MediaQuery.of(context).size.width * 0.9;
     return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 0,
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
       // 키보드 나왔을 때 처리 화면 가려지는 거 방지용
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Stack(children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.25,
-            // color: Theme.of(context).primaryColor,
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius:
-                  const BorderRadius.vertical(bottom: Radius.circular(25)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset('assets/logo.png'),
-                    const Text(
-                      '숨표',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    )
-                  ],
-                )
-              ],
-            ),
-          ),
+          const loginBackground(),
           Padding(
             padding: EdgeInsets.fromLTRB(
-                MediaQuery.of(context).size.width * 0.05,
-                MediaQuery.of(context).size.height * 0.21,
-                MediaQuery.of(context).size.width * 0.05,
-                MediaQuery.of(context).size.height * 0.1),
+              MediaQuery.of(context).size.width * 0.05,
+              MediaQuery.of(context).size.height * 0.21,
+              MediaQuery.of(context).size.width * 0.05,
+              MediaQuery.of(context).size.height * 0.1,
+            ),
             child: Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25)),
@@ -58,6 +39,7 @@ class _loginPageState extends State<loginPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
@@ -86,40 +68,6 @@ class _loginPageState extends State<loginPage> {
             ),
           ),
         ]),
-      ),
-    );
-  }
-}
-
-class loginTextbox extends StatefulWidget {
-  Icon icon;
-  String dataType;
-  loginTextbox({super.key, required this.icon, required this.dataType});
-
-  @override
-  State<loginTextbox> createState() => _loginTextboxState();
-}
-
-class _loginTextboxState extends State<loginTextbox> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom:
-                  BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          widget.icon,
-          Flexible(
-            child: TextField(
-              obscureText: widget.dataType != '아이디' ? true : false,
-              decoration: InputDecoration(
-                  labelText: widget.dataType, border: InputBorder.none),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -183,7 +131,12 @@ class _loginButtonState extends State<loginButton> {
                   ),
                   backgroundColor:
                       MaterialStatePropertyAll(Theme.of(context).primaryColor)),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                    (context),
+                    MaterialPageRoute(
+                        builder: (context) => const HomeScreen()));
+              },
               child: const Text(
                 '로고인',
                 style: TextStyle(),
@@ -201,7 +154,10 @@ class _loginButtonState extends State<loginButton> {
               ),
               backgroundColor: const MaterialStatePropertyAll(Colors.white),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push((context),
+                  MaterialPageRoute(builder: (context) => const signUpPage()));
+            },
             child: Text(
               '회원가입',
               style: TextStyle(

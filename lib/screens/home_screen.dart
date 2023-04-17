@@ -82,9 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           body: GestureDetector(
             onDoubleTap: () {
-              print(calMonthSize);
-              print(calWeekSize);
-              slidingMaxHeight = getContentSize()!.height * 0.65;
+              slidingMaxHeight = getContentSize()!.height - 0.65;
               slidingMinHeight = getContentSize()!.height * 0.35;
               setState(
                 () {},
