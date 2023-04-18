@@ -20,6 +20,7 @@ class _AppState extends State<App> {
     return MaterialApp(
       theme: ThemeData(
         primaryColor: const Color(0xFF8AA9DE),
+        secondaryHeaderColor: const Color(0xFFE8EEF9),
       ),
       // home: const HomeScreen(),
       home: const loginPage(),
