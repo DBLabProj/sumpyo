@@ -68,7 +68,6 @@ class _SignupPageState extends State<SignupPage> {
         }
       }
     } catch (e) {
-      print(11111);
       print(e.toString());
       Fluttertoast.showToast(msg: e.toString());
     }

@@ -1,7 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:multi_masked_formatter/multi_masked_formatter.dart';
+import 'package:sumpyo/models/user.dart';
 import 'package:sumpyo/widgets/loginWidget.dart';
+import 'package:http/http.dart' as http;
+
+import '../apis/api.dart';
 
 class signUpPage extends StatefulWidget {
   const signUpPage({super.key});
@@ -11,11 +18,78 @@ class signUpPage extends StatefulWidget {
 }
 
 class _signUppageState extends State<signUpPage> {
+  var formKey = GlobalKey<FormState>();
+
+  var userNameController = TextEditingController();
+  var emailInputed = '';
+  var emailController = TextEditingController();
+  var phoneController = TextEditingController();
+  var passwordController = TextEditingController();
+  var passwordCheckController = TextEditingController();
+  var ageController = TextEditingController();
+  var genderController = TextEditingController();
+
+  checkUserEmail() async {
+    try {
+      var response = await http.post(Uri.parse(API.validateName),
+          body: {'user_name': userNameController.text.trim()});
+
+      if (response.statusCode == 200) {
+        var responseBody = jsonDecode(response.body);
+
+        if (responseBody['existName'] == true) {
+          Fluttertoast.showToast(
+            msg: "이미 존재하는 사용자 이름입니다.",
+          );
+        } else {
+          saveInfo();
+        }
+      }
+    } catch (e) {
+      print(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  saveInfo() async {
+    User userModel = User(1, userNameController.text.trim(), emailInputed,
+        phoneController.text.trim(), passwordController.text.trim());
+    try {
+      var res =
+          await http.post(Uri.parse(API.signUp), body: userModel.toJson());
+      if (res.statusCode == 200) {
+        var resSignup = jsonDecode(res.body);
+        if (resSignup['success'] == true) {
+          Fluttertoast.showToast(msg: 'Signup successfully');
+          setState(() {
+            userNameController.clear();
+            emailController.clear();
+            passwordController.clear();
+          });
+        } else {
+          Fluttertoast.showToast(msg: 'Error occurred. Please try again');
+        }
+      }
+    } catch (e) {
+      print(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.white,
+    ));
     double contentHeight =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 0,
+        // backgroundColor: Theme.of(context).primaryColor,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: SizedBox(
@@ -51,7 +125,9 @@ class _signUppageState extends State<signUpPage> {
                               icon: const Icon(Icons.account_circle_outlined),
                               dataType: '아이디',
                             ),
-                            const emailTextbox(),
+                            emailTextbox(
+                              emailController: emailController,
+                            ),
                             const phoneTextbox(),
                             loginTextbox(
                               icon: const Icon(Icons.key),
@@ -109,7 +185,8 @@ class submitSignUp extends StatelessWidget {
 }
 
 class emailTextbox extends StatefulWidget {
-  const emailTextbox({super.key});
+  var emailController;
+  emailTextbox({super.key, required this.emailController});
 
   @override
   State<emailTextbox> createState() => _emailTextboxState();
@@ -120,6 +197,7 @@ class _emailTextboxState extends State<emailTextbox> {
   String _selectedValue = 'google.com';
   @override
   Widget build(BuildContext context) {
+    String email = widget.emailController.text + '@' + _selectedValue;
     return Container(
       decoration: BoxDecoration(
           border: Border(
@@ -131,6 +209,7 @@ class _emailTextboxState extends State<emailTextbox> {
           const Icon(Icons.email_outlined),
           Flexible(
             child: TextFormField(
+              controller: widget.emailController,
               inputFormatters: [
                 FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
               ],
