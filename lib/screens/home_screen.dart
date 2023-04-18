@@ -13,46 +13,6 @@ class _HomeScreenState extends State<HomeScreen> {
   CalendarFormat calFormat = CalendarFormat.month;
   final GlobalKey _mainCalKey = GlobalKey();
   final GlobalKey contentKey = GlobalKey();
-  var slidingMaxHeight = 500.0;
-  var slidingMinHeight = 100.0;
-  Size? calWeekSize;
-  Size? calMonthSize;
-  Size? contentSize;
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      calMonthSize = getMonthCalSize();
-      calWeekSize = getWeekCalSize();
-      contentSize = getContentSize();
-      // getContentSize();
-    });
-  }
-
-  Size? getWeekCalSize() {
-    calFormat = CalendarFormat.week;
-    RenderBox calBox =
-        _mainCalKey.currentContext!.findRenderObject() as RenderBox;
-    Size calWeekSize = calBox.size;
-    setState(() {});
-    return calWeekSize;
-  }
-
-  Size? getMonthCalSize() {
-    calFormat = CalendarFormat.month;
-    RenderBox calBox =
-        _mainCalKey.currentContext!.findRenderObject() as RenderBox;
-    Size size = calBox.size;
-    setState(() {});
-    return size;
-  }
-
-  Size? getContentSize() {
-    RenderBox calBox =
-        contentKey.currentContext!.findRenderObject() as RenderBox;
-    Size size = calBox.size;
-    return size;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,16 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           // minHeight: _mainCalendarState().getCalSize()!.height,
           // maxHeight: MediaQuery.of(context).size.height * 0.65,
-          maxHeight: slidingMaxHeight,
-          minHeight: slidingMinHeight,
+          // maxHeight: slidingMaxHeight,
+          minHeight: MediaQuery.of(context).size.height * 0.3,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
           panelBuilder: () {
             return const diaryContainer();
           },
           body: GestureDetector(
             onDoubleTap: () {
-              slidingMaxHeight = getContentSize()!.height - 0.65;
-              slidingMinHeight = getContentSize()!.height * 0.35;
               setState(
                 () {},
               );
@@ -158,49 +116,53 @@ class _mainCalendarState extends State<mainCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    return TableCalendar(
-      // rowHeight: MediaQuery.of(context).size.height * 0.8,
-      key: widget.mainCalKey,
-      locale: 'ko_KR',
-      focusedDay: focusedDay,
-      firstDay: DateTime.utc(2000, 1, 1),
-      lastDay: DateTime.utc(2050, 12, 31),
-      calendarFormat: widget.calendarFormat,
-      selectedDayPredicate: (day) {
-        return isSameDay(selectedDay, day);
-      },
-      headerStyle: HeaderStyle(
-        headerPadding: EdgeInsets.symmetric(
-            vertical: MediaQuery.of(context).size.height * 0.03,
-            horizontal: MediaQuery.of(context).size.width * 0.05),
-        leftChevronVisible: false,
-        rightChevronVisible: false,
-        formatButtonVisible: false,
+    return SizedBox(
+      height: (MediaQuery.of(context).size.height -
+              MediaQuery.of(context).padding.top) *
+          0.3,
+      child: TableCalendar(
+        key: widget.mainCalKey,
+        locale: 'ko_KR',
+        focusedDay: focusedDay,
+        firstDay: DateTime.utc(2000, 1, 1),
+        lastDay: DateTime.utc(2050, 12, 31),
+        calendarFormat: widget.calendarFormat,
+        selectedDayPredicate: (day) {
+          return isSameDay(selectedDay, day);
+        },
+        headerStyle: HeaderStyle(
+          headerPadding: EdgeInsets.symmetric(
+              vertical: MediaQuery.of(context).size.height * 0.03,
+              horizontal: MediaQuery.of(context).size.width * 0.05),
+          leftChevronVisible: false,
+          rightChevronVisible: false,
+          formatButtonVisible: false,
+        ),
+        calendarStyle: CalendarStyle(
+          todayDecoration: const BoxDecoration(
+            color: Color(0xff5A6E90),
+            shape: BoxShape.circle,
+          ),
+          selectedDecoration: BoxDecoration(
+            color: Colors.transparent,
+            border: Border.all(color: const Color(0xFFB9E1EC), width: 3),
+            shape: BoxShape.circle,
+            // border: Border.all(color: const Color(0xFFB9E1EC), width: 3),
+          ),
+          defaultTextStyle: const TextStyle(color: Colors.white),
+          weekendTextStyle: const TextStyle(color: Colors.white),
+          outsideTextStyle: TextStyle(
+            color: Colors.white.withOpacity(0.4),
+          ),
+        ),
+        onDaySelected: (selectedDay, focusedDay) {
+          setState(() {
+            widget.calendarFormat = CalendarFormat.week;
+            this.selectedDay = selectedDay;
+            this.focusedDay = focusedDay;
+          });
+        },
       ),
-      calendarStyle: CalendarStyle(
-        todayDecoration: const BoxDecoration(
-          color: Color(0xff5A6E90),
-          shape: BoxShape.circle,
-        ),
-        selectedDecoration: BoxDecoration(
-          color: Colors.transparent,
-          border: Border.all(color: const Color(0xFFB9E1EC), width: 3),
-          shape: BoxShape.circle,
-          // border: Border.all(color: const Color(0xFFB9E1EC), width: 3),
-        ),
-        defaultTextStyle: const TextStyle(color: Colors.white),
-        weekendTextStyle: const TextStyle(color: Colors.white),
-        outsideTextStyle: TextStyle(
-          color: Colors.white.withOpacity(0.4),
-        ),
-      ),
-      onDaySelected: (selectedDay, focusedDay) {
-        setState(() {
-          widget.calendarFormat = CalendarFormat.week;
-          this.selectedDay = selectedDay;
-          this.focusedDay = focusedDay;
-        });
-      },
     );
   }
 }

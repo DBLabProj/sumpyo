@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:multi_masked_formatter/multi_masked_formatter.dart';
 import 'package:sumpyo/widgets/loginWidget.dart';
 
@@ -128,10 +129,13 @@ class _emailTextboxState extends State<emailTextbox> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const Icon(Icons.email_outlined),
-          const Flexible(
-            child: TextField(
-              decoration:
-                  InputDecoration(labelText: '이메일', border: InputBorder.none),
+          Flexible(
+            child: TextFormField(
+              inputFormatters: [
+                FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
+              ],
+              decoration: const InputDecoration(
+                  hintText: '이메일', border: InputBorder.none, labelText: '이메일'),
             ),
           ),
           const Icon(Icons.alternate_email),
