@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:multi_masked_formatter/multi_masked_formatter.dart';
 import 'package:sumpyo/models/user.dart';
 import 'package:sumpyo/widgets/loginWidget.dart';
@@ -21,13 +22,27 @@ class _signUppageState extends State<signUpPage> {
   var formKey = GlobalKey<FormState>();
 
   var userNameController = TextEditingController();
-  var emailInputed = '';
+  var domainName = '';
   var emailController = TextEditingController();
   var phoneController = TextEditingController();
   var passwordController = TextEditingController();
   var passwordCheckController = TextEditingController();
   var ageController = TextEditingController();
-  var genderController = TextEditingController();
+  var genderController = '';
+
+  changeGender(int index) {
+    if (index == 0) {
+      setState(() {
+        genderController = '남성';
+      });
+    } else {
+      setState(() {
+        genderController = '여성';
+      });
+    }
+  }
+
+  changeDomain() {}
 
   checkUserEmail() async {
     try {
@@ -52,8 +67,15 @@ class _signUppageState extends State<signUpPage> {
   }
 
   saveInfo() async {
-    User userModel = User(1, userNameController.text.trim(), emailInputed,
-        phoneController.text.trim(), passwordController.text.trim());
+    User userModel = User(
+      1,
+      userNameController.text.trim(),
+      '${emailController.text.trim()}@${domainName.trim()}',
+      phoneController.text.trim(),
+      passwordController.text.trim(),
+      genderController,
+      ageController.text.trim(),
+    );
     try {
       var res =
           await http.post(Uri.parse(API.signUp), body: userModel.toJson());
@@ -125,10 +147,6 @@ class _signUppageState extends State<signUpPage> {
                               icon: const Icon(Icons.account_circle_outlined),
                               dataType: '아이디',
                             ),
-                            emailTextbox(
-                              emailController: emailController,
-                            ),
-                            const phoneTextbox(),
                             loginTextbox(
                               icon: const Icon(Icons.key),
                               dataType: '비밀번호',
@@ -137,7 +155,18 @@ class _signUppageState extends State<signUpPage> {
                               icon: const Icon(Icons.key),
                               dataType: '비밀번호 확인',
                             ),
-                            const submitSignUp()
+                            emailTextbox(
+                              emailController: emailController,
+                              domainName: domainName,
+                            ),
+                            const phoneTextbox(),
+                            genderSelectButton(
+                              genderChange: changeGender,
+                            ),
+                            const brithdaySelector(),
+                            submitSignUp(
+                              gender: genderController,
+                            )
                           ],
                         ),
                       ),
@@ -153,10 +182,10 @@ class _signUppageState extends State<signUpPage> {
   }
 }
 
+// 회원가입 제출
 class submitSignUp extends StatelessWidget {
-  const submitSignUp({
-    super.key,
-  });
+  String gender;
+  submitSignUp({super.key, required this.gender});
 
   @override
   Widget build(BuildContext context) {
@@ -171,8 +200,9 @@ class submitSignUp extends StatelessWidget {
         backgroundColor: const MaterialStatePropertyAll(Colors.white),
       ),
       onPressed: () {
-        Navigator.push((context),
-            MaterialPageRoute(builder: (context) => const signUpPage()));
+        // Navigator.push((context),
+        // MaterialPageRoute(builder: (context) => const signUpPage()));
+        print(gender);
       },
       child: Text(
         '회원가입',
@@ -184,9 +214,15 @@ class submitSignUp extends StatelessWidget {
   }
 }
 
+// 이메일
 class emailTextbox extends StatefulWidget {
   var emailController;
-  emailTextbox({super.key, required this.emailController});
+  String domainName;
+  emailTextbox({
+    super.key,
+    required this.emailController,
+    this.domainName = 'google.com',
+  });
 
   @override
   State<emailTextbox> createState() => _emailTextboxState();
@@ -229,6 +265,7 @@ class _emailTextboxState extends State<emailTextbox> {
             onChanged: (value) {
               setState(() {
                 _selectedValue = value!;
+                widget.domainName = value;
               });
             },
           ),
@@ -238,6 +275,7 @@ class _emailTextboxState extends State<emailTextbox> {
   }
 }
 
+// 전화번호
 class phoneTextbox extends StatefulWidget {
   const phoneTextbox({super.key});
 
@@ -269,6 +307,91 @@ class _phoneTextboxState extends State<phoneTextbox> {
           )),
         ],
       ),
+    );
+  }
+}
+
+// 성별 버튼
+class genderSelectButton extends StatefulWidget {
+  Function genderChange;
+  genderSelectButton({super.key, required this.genderChange});
+
+  @override
+  State<genderSelectButton> createState() => _genderSelectButtonState();
+}
+
+class _genderSelectButtonState extends State<genderSelectButton> {
+  List<bool> isSelected = [false, false];
+  @override
+  Widget build(BuildContext context) {
+    return ToggleButtons(
+      isSelected: isSelected,
+      selectedBorderColor: Theme.of(context).primaryColor,
+      onPressed: (index) {
+        setState(() {
+          for (int buttonIndex = 0;
+              buttonIndex < isSelected.length;
+              buttonIndex++) {
+            if (buttonIndex == index) {
+              isSelected[buttonIndex] = true;
+              widget.genderChange(index);
+            } else {
+              isSelected[buttonIndex] = false;
+            }
+          }
+        });
+      },
+      children: const [
+        Text('남성'),
+        Text('여성'),
+      ],
+    );
+  }
+}
+
+class brithdaySelector extends StatefulWidget {
+  const brithdaySelector({super.key});
+
+  @override
+  State<brithdaySelector> createState() => _brithdaySelectorState();
+}
+
+class _brithdaySelectorState extends State<brithdaySelector> {
+  DateTime brithday = DateTime.now();
+  String _selectedDate = '';
+  DateTime _selectedDate2 = DateTime.now();
+  Future _selectDate(BuildContext context) async {
+    final DateTime? selected = await showDatePicker(
+      // locale: const Locale('ko', 'KO'),
+      context: context,
+      initialDate:
+          // _selectedDate == '' ? DateTime.now() : DateTime(_selectedDate),
+          _selectedDate2,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (selected != null) {
+      setState(() {
+        _selectedDate2 = selected;
+        _selectedDate = (DateFormat('yyyy-MM-dd')).format(selected);
+        print(_selectedDate);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(Icons.calendar_month),
+        Flexible(
+          child: TextField(
+            controller: TextEditingController(text: _selectedDate),
+            keyboardType: TextInputType.none,
+            onTap: () => _selectDate(context),
+          ),
+        ),
+      ],
     );
   }
 }

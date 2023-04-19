@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
           minHeight: MediaQuery.of(context).size.height * 0.3,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
           panelBuilder: () {
-            return const writeDiary();
+            return const diaryContainer();
           },
           //-------------------------------바디 영역----------------------------
           body: GestureDetector(

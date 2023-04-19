@@ -16,11 +16,14 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   var formKey = GlobalKey<FormState>();
-
   var userNameController = TextEditingController();
+  String domainName = '';
   var emailController = TextEditingController();
   var phoneController = TextEditingController();
   var passwordController = TextEditingController();
+  var passwordCheckController = TextEditingController();
+  var ageController = TextEditingController();
+  var genderController = TextEditingController();
 
   checkUserEmail() async {
     try {
@@ -46,11 +49,14 @@ class _SignupPageState extends State<SignupPage> {
 
   saveInfo() async {
     User userModel = User(
-        1,
-        userNameController.text.trim(),
-        emailController.text.trim(),
-        phoneController.text.trim(),
-        passwordController.text.trim());
+      1,
+      userNameController.text.trim(),
+      '${emailController.text.trim()}@${domainName.trim()}',
+      phoneController.text.trim(),
+      passwordController.text.trim(),
+      genderController.text.trim(),
+      ageController.text.trim(),
+    );
     try {
       var res =
           await http.post(Uri.parse(API.signUp), body: userModel.toJson());
