@@ -20,7 +20,7 @@ class signUpPage extends StatefulWidget {
 
 class _signUppageState extends State<signUpPage> {
   var formKey = GlobalKey<FormState>();
-
+  bool isSecondPage = false;
   var userNameController = TextEditingController();
   var domainName = '';
   var emailController = TextEditingController();
@@ -43,6 +43,12 @@ class _signUppageState extends State<signUpPage> {
   }
 
   changeDomain() {}
+
+  changePage() {
+    setState(() {
+      isSecondPage = !isSecondPage;
+    });
+  }
 
   checkUserEmail() async {
     try {
@@ -133,42 +139,16 @@ class _signUppageState extends State<signUpPage> {
                     child: GestureDetector(
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              '회원가입',
-                              style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w300,
-                                  color: Theme.of(context).primaryColor),
-                            ),
-                            loginTextbox(
-                              icon: const Icon(Icons.account_circle_outlined),
-                              dataType: '아이디',
-                            ),
-                            loginTextbox(
-                              icon: const Icon(Icons.key),
-                              dataType: '비밀번호',
-                            ),
-                            loginTextbox(
-                              icon: const Icon(Icons.key),
-                              dataType: '비밀번호 확인',
-                            ),
-                            emailTextbox(
-                              emailController: emailController,
-                              domainName: domainName,
-                            ),
-                            const phoneTextbox(),
-                            genderSelectButton(
-                              genderChange: changeGender,
-                            ),
-                            const brithdaySelector(),
-                            submitSignUp(
-                              gender: genderController,
-                            )
-                          ],
-                        ),
+                        child: isSecondPage
+                            ? secondPage(
+                                emailController: emailController,
+                                domainName: domainName,
+                                changeGender: changeGender,
+                                changePage: changePage,
+                              )
+                            : firstPage(
+                                changePage: changePage,
+                              ),
                       ),
                     ),
                   ),
@@ -184,8 +164,9 @@ class _signUppageState extends State<signUpPage> {
 
 // 회원가입 제출
 class submitSignUp extends StatelessWidget {
-  String gender;
-  submitSignUp({super.key, required this.gender});
+  const submitSignUp({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +183,6 @@ class submitSignUp extends StatelessWidget {
       onPressed: () {
         // Navigator.push((context),
         // MaterialPageRoute(builder: (context) => const signUpPage()));
-        print(gender);
       },
       child: Text(
         '회원가입',
@@ -349,6 +329,7 @@ class _genderSelectButtonState extends State<genderSelectButton> {
   }
 }
 
+// 생일
 class brithdaySelector extends StatefulWidget {
   const brithdaySelector({super.key});
 
@@ -391,6 +372,105 @@ class _brithdaySelectorState extends State<brithdaySelector> {
             onTap: () => _selectDate(context),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class firstPage extends StatefulWidget {
+  Function changePage;
+  firstPage({super.key, required this.changePage});
+
+  @override
+  State<firstPage> createState() => _firstPageState();
+}
+
+class _firstPageState extends State<firstPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Text(
+          '회원가입',
+          style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w300,
+              color: Theme.of(context).primaryColor),
+        ),
+        loginTextbox(
+          icon: const Icon(Icons.account_circle_outlined),
+          dataType: '아이디',
+        ),
+        loginTextbox(
+          icon: const Icon(Icons.key),
+          dataType: '비밀번호',
+        ),
+        loginTextbox(
+          icon: const Icon(Icons.key),
+          dataType: '비밀번호 확인',
+        ),
+        TextButton(
+          onPressed: () {
+            widget.changePage();
+          },
+          child: const Text('다음'),
+        ),
+        // emailTextbox(
+        //   emailController: emailController,
+        //   domainName: domainName,
+        // ),
+        // const phoneTextbox(),
+        // genderSelectButton(
+        //   genderChange: changeGender,
+        // ),
+        // const brithdaySelector(),
+        // submitSignUp(
+        //   gender: genderController,
+        // )
+      ],
+    );
+  }
+}
+
+class secondPage extends StatefulWidget {
+  String domainName;
+  TextEditingController emailController;
+  Function changeGender;
+  Function changePage;
+  secondPage({
+    super.key,
+    required this.emailController,
+    required this.domainName,
+    required this.changeGender,
+    required this.changePage,
+  });
+
+  @override
+  State<secondPage> createState() => _secondPageState();
+}
+
+class _secondPageState extends State<secondPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        emailTextbox(
+          emailController: widget.emailController,
+          domainName: widget.domainName,
+        ),
+        const phoneTextbox(),
+        genderSelectButton(
+          genderChange: widget.changeGender,
+        ),
+        const brithdaySelector(),
+        TextButton(
+            onPressed: () {
+              widget.changePage();
+            },
+            child: const Text('이전')),
+        const submitSignUp()
       ],
     );
   }
