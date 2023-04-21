@@ -11,6 +11,8 @@ class loginPage extends StatefulWidget {
 }
 
 class _loginPageState extends State<loginPage> {
+  TextEditingController idController = TextEditingController();
+  TextEditingController pwController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     double areaWidth = MediaQuery.of(context).size.width * 0.9;
@@ -50,13 +52,18 @@ class _loginPageState extends State<loginPage> {
                             color: Theme.of(context).primaryColor),
                       ),
                       loginTextbox(
-                          icon: const Icon(Icons.account_circle_outlined),
-                          dataType: '아이디'),
+                        icon: const Icon(Icons.account_circle_outlined),
+                        dataType: '아이디',
+                        controller: idController,
+                      ),
                       const SizedBox(
                         height: 30,
                       ),
                       loginTextbox(
-                          icon: const Icon(Icons.key), dataType: '비밀번호'),
+                        icon: const Icon(Icons.key),
+                        dataType: '비밀번호',
+                        controller: pwController,
+                      ),
                       const loginToolBox(),
                       loginButton(
                         parentWidth: areaWidth,

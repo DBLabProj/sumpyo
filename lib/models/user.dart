@@ -5,7 +5,7 @@ class User {
   String user_phone;
   String user_passwd;
   String user_gender;
-  String user_age;
+  DateTime user_age;
 
   User(
     this.user_id,
@@ -23,5 +23,7 @@ class User {
         'user_email': user_email,
         'user_phone': user_phone,
         'user_passwd': user_passwd,
+        'user_gender': user_gender,
+        'user_birthday': user_age,
       };
 }

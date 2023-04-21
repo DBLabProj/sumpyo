@@ -22,13 +22,18 @@ class _signUppageState extends State<signUpPage> {
   var formKey = GlobalKey<FormState>();
   bool isSecondPage = false;
   var userNameController = TextEditingController();
-  var domainName = '';
+  var domainName = 'google.com';
   var emailController = TextEditingController();
   var phoneController = TextEditingController();
-  var passwordController = TextEditingController();
-  var passwordCheckController = TextEditingController();
+  var pwController = TextEditingController();
+  var pwCheckController = TextEditingController();
   var ageController = TextEditingController();
+  var birthdayController = DateTime.now();
   var genderController = '';
+
+  changeBrithday(DateTime birthday) {
+    birthdayController = birthday;
+  }
 
   changeGender(int index) {
     if (index == 0) {
@@ -42,7 +47,12 @@ class _signUppageState extends State<signUpPage> {
     }
   }
 
-  changeDomain() {}
+  changeDomain(String domain) {
+    setState(() {
+      domainName = domain;
+      saveInfo();
+    });
+  }
 
   changePage() {
     setState(() {
@@ -78,30 +88,31 @@ class _signUppageState extends State<signUpPage> {
       userNameController.text.trim(),
       '${emailController.text.trim()}@${domainName.trim()}',
       phoneController.text.trim(),
-      passwordController.text.trim(),
+      pwController.text.trim(),
       genderController,
-      ageController.text.trim(),
+      birthdayController,
     );
-    try {
-      var res =
-          await http.post(Uri.parse(API.signUp), body: userModel.toJson());
-      if (res.statusCode == 200) {
-        var resSignup = jsonDecode(res.body);
-        if (resSignup['success'] == true) {
-          Fluttertoast.showToast(msg: 'Signup successfully');
-          setState(() {
-            userNameController.clear();
-            emailController.clear();
-            passwordController.clear();
-          });
-        } else {
-          Fluttertoast.showToast(msg: 'Error occurred. Please try again');
-        }
-      }
-    } catch (e) {
-      print(e.toString());
-      Fluttertoast.showToast(msg: e.toString());
-    }
+    print(userModel.toJson());
+    // try {
+    //   var res =
+    //       await http.post(Uri.parse(API.signUp), body: userModel.toJson());
+    //   if (res.statusCode == 200) {
+    //     var resSignup = jsonDecode(res.body);
+    //     if (resSignup['success'] == true) {
+    //       Fluttertoast.showToast(msg: 'Signup successfully');
+    //       setState(() {
+    //         userNameController.clear();
+    //         emailController.clear();
+    //         pwController.clear();
+    //       });
+    //     } else {
+    //       Fluttertoast.showToast(msg: 'Error occurred. Please try again');
+    //     }
+    //   }
+    // } catch (e) {
+    //   print(e.toString());
+    //   Fluttertoast.showToast(msg: e.toString());
+    // }
   }
 
   @override
@@ -142,12 +153,18 @@ class _signUppageState extends State<signUpPage> {
                         child: isSecondPage
                             ? secondPage(
                                 emailController: emailController,
-                                domainName: domainName,
+                                changeDomain: changeDomain,
                                 changeGender: changeGender,
                                 changePage: changePage,
+                                domain: domainName,
+                                changeBrithday: changeBrithday,
+                                phoneController: phoneController,
                               )
                             : firstPage(
                                 changePage: changePage,
+                                idController: userNameController,
+                                pwCheckController: pwController,
+                                pwController: pwCheckController,
                               ),
                       ),
                     ),
@@ -164,8 +181,10 @@ class _signUppageState extends State<signUpPage> {
 
 // 회원가입 제출
 class submitSignUp extends StatelessWidget {
-  const submitSignUp({
+  String domain;
+  submitSignUp({
     super.key,
+    required this.domain,
   });
 
   @override
@@ -183,6 +202,7 @@ class submitSignUp extends StatelessWidget {
       onPressed: () {
         // Navigator.push((context),
         // MaterialPageRoute(builder: (context) => const signUpPage()));
+        print(domain);
       },
       child: Text(
         '회원가입',
@@ -197,11 +217,11 @@ class submitSignUp extends StatelessWidget {
 // 이메일
 class emailTextbox extends StatefulWidget {
   var emailController;
-  String domainName;
+  Function changeDomain;
   emailTextbox({
     super.key,
     required this.emailController,
-    this.domainName = 'google.com',
+    required this.changeDomain,
   });
 
   @override
@@ -245,7 +265,7 @@ class _emailTextboxState extends State<emailTextbox> {
             onChanged: (value) {
               setState(() {
                 _selectedValue = value!;
-                widget.domainName = value;
+                widget.changeDomain(value);
               });
             },
           ),
@@ -257,7 +277,8 @@ class _emailTextboxState extends State<emailTextbox> {
 
 // 전화번호
 class phoneTextbox extends StatefulWidget {
-  const phoneTextbox({super.key});
+  TextEditingController phoneController;
+  phoneTextbox({super.key, required this.phoneController});
 
   @override
   State<phoneTextbox> createState() => _phoneTextboxState();
@@ -277,6 +298,7 @@ class _phoneTextboxState extends State<phoneTextbox> {
           const Icon(Icons.phone_android_rounded),
           Flexible(
               child: TextField(
+            controller: widget.phoneController,
             inputFormatters: [
               MultiMaskedTextInputFormatter(
                   masks: ['xxx-xxxx-xxxx', 'xxx-xxx-xxxx'], separator: '-'),
@@ -331,7 +353,8 @@ class _genderSelectButtonState extends State<genderSelectButton> {
 
 // 생일
 class brithdaySelector extends StatefulWidget {
-  const brithdaySelector({super.key});
+  Function changeBrithday;
+  brithdaySelector({super.key, required this.changeBrithday});
 
   @override
   State<brithdaySelector> createState() => _brithdaySelectorState();
@@ -340,22 +363,23 @@ class brithdaySelector extends StatefulWidget {
 class _brithdaySelectorState extends State<brithdaySelector> {
   DateTime brithday = DateTime.now();
   String _selectedDate = '';
-  DateTime _selectedDate2 = DateTime.now();
   Future _selectDate(BuildContext context) async {
+    var parent = context.findAncestorStateOfType();
+    print(parent);
     final DateTime? selected = await showDatePicker(
       // locale: const Locale('ko', 'KO'),
       context: context,
       initialDate:
           // _selectedDate == '' ? DateTime.now() : DateTime(_selectedDate),
-          _selectedDate2,
+          brithday,
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
     if (selected != null) {
       setState(() {
-        _selectedDate2 = selected;
+        brithday = selected;
         _selectedDate = (DateFormat('yyyy-MM-dd')).format(selected);
-        print(_selectedDate);
+        widget.changeBrithday(brithday);
       });
     }
   }
@@ -379,7 +403,16 @@ class _brithdaySelectorState extends State<brithdaySelector> {
 
 class firstPage extends StatefulWidget {
   Function changePage;
-  firstPage({super.key, required this.changePage});
+  TextEditingController idController;
+  TextEditingController pwController;
+  TextEditingController pwCheckController;
+  firstPage({
+    super.key,
+    required this.changePage,
+    required this.idController,
+    required this.pwController,
+    required this.pwCheckController,
+  });
 
   @override
   State<firstPage> createState() => _firstPageState();
@@ -401,14 +434,17 @@ class _firstPageState extends State<firstPage> {
         loginTextbox(
           icon: const Icon(Icons.account_circle_outlined),
           dataType: '아이디',
+          controller: widget.idController,
         ),
         loginTextbox(
           icon: const Icon(Icons.key),
           dataType: '비밀번호',
+          controller: widget.pwController,
         ),
         loginTextbox(
           icon: const Icon(Icons.key),
           dataType: '비밀번호 확인',
+          controller: widget.pwCheckController,
         ),
         TextButton(
           onPressed: () {
@@ -416,34 +452,28 @@ class _firstPageState extends State<firstPage> {
           },
           child: const Text('다음'),
         ),
-        // emailTextbox(
-        //   emailController: emailController,
-        //   domainName: domainName,
-        // ),
-        // const phoneTextbox(),
-        // genderSelectButton(
-        //   genderChange: changeGender,
-        // ),
-        // const brithdaySelector(),
-        // submitSignUp(
-        //   gender: genderController,
-        // )
       ],
     );
   }
 }
 
 class secondPage extends StatefulWidget {
-  String domainName;
+  String domain;
+  Function changeDomain;
   TextEditingController emailController;
   Function changeGender;
   Function changePage;
+  Function changeBrithday;
+  TextEditingController phoneController;
   secondPage({
     super.key,
     required this.emailController,
-    required this.domainName,
+    required this.changeDomain,
     required this.changeGender,
     required this.changePage,
+    required this.domain,
+    required this.changeBrithday,
+    required this.phoneController,
   });
 
   @override
@@ -454,23 +484,50 @@ class _secondPageState extends State<secondPage> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: () => widget.changePage(),
+              child: const Text(
+                '<',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+            Text(
+              '회원가입',
+              style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w300,
+                  color: Theme.of(context).primaryColor),
+            ),
+            const Text(
+              '  ',
+              style: TextStyle(
+                fontSize: 30,
+              ),
+            ),
+          ],
+        ),
         emailTextbox(
           emailController: widget.emailController,
-          domainName: widget.domainName,
+          changeDomain: widget.changeDomain,
         ),
-        const phoneTextbox(),
+        phoneTextbox(
+          phoneController: widget.phoneController,
+        ),
         genderSelectButton(
           genderChange: widget.changeGender,
         ),
-        const brithdaySelector(),
-        TextButton(
-            onPressed: () {
-              widget.changePage();
-            },
-            child: const Text('이전')),
-        const submitSignUp()
+        brithdaySelector(changeBrithday: widget.changeBrithday),
+        submitSignUp(
+          domain: widget.domain,
+        )
       ],
     );
   }

@@ -43,7 +43,12 @@ class loginBackground extends StatelessWidget {
 class loginTextbox extends StatefulWidget {
   Icon icon;
   String dataType;
-  loginTextbox({super.key, required this.icon, required this.dataType});
+  TextEditingController controller;
+  loginTextbox(
+      {super.key,
+      required this.icon,
+      required this.dataType,
+      required this.controller});
 
   @override
   State<loginTextbox> createState() => _loginTextboxState();
@@ -62,7 +67,8 @@ class _loginTextboxState extends State<loginTextbox> {
         children: [
           widget.icon,
           Flexible(
-            child: TextField(
+            child: TextFormField(
+              controller: widget.controller,
               obscureText: widget.dataType != '아이디' ? true : false,
               decoration: InputDecoration(
                   labelText: widget.dataType, border: InputBorder.none),
