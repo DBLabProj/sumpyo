@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class User {
   int user_id;
   String user_name;
@@ -5,7 +7,7 @@ class User {
   String user_phone;
   String user_passwd;
   String user_gender;
-  DateTime user_age;
+  DateTime user_birthday;
 
   User(
     this.user_id,
@@ -14,7 +16,7 @@ class User {
     this.user_phone,
     this.user_passwd,
     this.user_gender,
-    this.user_age,
+    this.user_birthday,
   );
 
   Map<String, dynamic> toJson() => {
@@ -24,6 +26,6 @@ class User {
         'user_phone': user_phone,
         'user_passwd': user_passwd,
         'user_gender': user_gender,
-        'user_birthday': user_age,
+        'user_birthday': (DateFormat('yyyy-MM-dd')).format(user_birthday),
       };
 }

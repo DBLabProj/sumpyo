@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_masked_formatter/multi_masked_formatter.dart';
 import 'package:sumpyo/models/user.dart';
+import 'package:sumpyo/screens/signup_success_screen.dart';
 import 'package:sumpyo/widgets/loginWidget.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,7 +28,6 @@ class _signUppageState extends State<signUpPage> {
   var phoneController = TextEditingController();
   var pwController = TextEditingController();
   var pwCheckController = TextEditingController();
-  var ageController = TextEditingController();
   var birthdayController = DateTime.now();
   var genderController = '';
 
@@ -50,7 +50,6 @@ class _signUppageState extends State<signUpPage> {
   changeDomain(String domain) {
     setState(() {
       domainName = domain;
-      saveInfo();
     });
   }
 
@@ -60,7 +59,7 @@ class _signUppageState extends State<signUpPage> {
     });
   }
 
-  checkUserEmail() async {
+  checkUsername() async {
     try {
       var response = await http.post(Uri.parse(API.validateName),
           body: {'user_name': userNameController.text.trim()});
@@ -93,26 +92,28 @@ class _signUppageState extends State<signUpPage> {
       birthdayController,
     );
     print(userModel.toJson());
-    // try {
-    //   var res =
-    //       await http.post(Uri.parse(API.signUp), body: userModel.toJson());
-    //   if (res.statusCode == 200) {
-    //     var resSignup = jsonDecode(res.body);
-    //     if (resSignup['success'] == true) {
-    //       Fluttertoast.showToast(msg: 'Signup successfully');
-    //       setState(() {
-    //         userNameController.clear();
-    //         emailController.clear();
-    //         pwController.clear();
-    //       });
-    //     } else {
-    //       Fluttertoast.showToast(msg: 'Error occurred. Please try again');
-    //     }
-    //   }
-    // } catch (e) {
-    //   print(e.toString());
-    //   Fluttertoast.showToast(msg: e.toString());
-    // }
+    try {
+      var res =
+          await http.post(Uri.parse(API.signUp), body: userModel.toJson());
+      if (res.statusCode == 200) {
+        var resSignup = jsonDecode(res.body);
+        if (resSignup['success'] == true) {
+          Fluttertoast.showToast(msg: 'Signup successfully');
+          setState(() {
+            userNameController.clear();
+            emailController.clear();
+            pwController.clear();
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => signupSuccessPage()));
+          });
+        } else {
+          Fluttertoast.showToast(msg: 'Error occurred. Please try again');
+        }
+      }
+    } catch (e) {
+      print(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
+    }
   }
 
   @override
@@ -159,6 +160,7 @@ class _signUppageState extends State<signUpPage> {
                                 domain: domainName,
                                 changeBrithday: changeBrithday,
                                 phoneController: phoneController,
+                                checkUsername: checkUsername,
                               )
                             : firstPage(
                                 changePage: changePage,
@@ -182,9 +184,11 @@ class _signUppageState extends State<signUpPage> {
 // 회원가입 제출
 class submitSignUp extends StatelessWidget {
   String domain;
+  Function checkUsername;
   submitSignUp({
     super.key,
     required this.domain,
+    required this.checkUsername,
   });
 
   @override
@@ -202,7 +206,7 @@ class submitSignUp extends StatelessWidget {
       onPressed: () {
         // Navigator.push((context),
         // MaterialPageRoute(builder: (context) => const signUpPage()));
-        print(domain);
+        checkUsername();
       },
       child: Text(
         '회원가입',
@@ -464,6 +468,7 @@ class secondPage extends StatefulWidget {
   Function changeGender;
   Function changePage;
   Function changeBrithday;
+  Function checkUsername;
   TextEditingController phoneController;
   secondPage({
     super.key,
@@ -474,6 +479,7 @@ class secondPage extends StatefulWidget {
     required this.domain,
     required this.changeBrithday,
     required this.phoneController,
+    required this.checkUsername,
   });
 
   @override
@@ -527,6 +533,7 @@ class _secondPageState extends State<secondPage> {
         brithdaySelector(changeBrithday: widget.changeBrithday),
         submitSignUp(
           domain: widget.domain,
+          checkUsername: widget.checkUsername,
         )
       ],
     );

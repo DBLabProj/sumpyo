@@ -11,9 +11,41 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool firstWeek = false;
+  bool firstMonth = false;
+  double monthHeight = 0.0;
+  double weekHeight = 0.0;
   CalendarFormat calFormat = CalendarFormat.month;
   final GlobalKey _mainCalKey = GlobalKey();
   final GlobalKey contentKey = GlobalKey();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      monthHeight = getCalSize();
+    });
+  }
+
+  double getCalSize() {
+    RenderBox calBox =
+        _mainCalKey.currentContext!.findRenderObject() as RenderBox;
+    _mainCalKey;
+    Size size = calBox.size;
+    return size.height;
+  }
+
+  void getWeekSize() {
+    RenderBox calBox =
+        _mainCalKey.currentContext!.findRenderObject() as RenderBox;
+    weekHeight = calBox.size.height;
+  }
+
+  Size? getContentSize() {
+    RenderBox calBox =
+        contentKey.currentContext!.findRenderObject() as RenderBox;
+    Size size = calBox.size;
+    return size;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +59,25 @@ class _HomeScreenState extends State<HomeScreen> {
         //--------------------------------슬라이딩 패널--------------------------
         child: SlidingUpPanel(
           onPanelOpened: () {
-            calFormat = CalendarFormat.week;
-            setState(() {});
+            setState(() {
+              calFormat = CalendarFormat.week;
+            });
+
+            if (!firstMonth) {
+              firstMonth = !firstMonth;
+              Future.delayed(const Duration(milliseconds: 500), () {
+                print(getCalSize());
+              });
+            }
           },
           onPanelClosed: () {
-            calFormat = CalendarFormat.month;
-            setState(() {});
+            setState(() {
+              calFormat = CalendarFormat.month;
+            });
           },
           minHeight: MediaQuery.of(context).size.height * 0.3,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
+          color: Colors.transparent,
           panelBuilder: () {
             return const diaryContainer();
           },
@@ -50,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
               key: contentKey,
               children: [
                 mainCalendar(
+                  getWeekSize: getWeekSize,
                   calendarFormat: calFormat,
                   mainCalKey: _mainCalKey,
                 ),
@@ -100,10 +143,12 @@ class topAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 // -----------------------------------달력--------------------------------------
 class mainCalendar extends StatefulWidget {
+  Function getWeekSize;
   CalendarFormat calendarFormat;
   GlobalKey mainCalKey;
   mainCalendar({
     super.key,
+    required this.getWeekSize,
     required this.calendarFormat,
     required this.mainCalKey,
   });
@@ -177,9 +222,9 @@ class _diaryContainerState extends State<diaryContainer> {
   Widget build(BuildContext context) {
     return Container(
       // height: MediaQuery.of(context).size.height.,
-      decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
+      decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30))),
       padding: EdgeInsets.fromLTRB(
           10,
           MediaQuery.of(context).size.width * 0.035,

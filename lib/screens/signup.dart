@@ -22,7 +22,7 @@ class _SignupPageState extends State<SignupPage> {
   var phoneController = TextEditingController();
   var passwordController = TextEditingController();
   var passwordCheckController = TextEditingController();
-  var ageController = TextEditingController();
+  var ageController = DateTime.now();
   var genderController = TextEditingController();
 
   checkUserEmail() async {
@@ -55,7 +55,7 @@ class _SignupPageState extends State<SignupPage> {
       phoneController.text.trim(),
       passwordController.text.trim(),
       genderController.text.trim(),
-      ageController.text.trim(),
+      ageController,
     );
     try {
       var res =
