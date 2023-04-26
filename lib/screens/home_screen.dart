@@ -5,7 +5,6 @@ import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -49,54 +48,56 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      appBar: topAppBar(
-        appBar: AppBar(),
-      ),
-      bottomNavigationBar: const bottomNavi(),
-      body: SafeArea(
-        //--------------------------------슬라이딩 패널--------------------------
-        child: SlidingUpPanel(
-          onPanelOpened: () {
-            setState(() {
-              calFormat = CalendarFormat.week;
-            });
-
-            if (!firstMonth) {
-              firstMonth = !firstMonth;
-              Future.delayed(const Duration(milliseconds: 500), () {
-                print(getCalSize());
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
+        appBar: topAppBar(
+          appBar: AppBar(),
+        ),
+        bottomNavigationBar: const bottomNavi(),
+        body: SafeArea(
+          //--------------------------------슬라이딩 패널--------------------------
+          child: SlidingUpPanel(
+            onPanelOpened: () {
+              setState(() {
+                calFormat = CalendarFormat.week;
               });
-            }
-          },
-          onPanelClosed: () {
-            setState(() {
-              calFormat = CalendarFormat.month;
-            });
-          },
-          minHeight: MediaQuery.of(context).size.height * 0.3,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
-          color: Colors.transparent,
-          panelBuilder: () {
-            return const diaryContainer();
-          },
-          //-------------------------------바디 영역----------------------------
-          body: GestureDetector(
-            onDoubleTap: () {
-              setState(
-                () {},
-              );
+
+              if (!firstMonth) {
+                firstMonth = !firstMonth;
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  weekHeight = getCalSize();
+                });
+              }
             },
-            child: Column(
-              key: contentKey,
-              children: [
-                mainCalendar(
-                  getWeekSize: getWeekSize,
-                  calendarFormat: calFormat,
-                  mainCalKey: _mainCalKey,
-                ),
-              ],
+            onPanelClosed: () {
+              setState(() {
+                calFormat = CalendarFormat.month;
+              });
+            },
+            minHeight: MediaQuery.of(context).size.height * 0.3,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
+            color: Colors.transparent,
+            panelBuilder: () {
+              return const diaryContainer();
+            },
+            //-------------------------------바디 영역----------------------------
+            body: GestureDetector(
+              onDoubleTap: () {
+                setState(
+                  () {},
+                );
+              },
+              child: Column(
+                key: contentKey,
+                children: [
+                  mainCalendar(
+                    getWeekSize: getWeekSize,
+                    calendarFormat: calFormat,
+                    mainCalKey: _mainCalKey,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -280,7 +281,7 @@ class _bottomNaviState extends State<bottomNavi> {
   Widget build(BuildContext context) {
     Color colorSelect = Theme.of(context).primaryColor;
     return SizedBox(
-      height: 60,
+      height: 80,
       child: BottomBarCreative(
         backgroundColor: bgColor,
         items: items,
