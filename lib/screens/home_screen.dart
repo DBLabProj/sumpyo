@@ -12,8 +12,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool firstWeek = false;
   bool firstMonth = false;
+  double contentHeight = 0.0;
   double monthHeight = 0.0;
   double weekHeight = 0.0;
+  double minHeight = 50.0;
+  double maxHeight = 500.0;
   CalendarFormat calFormat = CalendarFormat.month;
   final GlobalKey _mainCalKey = GlobalKey();
   final GlobalKey contentKey = GlobalKey();
@@ -22,82 +25,85 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       monthHeight = getCalSize();
+      contentHeight = getContentSize();
+      setState(() {
+        minHeight = contentHeight - monthHeight - 90;
+        print('컨텐츠높이:$contentHeight, 월간달력:$monthHeight, 최소높이:$minHeight');
+      });
     });
   }
 
   double getCalSize() {
     RenderBox calBox =
         _mainCalKey.currentContext!.findRenderObject() as RenderBox;
-    _mainCalKey;
     Size size = calBox.size;
     return size.height;
   }
 
-  void getWeekSize() {
-    RenderBox calBox =
-        _mainCalKey.currentContext!.findRenderObject() as RenderBox;
-    weekHeight = calBox.size.height;
-  }
-
-  Size? getContentSize() {
+  double getContentSize() {
     RenderBox calBox =
         contentKey.currentContext!.findRenderObject() as RenderBox;
     Size size = calBox.size;
-    return size;
+    return size.height;
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
-        appBar: topAppBar(
-          appBar: AppBar(),
-        ),
-        bottomNavigationBar: const bottomNavi(),
-        body: SafeArea(
-          //--------------------------------슬라이딩 패널--------------------------
-          child: SlidingUpPanel(
-            onPanelOpened: () {
-              setState(() {
-                calFormat = CalendarFormat.week;
-              });
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      appBar: topAppBar(
+        appBar: AppBar(),
+      ),
+      bottomNavigationBar: const bottomNavi(),
+      body: SafeArea(
+        //--------------------------------슬라이딩 패널--------------------------
+        child: SlidingUpPanel(
+          onPanelOpened: () {
+            setState(() {
+              calFormat = CalendarFormat.week;
+            });
 
-              if (!firstMonth) {
-                firstMonth = !firstMonth;
-                Future.delayed(const Duration(milliseconds: 500), () {
-                  weekHeight = getCalSize();
+            if (!firstMonth) {
+              firstMonth = !firstMonth;
+              Future.delayed(const Duration(milliseconds: 500), () {
+                weekHeight = getCalSize();
+                setState(() {
+                  maxHeight = contentHeight - weekHeight - 183;
                 });
-              }
-            },
-            onPanelClosed: () {
-              setState(() {
-                calFormat = CalendarFormat.month;
               });
+            }
+          },
+          onPanelClosed: () {
+            setState(() {
+              calFormat = CalendarFormat.month;
+            });
+          },
+          minHeight: minHeight,
+          maxHeight: maxHeight,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
+          color: Colors.transparent,
+          panelBuilder: () {
+            return const diaryContainer();
+          },
+          //-------------------------------바디 영역----------------------------
+          body: GestureDetector(
+            onDoubleTap: () {
+              setState(
+                () {
+                  print(
+                      '최대높이:$maxHeight, 최소높이:$minHeight, 컨텐츠영역높이:$contentHeight, 월간달력높이:$monthHeight, 주간달력높이:$weekHeight');
+                  print(MediaQuery.of(context).size.height);
+                },
+              );
             },
-            minHeight: MediaQuery.of(context).size.height * 0.3,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
-            color: Colors.transparent,
-            panelBuilder: () {
-              return const diaryContainer();
-            },
-            //-------------------------------바디 영역----------------------------
-            body: GestureDetector(
-              onDoubleTap: () {
-                setState(
-                  () {},
-                );
-              },
-              child: Column(
-                key: contentKey,
-                children: [
-                  mainCalendar(
-                    getWeekSize: getWeekSize,
-                    calendarFormat: calFormat,
-                    mainCalKey: _mainCalKey,
-                  ),
-                ],
-              ),
+            child: Column(
+              key: contentKey,
+              children: [
+                mainCalendar(
+                  calendarFormat: calFormat,
+                  mainCalKey: _mainCalKey,
+                ),
+              ],
             ),
           ),
         ),
@@ -144,12 +150,10 @@ class topAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 // -----------------------------------달력--------------------------------------
 class mainCalendar extends StatefulWidget {
-  Function getWeekSize;
   CalendarFormat calendarFormat;
   GlobalKey mainCalKey;
   mainCalendar({
     super.key,
-    required this.getWeekSize,
     required this.calendarFormat,
     required this.mainCalKey,
   });
