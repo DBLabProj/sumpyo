@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -327,30 +328,42 @@ class genderSelectButton extends StatefulWidget {
 }
 
 class _genderSelectButtonState extends State<genderSelectButton> {
-  List<bool> isSelected = [false, false];
+  List<String> _genderList = ['남성', '여성'];
+  String? _selectedValue;
   @override
   Widget build(BuildContext context) {
-    return ToggleButtons(
-      isSelected: isSelected,
-      selectedBorderColor: Theme.of(context).primaryColor,
-      onPressed: (index) {
-        setState(() {
-          for (int buttonIndex = 0;
-              buttonIndex < isSelected.length;
-              buttonIndex++) {
-            if (buttonIndex == index) {
-              isSelected[buttonIndex] = true;
-              widget.genderChange(index);
-            } else {
-              isSelected[buttonIndex] = false;
-            }
-          }
-        });
-      },
-      children: const [
-        Text('남성'),
-        Text('여성'),
-      ],
+    return Container(
+      decoration: BoxDecoration(
+          border: Border(
+              bottom:
+                  BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const Icon(Icons.wc),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.34,
+            child: DropdownButton(
+              isExpanded: true,
+              underline: SizedBox.shrink(),
+              value: _selectedValue != null ? _selectedValue : null,
+              hint: Text('성별'),
+              items: _genderList.map((value) {
+                return DropdownMenuItem(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedValue = value!;
+                  // widget.changeDomain(value);
+                });
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -365,27 +378,82 @@ class brithdaySelector extends StatefulWidget {
 }
 
 class _brithdaySelectorState extends State<brithdaySelector> {
+  TextEditingController _BirthdayController =
+      TextEditingController(text: '생년월일111');
   DateTime brithday = DateTime.now();
-  String _selectedDate = '';
-  Future _selectDate(BuildContext context) async {
-    var parent = context.findAncestorStateOfType();
-    print(parent);
-    final DateTime? selected = await showDatePicker(
-      // locale: const Locale('ko', 'KO'),
+  // String _selectedDate = '';
+  DateTime? tempPickedDate;
+  DateTime _selectedDate = DateTime.now();
+  _selectDate() async {
+    DateTime? pickedDate = await showModalBottomSheet<DateTime>(
+      backgroundColor: ThemeData.light().scaffoldBackgroundColor,
       context: context,
-      initialDate:
-          // _selectedDate == '' ? DateTime.now() : DateTime(_selectedDate),
-          brithday,
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      builder: (context) {
+        return Container(
+          height: 300,
+          child: Column(
+            children: <Widget>[
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    CupertinoButton(
+                      child: Text('취소'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        FocusScope.of(context).unfocus();
+                      },
+                    ),
+                    CupertinoButton(
+                      child: Text('완료'),
+                      onPressed: () {
+                        Navigator.of(context).pop(tempPickedDate);
+                        FocusScope.of(context).unfocus();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Divider(
+                height: 0,
+                thickness: 1,
+              ),
+              Expanded(
+                child: Container(
+                  child: CupertinoDatePicker(
+                    // dateOrder: DatePickerDateOrder(),
+                    backgroundColor: ThemeData.light().scaffoldBackgroundColor,
+                    minimumYear: 1900,
+                    maximumYear: DateTime.now().year,
+                    initialDateTime: DateTime.now(),
+                    maximumDate: DateTime.now(),
+                    mode: CupertinoDatePickerMode.date,
+                    onDateTimeChanged: (DateTime dateTime) {
+                      tempPickedDate = dateTime;
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
-    if (selected != null) {
+
+    if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
-        brithday = selected;
-        _selectedDate = (DateFormat('yyyy-MM-dd')).format(selected);
-        widget.changeBrithday(brithday);
+        _selectedDate = pickedDate;
+        _BirthdayController.text = pickedDate.toString();
+        convertDateTimeDisplay(_BirthdayController.text);
       });
     }
+  }
+
+  String convertDateTimeDisplay(String date) {
+    final DateFormat displayFormater = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+    final DateFormat serverFormater = DateFormat('yyyy-MM-dd');
+    final DateTime displayDate = displayFormater.parse(date);
+    return _BirthdayController.text = serverFormater.format(displayDate);
   }
 
   @override
@@ -393,11 +461,21 @@ class _brithdaySelectorState extends State<brithdaySelector> {
     return Row(
       children: [
         const Icon(Icons.calendar_month),
-        Flexible(
-          child: TextField(
-            controller: TextEditingController(text: _selectedDate),
-            keyboardType: TextInputType.none,
-            onTap: () => _selectDate(context),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.3,
+          child: GestureDetector(
+            onTap: () {
+              HapticFeedback.mediumImpact();
+              _selectDate();
+            },
+            child: TextFormField(
+              enabled: false,
+              decoration: InputDecoration(
+                isDense: true,
+              ),
+              controller: _BirthdayController,
+              style: TextStyle(fontSize: 20),
+            ),
           ),
         ),
       ],
@@ -530,10 +608,14 @@ class _secondPageState extends State<secondPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            genderSelectButton(
-              genderChange: widget.changeGender,
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.4,
+              child: genderSelectButton(
+                genderChange: widget.changeGender,
+              ),
             ),
-            Flexible(
+            SizedBox(
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: brithdaySelector(changeBrithday: widget.changeBrithday)),
           ],
         ),

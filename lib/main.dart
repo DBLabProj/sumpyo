@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:sumpyo/l10n/l10n.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sumpyo/screens/login_screen.dart';
 
-void main() async {
-  await initializeDateFormatting();
+void main() {
   runApp(const App());
 }
 
@@ -19,14 +19,13 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // localizationsDelegates: const [
-      //   GlobalMaterialLocalizations.delegate,
-      //   GlobalWidgetsLocalizations.delegate
-      // ],
-      // supportedLocales: const [
-      //   Locale('en', 'US'),
-      //   Locale('ko', 'KO'),
-      // ],
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
       theme: ThemeData(
         primaryColor: const Color(0xFF8AA9DE),
         secondaryHeaderColor: const Color(0xFFE8EEF9),

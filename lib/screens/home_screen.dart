@@ -176,7 +176,7 @@ class _mainCalendarState extends State<mainCalendar> {
   Widget build(BuildContext context) {
     return TableCalendar(
       key: widget.mainCalKey,
-      locale: 'ko_KR',
+      locale: 'ko',
       focusedDay: focusedDay,
       firstDay: DateTime.utc(2000, 1, 1),
       lastDay: DateTime.utc(2050, 12, 31),

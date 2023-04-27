@@ -1,0 +1,6 @@
+{
+    "language": "한글",
+    "@language":{
+        "description": "The current Language"
+    }
+}
