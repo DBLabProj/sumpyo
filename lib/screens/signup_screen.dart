@@ -527,10 +527,16 @@ class _secondPageState extends State<secondPage> {
         phoneTextbox(
           phoneController: widget.phoneController,
         ),
-        genderSelectButton(
-          genderChange: widget.changeGender,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            genderSelectButton(
+              genderChange: widget.changeGender,
+            ),
+            Flexible(
+                child: brithdaySelector(changeBrithday: widget.changeBrithday)),
+          ],
         ),
-        brithdaySelector(changeBrithday: widget.changeBrithday),
         submitSignUp(
           domain: widget.domain,
           checkUsername: widget.checkUsername,

@@ -18,6 +18,7 @@ class _loginPageState extends State<loginPage> {
     double areaWidth = MediaQuery.of(context).size.width * 0.9;
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.0,
         toolbarHeight: 0,
         backgroundColor: Theme.of(context).primaryColor,
       ),
@@ -139,13 +140,14 @@ class _loginButtonState extends State<loginButton> {
                   backgroundColor:
                       MaterialStatePropertyAll(Theme.of(context).primaryColor)),
               onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
                 Navigator.push(
-                    (context),
-                    MaterialPageRoute(
-                        builder: (context) => const HomeScreen()));
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
               },
               child: const Text(
-                '로고인',
+                '로그인',
                 style: TextStyle(),
               )),
         ),

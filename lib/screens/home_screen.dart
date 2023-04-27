@@ -17,6 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   double weekHeight = 0.0;
   double minHeight = 50.0;
   double maxHeight = 500.0;
+  double topbarHeight = 0.0;
+
   CalendarFormat calFormat = CalendarFormat.month;
   final GlobalKey _mainCalKey = GlobalKey();
   final GlobalKey contentKey = GlobalKey();
@@ -27,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
       monthHeight = getCalSize();
       contentHeight = getContentSize();
       setState(() {
-        minHeight = contentHeight - monthHeight - 90;
+        minHeight = contentHeight - monthHeight - topbarHeight - 80;
         print('컨텐츠높이:$contentHeight, 월간달력:$monthHeight, 최소높이:$minHeight');
       });
     });
@@ -49,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    topbarHeight = MediaQuery.of(context).size.height * 0.15;
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       appBar: topAppBar(
@@ -68,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Future.delayed(const Duration(milliseconds: 500), () {
                 weekHeight = getCalSize();
                 setState(() {
-                  maxHeight = contentHeight - weekHeight - 183;
+                  maxHeight = contentHeight - weekHeight - topbarHeight - 80;
                 });
               });
             }
@@ -81,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
           minHeight: minHeight,
           maxHeight: maxHeight,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
-          color: Colors.transparent,
+          color: Colors.white,
           panelBuilder: () {
             return const diaryContainer();
           },
@@ -119,27 +122,30 @@ class topAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.menu_rounded,
-            size: 40,
+    return PreferredSize(
+      preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.15),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.menu_rounded,
+              size: 40,
+            ),
+            color: Colors.white,
+            onPressed: () {},
           ),
-          color: Colors.white,
-          onPressed: () {},
+          actions: [
+            IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.account_circle_rounded,
+                  size: 40,
+                ))
+          ],
         ),
-        actions: [
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.account_circle_rounded,
-                size: 40,
-              ))
-        ],
       ),
     );
   }
