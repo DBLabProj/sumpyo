@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sumpyo/l10n/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:sumpyo/screens/login_screen.dart';
+import 'package:sumpyo/screens/mypage_screen.dart';
 
 void main() {
   runApp(const App());
@@ -28,9 +28,10 @@ class _AppState extends State<App> {
       theme: ThemeData(
         primaryColor: const Color(0xFF8AA9DE),
         secondaryHeaderColor: const Color(0xFFE8EEF9),
+        dividerColor: const Color(0xff7c7c7c),
       ),
       // home: const HomeScreen(),
-      home: const loginPage(),
+      home: const myPage(),
     );
   }
 }
