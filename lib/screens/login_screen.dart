@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:sumpyo/screens/home_screen.dart';
+import 'package:sumpyo/main.dart';
 import 'package:sumpyo/screens/signup_screen.dart';
 import 'package:sumpyo/widgets/loginWidget.dart';
 
-class loginPage extends StatefulWidget {
-  const loginPage({super.key});
+class loginScreen extends StatefulWidget {
+  const loginScreen({super.key});
 
   @override
-  State<loginPage> createState() => _loginPageState();
+  State<loginScreen> createState() => _loginScreenState();
 }
 
-class _loginPageState extends State<loginPage> {
+class _loginScreenState extends State<loginScreen> {
   TextEditingController idController = TextEditingController();
   TextEditingController pwController = TextEditingController();
   @override
@@ -143,7 +143,7 @@ class _loginButtonState extends State<loginButton> {
                 Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  MaterialPageRoute(builder: (context) => const App()),
                 );
               },
               child: const Text(
