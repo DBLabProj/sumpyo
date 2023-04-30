@@ -44,7 +44,7 @@ class _AppState extends State<App> {
       theme: ThemeData(
         primaryColor: const Color(0xFF8AA9DE),
         secondaryHeaderColor: const Color(0xFFE8EEF9),
-        dividerColor: const Color(0xff7c7c7c),
+        dividerColor: const Color(0xffCCCCCC),
       ),
       home: Scaffold(
         body: screens[visit],
