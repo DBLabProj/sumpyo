@@ -30,7 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
       contentHeight = getContentSize();
       setState(() {
         minHeight = contentHeight - monthHeight - topbarHeight - 80;
-        print('컨텐츠높이:$contentHeight, 월간달력:$monthHeight, 최소높이:$minHeight');
+        print(
+          '컨텐츠높이:$contentHeight, 월간달력:$monthHeight, 최소높이:$minHeight',
+        );
       });
     });
   }

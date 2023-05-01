@@ -131,25 +131,26 @@ class _loginButtonState extends State<loginButton> {
         SizedBox(
           width: buttonWidth,
           child: ElevatedButton(
-              style: ButtonStyle(
-                  shape: MaterialStatePropertyAll(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+            style: ButtonStyle(
+                shape: MaterialStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  backgroundColor:
-                      MaterialStatePropertyAll(Theme.of(context).primaryColor)),
-              onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                );
-              },
-              child: const Text(
-                '로그인',
-                style: TextStyle(),
-              )),
+                ),
+                backgroundColor:
+                    MaterialStatePropertyAll(Theme.of(context).primaryColor)),
+            onPressed: () {
+              Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              );
+            },
+            child: const Text(
+              '로그인',
+              style: TextStyle(),
+            ),
+          ),
         ),
         SizedBox(
           width: buttonWidth,

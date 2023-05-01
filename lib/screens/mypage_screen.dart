@@ -42,47 +42,41 @@ class _mypage_screState extends State<myPage> {
                     MediaQuery.of(context).size.height * 0.05),
                 child: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.person_pin,
-                                color: Colors.white,
-                                size: 50,
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: Column(
-                                  children: const [
-                                    Text(
-                                      '샤프님은',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                    Text(
-                                      '일반 회원이에요',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.account_circle,
+                            color: Colors.white,
+                            size: 50,
                           ),
-                        )
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Column(
+                              children: const [
+                                Text(
+                                  '샤프님은',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                Text(
+                                  '일반 회원이에요',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     Card(
                       child: Row(

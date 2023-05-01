@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sumpyo/l10n/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:sumpyo/screens/mypage_screen.dart';
+import 'package:sumpyo/screens/edit_account_info.dart';
 
 void main() {
   runApp(const App());
@@ -31,7 +31,7 @@ class _AppState extends State<App> {
         dividerColor: const Color(0xffCCCCCC),
       ),
       // home: const HomeScreen(),
-      home: const myPage(),
+      home: const editAccount(),
     );
   }
 }
