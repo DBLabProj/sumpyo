@@ -6,6 +6,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sumpyo/screens/dummy_screen.dart';
 import 'package:sumpyo/screens/home_screen.dart';
 import 'package:sumpyo/screens/login_screen.dart';
+import 'package:sumpyo/screens/mypage_screen.dart';
 import 'package:sumpyo/screens/notice_screen.dart';
 import 'package:sumpyo/screens/statistics_screen.dart';
 
