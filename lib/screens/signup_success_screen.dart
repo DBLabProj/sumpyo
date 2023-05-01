@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:sumpyo/screens/login_screen.dart';
 import 'package:sumpyo/widgets/loginWidget.dart';
 
-class signupSuccessPage extends StatelessWidget {
+class signupSuccessScreen extends StatelessWidget {
   double cardHeight = 0.0;
   double cardWidth = 0.0;
-  signupSuccessPage({super.key});
+  signupSuccessScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,7 @@ class signupSuccessPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const loginPage()),
+                                    builder: (context) => const loginScreen()),
                               );
                             },
                             child: const Text('완료'),

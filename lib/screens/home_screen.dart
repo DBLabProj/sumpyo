@@ -1,6 +1,10 @@
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel2/sliding_up_panel2.dart';
+import 'package:sumpyo/screens/dummy_screen.dart';
+import 'package:sumpyo/screens/mypage_screen.dart';
+import 'package:sumpyo/screens/notice_screen.dart';
+import 'package:sumpyo/screens/statistics_screen.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -59,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: topAppBar(
         appBar: AppBar(),
       ),
-      bottomNavigationBar: const bottomNavi(),
+      // bottomNavigationBar: const bottomNavi(),
       body: SafeArea(
         //--------------------------------슬라이딩 패널--------------------------
         child: SlidingUpPanel(
@@ -116,6 +120,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+// -----------------------------------하단 바-----------------------------------
+const List<TabItem> items = [
+  TabItem(icon: Icons.calendar_month_outlined),
+  TabItem(icon: Icons.notifications_none_outlined),
+  TabItem(icon: Icons.circle),
+  TabItem(icon: Icons.bar_chart_rounded),
+  TabItem(icon: Icons.supervised_user_circle),
+];
 
 // -----------------------------------상단 바------------------------------------
 class topAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -268,15 +281,6 @@ class _diaryContainerState extends State<diaryContainer> {
   }
 }
 
-// -----------------------------------하단 바-----------------------------------
-const List<TabItem> items = [
-  TabItem(icon: Icons.calendar_month_outlined),
-  TabItem(icon: Icons.notifications_none_outlined),
-  TabItem(icon: Icons.circle),
-  TabItem(icon: Icons.bar_chart_rounded),
-  TabItem(icon: Icons.supervised_user_circle),
-];
-
 class bottomNavi extends StatefulWidget {
   const bottomNavi({super.key});
 
@@ -285,6 +289,14 @@ class bottomNavi extends StatefulWidget {
 }
 
 class _bottomNaviState extends State<bottomNavi> {
+  final screens = [
+    //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
+    const HomeScreen(),
+    const noticeScreen(),
+    const dummyScreen(),
+    const statisticsScreen(),
+    const myPage(),
+  ];
   int visit = 0;
   double height = 30;
   Color bgColor = Colors.white;

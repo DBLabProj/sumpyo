@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:sumpyo/screens/home_screen.dart';
+import 'package:sumpyo/main.dart';
 import 'package:sumpyo/screens/signup_screen.dart';
 import 'package:sumpyo/widgets/loginWidget.dart';
 
-class loginPage extends StatefulWidget {
-  const loginPage({super.key});
+class loginScreen extends StatefulWidget {
+  const loginScreen({super.key});
 
   @override
-  State<loginPage> createState() => _loginPageState();
+  State<loginScreen> createState() => _loginScreenState();
 }
 
-class _loginPageState extends State<loginPage> {
+class _loginScreenState extends State<loginScreen> {
   TextEditingController idController = TextEditingController();
   TextEditingController pwController = TextEditingController();
   @override
@@ -131,26 +131,25 @@ class _loginButtonState extends State<loginButton> {
         SizedBox(
           width: buttonWidth,
           child: ElevatedButton(
-            style: ButtonStyle(
-                shape: MaterialStatePropertyAll(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+              style: ButtonStyle(
+                  shape: MaterialStatePropertyAll(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                ),
-                backgroundColor:
-                    MaterialStatePropertyAll(Theme.of(context).primaryColor)),
-            onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
-              );
-            },
-            child: const Text(
-              '로그인',
-              style: TextStyle(),
-            ),
-          ),
+                  backgroundColor:
+                      MaterialStatePropertyAll(Theme.of(context).primaryColor)),
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const App()),
+                );
+              },
+              child: const Text(
+                '로그인',
+                style: TextStyle(),
+              )),
         ),
         SizedBox(
           width: buttonWidth,

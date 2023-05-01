@@ -105,7 +105,7 @@ class _signUppageState extends State<signUpPage> {
             emailController.clear();
             pwController.clear();
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => signupSuccessPage()));
+                MaterialPageRoute(builder: (context) => signupSuccessScreen()));
           });
         } else {
           Fluttertoast.showToast(msg: 'Error occurred. Please try again');
@@ -128,8 +128,9 @@ class _signUppageState extends State<signUpPage> {
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.0,
         toolbarHeight: 0,
-        // backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -245,10 +246,11 @@ class _emailTextboxState extends State<emailTextbox> {
               bottom:
                   BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           const Icon(Icons.email_outlined),
-          Flexible(
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.3,
             child: TextFormField(
               controller: widget.emailController,
               inputFormatters: [
@@ -259,20 +261,25 @@ class _emailTextboxState extends State<emailTextbox> {
             ),
           ),
           const Icon(Icons.alternate_email),
-          DropdownButton(
-            value: _selectedValue,
-            items: _emailList.map((value) {
-              return DropdownMenuItem(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedValue = value!;
-                widget.changeDomain(value);
-              });
-            },
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.3,
+            child: DropdownButton(
+              isExpanded: true,
+              underline: const SizedBox.shrink(),
+              value: _selectedValue,
+              items: _emailList.map((value) {
+                return DropdownMenuItem(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedValue = value!;
+                  widget.changeDomain(value);
+                });
+              },
+            ),
           ),
         ],
       ),
@@ -328,7 +335,7 @@ class genderSelectButton extends StatefulWidget {
 }
 
 class _genderSelectButtonState extends State<genderSelectButton> {
-  List<String> _genderList = ['남성', '여성'];
+  final List<String> _genderList = ['남성', '여성'];
   String? _selectedValue;
   @override
   Widget build(BuildContext context) {
@@ -345,9 +352,9 @@ class _genderSelectButtonState extends State<genderSelectButton> {
             width: MediaQuery.of(context).size.width * 0.34,
             child: DropdownButton(
               isExpanded: true,
-              underline: SizedBox.shrink(),
-              value: _selectedValue != null ? _selectedValue : null,
-              hint: Text('성별'),
+              underline: const SizedBox.shrink(),
+              value: _selectedValue,
+              hint: const Text('성별'),
               items: _genderList.map((value) {
                 return DropdownMenuItem(
                   value: value,
@@ -378,8 +385,8 @@ class brithdaySelector extends StatefulWidget {
 }
 
 class _brithdaySelectorState extends State<brithdaySelector> {
-  TextEditingController _BirthdayController =
-      TextEditingController(text: '생년월일111');
+  final TextEditingController _BirthdayController =
+      TextEditingController(text: DateTime.now().toString());
   DateTime brithday = DateTime.now();
   // String _selectedDate = '';
   DateTime? tempPickedDate;
@@ -389,7 +396,7 @@ class _brithdaySelectorState extends State<brithdaySelector> {
       backgroundColor: ThemeData.light().scaffoldBackgroundColor,
       context: context,
       builder: (context) {
-        return Container(
+        return SizedBox(
           height: 300,
           child: Column(
             children: <Widget>[
@@ -398,14 +405,14 @@ class _brithdaySelectorState extends State<brithdaySelector> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     CupertinoButton(
-                      child: Text('취소'),
+                      child: const Text('취소'),
                       onPressed: () {
                         Navigator.of(context).pop();
                         FocusScope.of(context).unfocus();
                       },
                     ),
                     CupertinoButton(
-                      child: Text('완료'),
+                      child: const Text('완료'),
                       onPressed: () {
                         Navigator.of(context).pop(tempPickedDate);
                         FocusScope.of(context).unfocus();
@@ -414,7 +421,7 @@ class _brithdaySelectorState extends State<brithdaySelector> {
                   ],
                 ),
               ),
-              Divider(
+              const Divider(
                 height: 0,
                 thickness: 1,
               ),
@@ -470,11 +477,11 @@ class _brithdaySelectorState extends State<brithdaySelector> {
             },
             child: TextFormField(
               enabled: false,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 isDense: true,
               ),
               controller: _BirthdayController,
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
           ),
         ),
@@ -513,20 +520,13 @@ class _firstPageState extends State<firstPage> {
               fontWeight: FontWeight.w300,
               color: Theme.of(context).primaryColor),
         ),
-        loginTextbox(
+        signupIdBox(
           icon: const Icon(Icons.account_circle_outlined),
-          dataType: '아이디',
           controller: widget.idController,
         ),
-        loginTextbox(
-          icon: const Icon(Icons.key),
-          dataType: '비밀번호',
-          controller: widget.pwController,
-        ),
-        loginTextbox(
-          icon: const Icon(Icons.key),
-          dataType: '비밀번호 확인',
-          controller: widget.pwCheckController,
+        signupPwBox(
+          pwController: widget.pwController,
+          pwCheckController: widget.pwCheckController,
         ),
         TextButton(
           onPressed: () {
@@ -539,6 +539,7 @@ class _firstPageState extends State<firstPage> {
   }
 }
 
+// 다음 화면(두번째)
 class secondPage extends StatefulWidget {
   String domain;
   Function changeDomain;
@@ -574,15 +575,8 @@ class _secondPageState extends State<secondPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             GestureDetector(
-              onTap: () => widget.changePage(),
-              child: const Text(
-                '<',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
+                onTap: () => widget.changePage(),
+                child: const Icon(Icons.arrow_back_ios)),
             Text(
               '회원가입',
               style: TextStyle(
@@ -623,6 +617,139 @@ class _secondPageState extends State<secondPage> {
           domain: widget.domain,
           checkUsername: widget.checkUsername,
         )
+      ],
+    );
+  }
+}
+
+// 회원가입 아이디
+class signupIdBox extends StatefulWidget {
+  Icon icon;
+  TextEditingController controller;
+  signupIdBox({
+    super.key,
+    this.icon = const Icon(Icons.account_circle_outlined),
+    required this.controller,
+  });
+
+  @override
+  State<signupIdBox> createState() => _signupIdBoxState();
+}
+
+class _signupIdBoxState extends State<signupIdBox> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          border: Border(
+              bottom:
+                  BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          widget.icon,
+          Flexible(
+            child: TextFormField(
+              controller: widget.controller,
+              decoration: const InputDecoration(
+                  labelText: '아이디', border: InputBorder.none),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStatePropertyAll(Theme.of(context).primaryColor),
+            ),
+            child: const Text('중복 확인'),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+// 회원가입 비밀번호
+class signupPwBox extends StatefulWidget {
+  TextEditingController pwController;
+  TextEditingController pwCheckController;
+  signupPwBox({
+    super.key,
+    required this.pwController,
+    required this.pwCheckController,
+  });
+
+  @override
+  State<signupPwBox> createState() => _signupPwBoxState();
+}
+
+class _signupPwBoxState extends State<signupPwBox> {
+  bool isDiff = true;
+  Image keyImg = Image.asset('assets/pwImage.png');
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+                      width: 1.5, color: Colors.grey.withOpacity(0.4)))),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              keyImg,
+              Flexible(
+                child: TextFormField(
+                  obscureText: true,
+                  controller: widget.pwController,
+                  decoration: const InputDecoration(
+                      labelText: '비밀번호', border: InputBorder.none),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(
+                          width: 1.5, color: Colors.grey.withOpacity(0.4)))),
+              child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                keyImg,
+                Flexible(
+                    child: TextFormField(
+                  obscureText: true,
+                  controller: widget.pwCheckController,
+                  decoration: const InputDecoration(
+                      labelText: '비밀번호 확인', border: InputBorder.none),
+                  onChanged: (value) {
+                    if (widget.pwCheckController.text !=
+                        widget.pwController.text) {
+                      setState(() {
+                        isDiff = true;
+                      });
+                    } else {
+                      setState(() {
+                        isDiff = false;
+                      });
+                    }
+                  },
+                )),
+              ]),
+            ),
+            isDiff
+                ? const Text(
+                    '* 비밀번호가 일치하지 않습니다',
+                    style: TextStyle(color: Colors.red),
+                    // textAlign: TextAlign.end,
+                  )
+                : const Text(''),
+          ],
+        ),
       ],
     );
   }
