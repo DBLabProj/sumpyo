@@ -104,8 +104,12 @@ class _signUppageState extends State<signUpPage> {
             userNameController.clear();
             emailController.clear();
             pwController.clear();
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => signupSuccessScreen()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => signupSuccessScreen(),
+              ),
+            );
           });
         } else {
           Fluttertoast.showToast(msg: 'Error occurred. Please try again');
@@ -718,28 +722,34 @@ class _signupPwBoxState extends State<signupPwBox> {
                   border: Border(
                       bottom: BorderSide(
                           width: 1.5, color: Colors.grey.withOpacity(0.4)))),
-              child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                keyImg,
-                Flexible(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  keyImg,
+                  Flexible(
                     child: TextFormField(
-                  obscureText: true,
-                  controller: widget.pwCheckController,
-                  decoration: const InputDecoration(
-                      labelText: '비밀번호 확인', border: InputBorder.none),
-                  onChanged: (value) {
-                    if (widget.pwCheckController.text !=
-                        widget.pwController.text) {
-                      setState(() {
-                        isDiff = true;
-                      });
-                    } else {
-                      setState(() {
-                        isDiff = false;
-                      });
-                    }
-                  },
-                )),
-              ]),
+                      obscureText: true,
+                      controller: widget.pwCheckController,
+                      decoration: const InputDecoration(
+                          labelText: '비밀번호 확인', border: InputBorder.none),
+                      onChanged: (value) {
+                        if (widget.pwCheckController.text !=
+                            widget.pwController.text) {
+                          setState(() {
+                            isDiff = true;
+                          });
+                        } else {
+                          setState(
+                            () {
+                              isDiff = false;
+                            },
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
             isDiff
                 ? const Text(
