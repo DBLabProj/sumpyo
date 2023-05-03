@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sumpyo/screens/edit_account_info.dart';
+import 'package:sumpyo/screens/manageData.dart';
 
 class myPage extends StatefulWidget {
   const myPage({
@@ -143,19 +145,19 @@ class _mypage_screState extends State<myPage> {
                         children: [
                           changeInfo(
                             ico: Icons.person_outline_outlined,
-                            info: "아이디 변경",
+                            info: "아이디",
                           ),
                           changeInfo(
                             ico: Icons.email_outlined,
-                            info: "이메일변경",
+                            info: "이메일",
                           ),
                           changeInfo(
                             ico: Icons.local_phone_outlined,
-                            info: "휴대폰번호 변경",
+                            info: "휴대폰번호",
                           ),
                           changeInfo(
                             ico: Icons.vpn_key_outlined,
-                            info: "패스워드 변경",
+                            info: "패스워드",
                             isBottoom: true,
                           ),
                         ],
@@ -167,11 +169,11 @@ class _mypage_screState extends State<myPage> {
                     Card(
                       child: Column(
                         children: [
-                          changeInfo(
+                          dataIO(
                             ico: Icons.backup_outlined,
                             info: "데이터 백업하기",
                           ),
-                          changeInfo(
+                          dataIO(
                             ico: Icons.cloud_download_outlined,
                             info: "데이터 복원하기",
                             isBottoom: true,
@@ -185,7 +187,7 @@ class _mypage_screState extends State<myPage> {
                     Card(
                       child: Column(
                         children: [
-                          changeInfo(
+                          dataIO(
                             ico: Icons.library_books_outlined,
                             info: "데이터 내보내기",
                             isBottoom: true,
@@ -232,9 +234,10 @@ class recordInfo extends StatelessWidget {
             Text(
               '$cnt',
               style: const TextStyle(
-                  color: Color.fromRGBO(124, 124, 124, 1),
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600),
+                color: Color.fromRGBO(124, 124, 124, 1),
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             Text(
               title,
@@ -265,13 +268,22 @@ class changeInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        print(info);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => editAccount(
+              dataType: info,
+            ),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(
           border: Border(
               bottom: !isBottoom
-                  ? BorderSide(color: Theme.of(context).dividerColor)
+                  ? BorderSide(
+                      color: Theme.of(context).dividerColor,
+                    )
                   : BorderSide.none),
           color: const Color.fromARGB(1, 255, 255, 255),
         ),
@@ -284,11 +296,80 @@ class changeInfo extends StatelessWidget {
               color: const Color.fromRGBO(124, 124, 124, 1),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    '$info 변경',
+                    style: const TextStyle(
+                      color: Color.fromRGBO(124, 124, 124, 1),
+                      fontSize: 17,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class dataIO extends StatelessWidget {
+  final String info;
+  final IconData ico;
+  bool isBottoom;
+  dataIO({
+    super.key,
+    required this.info,
+    required this.ico,
+    this.isBottoom = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ManageData(
+              dataType: info,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+              bottom: !isBottoom
+                  ? BorderSide(
+                      color: Theme.of(context).dividerColor,
+                    )
+                  : BorderSide.none),
+          color: const Color.fromARGB(1, 255, 255, 255),
+        ),
+        padding: const EdgeInsets.all(15),
+        child: Row(
+          children: [
+            Icon(
+              ico,
+              size: 30,
+              color: const Color.fromRGBO(124, 124, 124, 1),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+              ),
               child: Text(
                 info,
                 style: const TextStyle(
-                    color: Color.fromRGBO(124, 124, 124, 1), fontSize: 17),
+                  color: Color.fromRGBO(124, 124, 124, 1),
+                  fontSize: 17,
+                ),
               ),
             ),
           ],

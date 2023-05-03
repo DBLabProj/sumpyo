@@ -154,11 +154,12 @@ class topAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           actions: [
             IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.account_circle_rounded,
-                  size: 40,
-                ))
+              onPressed: () {},
+              icon: const Icon(
+                Icons.account_circle_rounded,
+                size: 40,
+              ),
+            ),
           ],
         ),
       ),
@@ -314,7 +315,10 @@ class _bottomNaviState extends State<bottomNavi> {
         indexSelected: visit,
         // styleDivider: StyleDivider.bottom,
         isFloating: true,
-        highlightStyle: const HighlightStyle(elevation: 2, sizeLarge: true),
+        highlightStyle: const HighlightStyle(
+          elevation: 2,
+          sizeLarge: true,
+        ),
         onTap: (index) => setState(
           () {
             visit = index;
