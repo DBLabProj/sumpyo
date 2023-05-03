@@ -4,6 +4,7 @@ import 'package:sumpyo/screens/signup_screen.dart';
 import 'package:sumpyo/widgets/loginWidget.dart';
 
 class loginScreen extends StatefulWidget {
+  // Function kill;
   const loginScreen({super.key});
 
   @override
@@ -67,6 +68,7 @@ class _loginScreenState extends State<loginScreen> {
                       ),
                       const loginToolBox(),
                       loginButton(
+                        // kill: widget.kill,
                         parentWidth: areaWidth,
                       ),
                     ],
@@ -95,13 +97,19 @@ class _loginToolBoxState extends State<loginToolBox> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Checkbox(
-            value: rememberMe,
-            onChanged: ((value) {
-              setState(() {
-                rememberMe = value;
-              });
-            })),
+        Row(
+          children: [
+            Checkbox(
+              value: rememberMe,
+              onChanged: ((value) {
+                setState(() {
+                  rememberMe = value;
+                });
+              }),
+            ),
+            const Text('정보 기억하기'),
+          ],
+        ),
         Row(
           children: const [
             Text('아이디 찾기'),
@@ -115,8 +123,12 @@ class _loginToolBoxState extends State<loginToolBox> {
 }
 
 class loginButton extends StatefulWidget {
+  // Function kill;
   double parentWidth;
-  loginButton({super.key, required this.parentWidth});
+  loginButton({
+    super.key,
+    required this.parentWidth,
+  });
 
   @override
   State<loginButton> createState() => _loginButtonState();
@@ -141,6 +153,7 @@ class _loginButtonState extends State<loginButton> {
                       MaterialStatePropertyAll(Theme.of(context).primaryColor)),
               onPressed: () {
                 Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+                // widget.kill();
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const App()),
