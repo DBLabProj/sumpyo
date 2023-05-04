@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-class User {
+class SignupUser {
   int user_id;
   String user_name;
   String user_email;
@@ -9,7 +9,7 @@ class User {
   String user_gender;
   DateTime user_birthday;
 
-  User(
+  SignupUser(
     this.user_id,
     this.user_name,
     this.user_email,
@@ -27,5 +27,20 @@ class User {
         'user_passwd': user_passwd,
         'user_gender': user_gender,
         'user_birthday': (DateFormat('yyyy-MM-dd')).format(user_birthday),
+      };
+}
+
+class loginUser {
+  String user_id;
+  String user_passwd;
+
+  loginUser(
+    this.user_id,
+    this.user_passwd,
+  );
+
+  Map<String, dynamic> toJson() => {
+        'user_id': user_id,
+        'user_passwd': user_passwd,
       };
 }

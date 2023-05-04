@@ -56,8 +56,6 @@ class signupSuccessScreen extends StatelessWidget {
                           width: cardWidth * 0.9,
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context, '/', (_) => false);
                               Navigator.pop(context);
                             },
                             child: const Text('완료'),

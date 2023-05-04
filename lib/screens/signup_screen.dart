@@ -37,15 +37,9 @@ class _signUppageState extends State<signUpPage> {
   }
 
   changeGender(int index) {
-    if (index == 0) {
-      setState(() {
-        genderController = '남성';
-      });
-    } else {
-      setState(() {
-        genderController = '여성';
-      });
-    }
+    setState(() {
+      index == 0 ? genderController = '남성' : genderController = '여성';
+    });
   }
 
   changeDomain(String domain) {
@@ -83,7 +77,7 @@ class _signUppageState extends State<signUpPage> {
   }
 
   saveInfo() async {
-    User userModel = User(
+    SignupUser userModel = SignupUser(
       1,
       userNameController.text.trim(),
       '${emailController.text.trim()}@${domainName.trim()}',
@@ -94,11 +88,12 @@ class _signUppageState extends State<signUpPage> {
     );
     print(userModel.toJson());
     try {
-      var res =
-          await http.post(Uri.parse(API.signUp), body: userModel.toJson());
+      var res = await http.post(Uri.parse(RestAPI.signup),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(userModel.toJson()));
       if (res.statusCode == 200) {
         var resSignup = jsonDecode(res.body);
-        if (resSignup['success'] == true) {
+        if (resSignup['result'] == 'Success') {
           Fluttertoast.showToast(msg: 'Signup successfully');
           setState(() {
             userNameController.clear();
@@ -112,7 +107,11 @@ class _signUppageState extends State<signUpPage> {
             );
           });
         } else {
-          Fluttertoast.showToast(msg: 'Error occurred. Please try again');
+          if (resSignup['result'] == 'Already') {
+            Fluttertoast.showToast(msg: '이미 존재하는 사용자명입니다.');
+          } else {
+            Fluttertoast.showToast(msg: 'Error occurred. Please try again');
+          }
         }
       }
     } catch (e) {

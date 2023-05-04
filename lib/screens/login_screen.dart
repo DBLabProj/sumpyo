@@ -1,7 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sumpyo/apis/api.dart';
 import 'package:sumpyo/main.dart';
+import 'package:sumpyo/models/user.dart';
 import 'package:sumpyo/screens/signup_screen.dart';
 import 'package:sumpyo/widgets/loginWidget.dart';
+import 'package:http/http.dart' as http;
 
 class loginScreen extends StatefulWidget {
   // Function kill;
@@ -14,6 +20,34 @@ class loginScreen extends StatefulWidget {
 class _loginScreenState extends State<loginScreen> {
   TextEditingController idController = TextEditingController();
   TextEditingController pwController = TextEditingController();
+  login() async {
+    loginUser user = loginUser(idController.text, pwController.text);
+    try {
+      var res = await http.post(Uri.parse(RestAPI.login),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(user.toJson()));
+      if (res.statusCode == 200) {
+        var resSignup = jsonDecode(res.body);
+        if (resSignup['result'] == 'Success') {
+          Fluttertoast.showToast(msg: 'Signup successfully');
+          setState(() {
+            idController.clear();
+            pwController.clear();
+          });
+          Navigator.push(
+              context, MaterialPageRoute(builder: (content) => const App()));
+        } else if (resSignup['result'] == 'Failed.') {
+          Fluttertoast.showToast(msg: 'Check your password');
+        } else {
+          Fluttertoast.showToast(msg: 'Error occurred. Please try again');
+        }
+      }
+    } catch (e) {
+      print(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double areaWidth = MediaQuery.of(context).size.width * 0.9;
@@ -68,7 +102,7 @@ class _loginScreenState extends State<loginScreen> {
                       ),
                       const loginToolBox(),
                       loginButton(
-                        // kill: widget.kill,
+                        login: login,
                         parentWidth: areaWidth,
                       ),
                     ],
@@ -123,11 +157,12 @@ class _loginToolBoxState extends State<loginToolBox> {
 }
 
 class loginButton extends StatefulWidget {
-  // Function kill;
+  Function login;
   double parentWidth;
   loginButton({
     super.key,
     required this.parentWidth,
+    required this.login,
   });
 
   @override
@@ -152,12 +187,7 @@ class _loginButtonState extends State<loginButton> {
                   backgroundColor:
                       MaterialStatePropertyAll(Theme.of(context).primaryColor)),
               onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
-                // widget.kill();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const App()),
-                );
+                widget.login();
               },
               child: const Text(
                 '로그인',
