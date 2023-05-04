@@ -67,11 +67,9 @@ class _editAccountState extends State<editAccount> {
                     )
                   ],
                 ),
-                child: widget.isEditScreen
-                    ? editInfoWidget(dataType: widget.dataType)
-                    : manageData(
-                        dataType: widget.dataType,
-                      ),
+                child: editInfoWidget(
+                  dataType: widget.dataType,
+                ),
               ),
             ),
           ],
@@ -266,31 +264,35 @@ class _newInfoState extends State<newInfo> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController pwController = TextEditingController();
   TextEditingController pwCheckController = TextEditingController();
+  TextEditingController idController = TextEditingController();
   changeDomain(var value) {
     // print(value);
   }
 
-  late Widget test;
+  late Widget inputBox;
   dataSet(String title) {
     if (title == "이메일") {
       setState(() {
-        test = emailTextbox(
+        inputBox = emailTextbox(
             emailController: emailController, changeDomain: changeDomain);
       });
     } else if (title == "아이디") {
       setState(() {
-        test = TextFormField();
+        inputBox = signupIdBox(
+          icon: const Icon(Icons.account_circle_outlined),
+          controller: idController,
+        );
       });
     } else if (title == "휴대폰번호") {
       setState(
         () {
-          test = phoneTextbox(
+          inputBox = phoneTextbox(
             phoneController: phoneController,
           );
         },
       );
     } else {
-      test = signupPwBox(
+      inputBox = signupPwBox(
         pwController: pwController,
         pwCheckController: pwCheckController,
       );
@@ -321,7 +323,7 @@ class _newInfoState extends State<newInfo> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Flexible(
-                child: test,
+                child: inputBox,
               ),
             ],
           )

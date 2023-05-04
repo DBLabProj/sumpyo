@@ -171,11 +171,11 @@ class _mypage_screState extends State<myPage> {
                         children: [
                           dataIO(
                             ico: Icons.backup_outlined,
-                            info: "데이터 백업하기",
+                            info: "백업하기",
                           ),
                           dataIO(
                             ico: Icons.cloud_download_outlined,
-                            info: "데이터 복원하기",
+                            info: "복원하기",
                             isBottoom: true,
                           ),
                         ],
@@ -189,7 +189,7 @@ class _mypage_screState extends State<myPage> {
                         children: [
                           dataIO(
                             ico: Icons.library_books_outlined,
-                            info: "데이터 내보내기",
+                            info: "내보내기",
                             isBottoom: true,
                           ),
                         ],
@@ -299,16 +299,12 @@ class changeInfo extends StatelessWidget {
               padding: const EdgeInsets.symmetric(
                 horizontal: 10,
               ),
-              child: Row(
-                children: [
-                  Text(
-                    '$info 변경',
-                    style: const TextStyle(
-                      color: Color.fromRGBO(124, 124, 124, 1),
-                      fontSize: 17,
-                    ),
-                  ),
-                ],
+              child: Text(
+                '$info 변경',
+                style: const TextStyle(
+                  color: Color.fromRGBO(124, 124, 124, 1),
+                  fontSize: 17,
+                ),
               ),
             ),
           ],
@@ -365,7 +361,7 @@ class dataIO extends StatelessWidget {
                 horizontal: 10,
               ),
               child: Text(
-                info,
+                '데이터 $info',
                 style: const TextStyle(
                   color: Color.fromRGBO(124, 124, 124, 1),
                   fontSize: 17,
