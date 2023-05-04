@@ -89,11 +89,11 @@ class _mypage_screState extends State<myPage> {
                           ),
                           recordInfo(
                             cnt: 7,
-                            title: '뭐 할까',
+                            title: '더미 1',
                           ),
                           recordInfo(
                             cnt: 10,
-                            title: '뭐 하징',
+                            title: '더미 2',
                             isRight: true,
                           ),
                         ],

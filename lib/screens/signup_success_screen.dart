@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sumpyo/screens/login_screen.dart';
 import 'package:sumpyo/widgets/loginWidget.dart';
 
 class signupSuccessScreen extends StatelessWidget {
@@ -59,11 +58,7 @@ class signupSuccessScreen extends StatelessWidget {
                             onPressed: () {
                               Navigator.pushNamedAndRemoveUntil(
                                   context, '/', (_) => false);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const loginScreen()),
-                              );
+                              Navigator.pop(context);
                             },
                             child: const Text('완료'),
                           ),
