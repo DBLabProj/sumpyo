@@ -1,7 +1,7 @@
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel2/sliding_up_panel2.dart';
-import 'package:sumpyo/screens/dummy_screen.dart';
+import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/mypage_screen.dart';
 import 'package:sumpyo/screens/notice_screen.dart';
 import 'package:sumpyo/screens/statistics_screen.dart';
@@ -294,7 +294,7 @@ class _bottomNaviState extends State<bottomNavi> {
     //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
     const HomeScreen(),
     const noticeScreen(),
-    const dummyScreen(),
+    writeDiaryScreen(),
     const statisticsScreen(),
     const myPage(),
   ];

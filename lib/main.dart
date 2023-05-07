@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:sumpyo/l10n/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:sumpyo/screens/dummy_screen.dart';
-import 'package:sumpyo/screens/home_screen.dart';
 import 'package:sumpyo/screens/login_screen.dart';
+import 'package:sumpyo/screens/write_diary_screen.dart';
+import 'package:sumpyo/screens/home_screen.dart';
 import 'package:sumpyo/screens/mypage_screen.dart';
 import 'package:sumpyo/screens/notice_screen.dart';
 import 'package:sumpyo/screens/statistics_screen.dart';
@@ -28,13 +28,12 @@ class _AppState extends State<App> {
     //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
     const HomeScreen(),
     const noticeScreen(),
-    const dummyScreen(),
+    writeDiaryScreen(),
     const statisticsScreen(),
     const myPage(),
   ];
   @override
   Widget build(BuildContext context) {
-    Color colorSelect = Theme.of(context).primaryColor;
     return Scaffold(
       body: screens[visit],
       bottomNavigationBar: SizedBox(

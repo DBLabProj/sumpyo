@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sumpyo/apis/api.dart';
 import 'package:sumpyo/main.dart';
@@ -20,31 +21,45 @@ class loginScreen extends StatefulWidget {
 class _loginScreenState extends State<loginScreen> {
   TextEditingController idController = TextEditingController();
   TextEditingController pwController = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    idController = TextEditingController();
+    pwController = TextEditingController();
+  }
+
+  static const storage = FlutterSecureStorage();
+
   login() async {
-    loginUser user = loginUser(idController.text, pwController.text);
-    try {
-      var res = await http.post(Uri.parse(RestAPI.login),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(user.toJson()));
-      if (res.statusCode == 200) {
-        var resSignup = jsonDecode(res.body);
-        if (resSignup['result'] == 'Success') {
-          Fluttertoast.showToast(msg: 'Signup successfully');
-          setState(() {
-            idController.clear();
-            pwController.clear();
-          });
-          Navigator.push(
-              context, MaterialPageRoute(builder: (content) => const App()));
-        } else if (resSignup['result'] == 'Failed.') {
-          Fluttertoast.showToast(msg: 'Check your password');
-        } else {
-          Fluttertoast.showToast(msg: 'Error occurred. Please try again');
+    if (idController.text.trim().isNotEmpty) {
+      loginUser user = loginUser(idController.text, pwController.text);
+      try {
+        var res = await http.post(Uri.parse(RestAPI.login),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode(user.toJson()));
+        if (res.statusCode == 200) {
+          var resSignup = jsonDecode(res.body);
+          if (resSignup['result'] == 'Success') {
+            Fluttertoast.showToast(msg: 'login successfully');
+            setState(() {
+              idController.clear();
+              pwController.clear();
+            });
+            Navigator.push(
+                context, MaterialPageRoute(builder: (content) => const App()));
+          } else if (resSignup['result'] == 'Failed.') {
+            Fluttertoast.showToast(msg: '아이디와 비밀번호를 확인해주세요.');
+          } else {
+            Fluttertoast.showToast(msg: 'Error occurred. Please try again');
+          }
         }
+      } catch (e) {
+        print(e.toString());
+        Fluttertoast.showToast(msg: e.toString());
       }
-    } catch (e) {
-      print(e.toString());
-      Fluttertoast.showToast(msg: e.toString());
+    } else {
+      Fluttertoast.showToast(msg: '아이디를 입력해주세요.');
     }
   }
 
