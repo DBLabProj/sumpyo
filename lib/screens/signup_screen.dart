@@ -654,6 +654,9 @@ class _signupIdBoxState extends State<signupIdBox> {
           Flexible(
             child: TextFormField(
               controller: widget.controller,
+              inputFormatters: [
+                FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
+              ],
               decoration: const InputDecoration(
                   labelText: '아이디', border: InputBorder.none),
             ),

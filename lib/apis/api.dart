@@ -10,4 +10,6 @@ class RestAPI {
   static const hostConnect = "http://203.252.240.80:5000";
   static const login = "$hostConnect/login/";
   static const signup = "$hostConnect/signup/";
+  static const uploadDiary = "$hostConnect/uploadDiary/";
+  static const getDiary = "$hostConnect/getDiary/";
 }

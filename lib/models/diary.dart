@@ -1,32 +1,34 @@
 import 'package:intl/intl.dart';
 
 class Diary {
-  int diaryId;
+  int diary_id;
   String user_name;
-  String user_email;
-  String user_phone;
-  String user_passwd;
-  String user_gender;
-  DateTime user_birthday;
+  String diary_title;
+  String diary_content;
+  DateTime diary_date;
 
   Diary(
-    this.diaryId,
+    this.diary_id,
     this.user_name,
-    this.user_email,
-    this.user_phone,
-    this.user_passwd,
-    this.user_gender,
-    this.user_birthday,
+    this.diary_title,
+    this.diary_content,
+    this.diary_date,
   );
 
+  Diary.fromJson(Map<String, dynamic> json)
+      : diary_id = json['diaryId'],
+        user_name = json['userName'],
+        diary_title = json['diaryTitle'],
+        diary_content = json['diaryContent'],
+        diary_date = DateTime.parse(json['diaryDate']);
+
   Map<String, dynamic> toJson() => {
-        'user_id': diaryId.toString(),
+        'user_id': diary_id.toString(),
         'user_name': user_name,
-        'user_email': user_email,
-        'user_phone': user_phone,
-        'user_passwd': user_passwd,
-        'user_gender': user_gender,
-        'user_birthday': (DateFormat('yyyy-MM-dd')).format(user_birthday),
+        'user_email': user_name,
+        'user_phone': diary_title,
+        'user_passwd': diary_content,
+        'user_birthday': (DateFormat('yyyy-MM-dd')).format(diary_date),
       };
 }
 
