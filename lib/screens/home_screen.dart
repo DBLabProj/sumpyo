@@ -60,15 +60,16 @@ class _HomeScreenState extends State<HomeScreen> {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"userId": "whdduq2302"}));
     if (res.statusCode == 200) {
-      var resDiary = jsonDecode(res.body);
+      var resDiary = jsonDecode(utf8.decode(res.bodyBytes));
       if (resDiary['result'] == 'Success') {
         Fluttertoast.showToast(msg: '성공적으로 불러왔습니다.');
         final List<dynamic> diarys = resDiary['diarys'];
-        // print(diarys);
+        print(diarys);
         for (var diary in diarys) {
           final instance = Diary.fromJson(diary);
           String diaryDate =
               DateFormat('yyyy-MM-dd').format(instance.diary_date);
+          print(instance.diary_content);
           diaryInstance.addAll({diaryDate: instance});
         }
         print(diaryInstance);
