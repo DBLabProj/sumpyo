@@ -1,5 +1,4 @@
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/material.dart';
 
 class statisticsScreen extends StatefulWidget {
   const statisticsScreen({super.key});
@@ -11,6 +10,6 @@ class statisticsScreen extends StatefulWidget {
 class _statisticsScreenState extends State<statisticsScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SafeArea(child: Column());
   }
 }

@@ -7,8 +7,8 @@ import 'package:sumpyo/screens/intro_screen.dart';
 import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/home_screen.dart';
 import 'package:sumpyo/screens/mypage_screen.dart';
-import 'package:sumpyo/screens/notice_screen.dart';
 import 'package:sumpyo/screens/statistics_screen.dart';
+import 'package:sumpyo/screens/analysis_screen.dart';
 
 void main() {
   runApp(const loginApp());
@@ -27,7 +27,7 @@ class _AppState extends State<App> {
   final screens = [
     //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
     const HomeScreen(),
-    const noticeScreen(),
+    const AnalysisScreen(),
     const writeDiaryScreen(),
     const statisticsScreen(),
     const myPage(),
