@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sumpyo/l10n/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:sumpyo/screens/login_screen.dart';
+import 'package:sumpyo/screens/intro_screen.dart';
 import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/home_screen.dart';
 import 'package:sumpyo/screens/mypage_screen.dart';
@@ -27,8 +27,8 @@ class _AppState extends State<App> {
   final screens = [
     //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
     const HomeScreen(),
-    AnalysisScreen(),
-    writeDiaryScreen(),
+    const AnalysisScreen(),
+    const writeDiaryScreen(),
     const statisticsScreen(),
     const myPage(),
   ];
@@ -78,6 +78,7 @@ class _loginAppState extends State<loginApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       supportedLocales: L10n.all,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -90,7 +91,7 @@ class _loginAppState extends State<loginApp> {
         secondaryHeaderColor: const Color(0xFFE8EEF9),
         dividerColor: const Color(0xffCCCCCC),
       ),
-      home: const loginScreen(),
+      home: const introScreen(),
     );
   }
 }

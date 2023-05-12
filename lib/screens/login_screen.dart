@@ -21,15 +21,32 @@ class loginScreen extends StatefulWidget {
 class _loginScreenState extends State<loginScreen> {
   TextEditingController idController = TextEditingController();
   TextEditingController pwController = TextEditingController();
+  dynamic userInfo = '';
+
+  static const storage = FlutterSecureStorage();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    idController = TextEditingController();
-    pwController = TextEditingController();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _asyncMethod();
+    });
   }
 
-  static const storage = FlutterSecureStorage();
+  _asyncMethod() async {
+    // read 함수로 key값에 맞는 정보를 불러오고 데이터타입은 String 타입
+    // 데이터가 없을때는 null을 반환
+    userInfo = await storage.read(key: 'login');
+    // user의 정보가 있다면 로그인 후 들어가는 첫 페이지로 넘어가게 합니다.
+    if (userInfo != null) {
+      var user = jsonDecode(userInfo);
+      idController.text = user['user_id'];
+      pwController.text = user['user_passwd'];
+      login();
+    } else {
+      print('로그인이 필요합니다');
+    }
+  }
 
   login() async {
     if (idController.text.trim().isNotEmpty) {
@@ -41,6 +58,12 @@ class _loginScreenState extends State<loginScreen> {
         if (res.statusCode == 200) {
           var resSignup = jsonDecode(res.body);
           if (resSignup['result'] == 'Success') {
+            var account = jsonEncode({
+              'user_id': idController.text,
+              'user_passwd': pwController.text
+            });
+            await storage.write(key: 'login', value: account);
+            print(storage.read(key: 'login'));
             Fluttertoast.showToast(msg: 'login successfully');
             setState(() {
               idController.clear();

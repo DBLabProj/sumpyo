@@ -1,6 +1,13 @@
+import 'dart:convert';
+
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:sliding_up_panel2/sliding_up_panel2.dart';
+import 'package:sumpyo/apis/api.dart';
+import 'package:http/http.dart' as http;
+import 'package:sumpyo/models/diary.dart';
 import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/mypage_screen.dart';
 import 'package:sumpyo/screens/notice_screen.dart';
@@ -22,22 +29,62 @@ class _HomeScreenState extends State<HomeScreen> {
   double minHeight = 50.0;
   double maxHeight = 500.0;
   double topbarHeight = 0.0;
-
   CalendarFormat calFormat = CalendarFormat.month;
+  DateTime _selectedDate = DateTime.now();
   final GlobalKey _mainCalKey = GlobalKey();
   final GlobalKey contentKey = GlobalKey();
+  final Future<Map<String, Diary>> _diarys = getDiary();
+  List<String> ableDiaryDays = [];
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       monthHeight = getCalSize();
       contentHeight = getContentSize();
+      // _diarys = getDiary();
       setState(() {
         minHeight = contentHeight - monthHeight - topbarHeight - 80;
         print(
           '컨텐츠높이:$contentHeight, 월간달력:$monthHeight, 최소높이:$minHeight',
         );
+        _diarys.then((value) => setState(() {
+              ableDiaryDays = value.keys.toList();
+            }));
       });
+    });
+  }
+
+  static Future<Map<String, Diary>> getDiary() async {
+    Map<String, Diary> diaryInstance = {};
+    var res = await http.post(Uri.parse(RestAPI.getDiary),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"userId": "whdduq2302"}));
+    if (res.statusCode == 200) {
+      var resDiary = jsonDecode(utf8.decode(res.bodyBytes));
+      if (resDiary['result'] == 'Success') {
+        Fluttertoast.showToast(msg: '성공적으로 불러왔습니다.');
+        final List<dynamic> diarys = resDiary['diarys'];
+        print(diarys);
+        for (var diary in diarys) {
+          final instance = Diary.fromJson(diary);
+          String diaryDate =
+              DateFormat('yyyy-MM-dd').format(instance.diary_date);
+          print(instance.diary_content);
+          diaryInstance.addAll({diaryDate: instance});
+        }
+        print(diaryInstance);
+        return diaryInstance;
+      } else {
+        Fluttertoast.showToast(msg: '불러오는중 오류가 발생했습니다.');
+        return diaryInstance;
+      }
+    }
+    return diaryInstance;
+  }
+
+  changeDate(DateTime selectedDate) {
+    setState(() {
+      _selectedDate = selectedDate;
     });
   }
 
@@ -57,13 +104,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // // print(ableDiaryDays);
     topbarHeight = MediaQuery.of(context).size.height * 0.15;
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       appBar: topAppBar(
         appBar: AppBar(),
       ),
-      // bottomNavigationBar: const bottomNavi(),
       body: SafeArea(
         //--------------------------------슬라이딩 패널--------------------------
         child: SlidingUpPanel(
@@ -92,28 +139,22 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
           color: Colors.white,
           panelBuilder: () {
-            return const diaryContainer();
+            return diaryContainer(
+              calendarDate: DateFormat("yyyy-MM-dd").format(_selectedDate),
+              diarys: _diarys,
+            );
           },
           //-------------------------------바디 영역----------------------------
-          body: GestureDetector(
-            onDoubleTap: () {
-              setState(
-                () {
-                  print(
-                      '최대높이:$maxHeight, 최소높이:$minHeight, 컨텐츠영역높이:$contentHeight, 월간달력높이:$monthHeight, 주간달력높이:$weekHeight');
-                  print(MediaQuery.of(context).size.height);
-                },
-              );
-            },
-            child: Column(
-              key: contentKey,
-              children: [
-                mainCalendar(
-                  calendarFormat: calFormat,
-                  mainCalKey: _mainCalKey,
-                ),
-              ],
-            ),
+          body: Column(
+            key: contentKey,
+            children: [
+              mainCalendar(
+                changeDate: changeDate,
+                ableDays: ableDiaryDays,
+                calendarFormat: calFormat,
+                mainCalKey: _mainCalKey,
+              ),
+            ],
           ),
         ),
       ),
@@ -173,11 +214,15 @@ class topAppBar extends StatelessWidget implements PreferredSizeWidget {
 // -----------------------------------달력--------------------------------------
 class mainCalendar extends StatefulWidget {
   CalendarFormat calendarFormat;
+  List<String> ableDays;
   GlobalKey mainCalKey;
+  Function changeDate;
   mainCalendar({
     super.key,
     required this.calendarFormat,
     required this.mainCalKey,
+    required this.ableDays,
+    required this.changeDate,
   });
 
   @override
@@ -197,6 +242,12 @@ class _mainCalendarState extends State<mainCalendar> {
       firstDay: DateTime.utc(2000, 1, 1),
       lastDay: DateTime.utc(2050, 12, 31),
       calendarFormat: widget.calendarFormat,
+      eventLoader: (day) {
+        if (widget.ableDays.contains(DateFormat("yyyy-MM-dd").format(day))) {
+          return ['다이어리가 있어요.'];
+        }
+        return [];
+      },
       selectedDayPredicate: (day) {
         return isSameDay(selectedDay, day);
       },
@@ -209,6 +260,9 @@ class _mainCalendarState extends State<mainCalendar> {
         formatButtonVisible: false,
       ),
       calendarStyle: CalendarStyle(
+        markersMaxCount: 1,
+        markerDecoration:
+            const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
         todayDecoration: const BoxDecoration(
           color: Color(0xff5A6E90),
           shape: BoxShape.circle,
@@ -230,6 +284,7 @@ class _mainCalendarState extends State<mainCalendar> {
           widget.calendarFormat = CalendarFormat.week;
           this.selectedDay = selectedDay;
           this.focusedDay = focusedDay;
+          widget.changeDate(selectedDay);
         });
       },
     );
@@ -238,7 +293,13 @@ class _mainCalendarState extends State<mainCalendar> {
 
 // -----------------------------------일기 화면----------------------------------
 class diaryContainer extends StatefulWidget {
-  const diaryContainer({super.key});
+  String calendarDate;
+  final Future<Map<String, Diary>> diarys;
+  diaryContainer({
+    super.key,
+    required this.diarys,
+    required this.calendarDate,
+  });
 
   @override
   State<diaryContainer> createState() => _diaryContainerState();
@@ -257,29 +318,53 @@ class _diaryContainerState extends State<diaryContainer> {
           MediaQuery.of(context).size.width * 0.035,
           MediaQuery.of(context).size.width * 0.035,
           0),
-      // EdgeInsets.symmetric(
-      //     horizontal: MediaQuery.of(context).size.width * 0.07),
       child: Column(
-        // mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          // 일기 일자
-          Text('2023년 04월 06일'),
-          SizedBox(
-            height: 20,
-          ),
-          // 일기 제목
-          Text('물통 깨뜨린 날...'),
-          SizedBox(
-            height: 20,
-          ),
-          // 일기 내용
-          Text('오늘 아침에 연구실에 출근하자마자 물통을 떨어뜨려서 바닥이 물범벅이 됐다. 물통 만 오천원이더 ...'),
-          // Text('${widget.?}')
+        children: [
+          FutureBuilder(
+              future: widget.diarys,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return makeContainer(snapshot, widget.calendarDate);
+                }
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: const [Text('아직 일기가 없어요')],
+                );
+              }),
         ],
       ),
     );
   }
+}
+
+Widget makeContainer(
+    AsyncSnapshot<Map<String, Diary>> snapshot, String calendarDate) {
+  if (snapshot.data!.containsKey(calendarDate)) {
+    Diary containerDiary = snapshot.data![calendarDate] as Diary;
+    return Column(
+      // mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 일기 일자
+        Text(DateFormat('yyyy년 MM월 dd일').format(containerDiary.diary_date)),
+        const SizedBox(
+          height: 20,
+        ),
+        // 일기 제목
+        Text(containerDiary.diary_title),
+        const SizedBox(
+          height: 20,
+        ),
+        // 일기 내용
+        Text(containerDiary.diary_content),
+      ],
+    );
+  }
+  return Container(
+    child: const Text('아직 일기가 없어요.'),
+  );
 }
 
 class bottomNavi extends StatefulWidget {
@@ -289,12 +374,19 @@ class bottomNavi extends StatefulWidget {
   State<bottomNavi> createState() => _bottomNaviState();
 }
 
+class Event {
+  final String title;
+  const Event(this.title);
+  @override
+  String toString() => title;
+}
+
 class _bottomNaviState extends State<bottomNavi> {
   final screens = [
     //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
     const HomeScreen(),
     const noticeScreen(),
-    writeDiaryScreen(),
+    const writeDiaryScreen(),
     const statisticsScreen(),
     const myPage(),
   ];

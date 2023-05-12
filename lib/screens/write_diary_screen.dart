@@ -1,21 +1,146 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'package:sumpyo/apis/api.dart';
 import 'package:sumpyo/models/diary.dart';
 
-class writeDiaryScreen extends StatelessWidget {
-  writeDiaryScreen({super.key});
+class writeDiaryScreen extends StatefulWidget {
+  const writeDiaryScreen({super.key});
+
+  @override
+  State<writeDiaryScreen> createState() => _writeDiaryScreenState();
+}
+
+class _writeDiaryScreenState extends State<writeDiaryScreen> {
+  TextEditingController diaryDateController = TextEditingController();
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
   DateTime diaryDate = DateTime.now();
+  dynamic userInfo = '';
+  String userId = '';
+  static const storage = FlutterSecureStorage();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _asyncMethod();
+    });
+  }
 
-  upLoadDiary() {
+  _asyncMethod() async {
+    userInfo = await storage.read(key: 'login');
+    if (userInfo != null) {
+      var user = jsonDecode(userInfo);
+      userId = user['user_id'];
+    }
+  }
+
+  upLoadDiary() async {
     uploadDiary diary = uploadDiary(
       1,
-      '1',
+      userId,
       titleController.text,
       contentController.text,
       diaryDate,
     );
+    print(diary.toJson());
+    try {
+      var res = await http.post(Uri.parse(RestAPI.uploadDiary),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(diary));
+      if (res.statusCode == 200) {
+        var resDiary = jsonDecode(res.body);
+        if (resDiary['result'] == 'Success') {
+          Fluttertoast.showToast(msg: '성공적으로 등록되었습니다.');
+        } else {
+          Fluttertoast.showToast(msg: '등록중 오류가 발생했습니다.');
+        }
+      }
+    } catch (e) {
+      print(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  DateTime? tempPickedDate;
+  DateTime _selectedDate = DateTime.now();
+  _selectDate() async {
+    DateTime? pickedDate = await showModalBottomSheet<DateTime>(
+      backgroundColor: ThemeData.light().scaffoldBackgroundColor,
+      context: context,
+      builder: (context) {
+        return SizedBox(
+          height: 300,
+          child: Column(
+            children: <Widget>[
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    CupertinoButton(
+                      child: const Text('취소'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        FocusScope.of(context).unfocus();
+                      },
+                    ),
+                    CupertinoButton(
+                      child: const Text('완료'),
+                      onPressed: () {
+                        Navigator.of(context).pop(tempPickedDate);
+                        FocusScope.of(context).unfocus();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(
+                height: 0,
+                thickness: 1,
+              ),
+              Expanded(
+                child: Container(
+                  child: CupertinoDatePicker(
+                    // dateOrder: DatePickerDateOrder(),
+                    backgroundColor: ThemeData.light().scaffoldBackgroundColor,
+                    minimumYear: 1900,
+                    maximumYear: DateTime.now().year,
+                    initialDateTime: DateTime.now(),
+                    maximumDate: DateTime.now(),
+                    mode: CupertinoDatePickerMode.date,
+                    onDateTimeChanged: (DateTime dateTime) {
+                      tempPickedDate = dateTime;
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (pickedDate != null && pickedDate != _selectedDate) {
+      setState(() {
+        _selectedDate = pickedDate;
+        diaryDate = pickedDate;
+        print(diaryDate);
+        // convertDateTimeDisplay(diaryDateController.text);
+      });
+    }
+  }
+
+  String convertDateTimeDisplay(String date) {
+    final DateFormat displayFormater = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+    final DateFormat serverFormater = DateFormat('yyyy-MM-dd');
+    final DateTime displayDate = displayFormater.parse(date);
+    return diaryDateController.text = serverFormater.format(displayDate);
   }
 
   @override
@@ -36,18 +161,33 @@ class writeDiaryScreen extends StatelessWidget {
               margin: const EdgeInsets.all(20),
               alignment: Alignment.bottomLeft,
               height: 25 * 2.4,
-              child: Text(
-                DateFormat('yyyy년 MM월 dd일').format(diaryDate),
-                style: const TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+              child: GestureDetector(
+                onTap: () {
+                  HapticFeedback.mediumImpact();
+                  _selectDate();
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      DateFormat('yyyy년 MM월 dd일').format(diaryDate),
+                      style: const TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                    const Icon(
+                      Icons.open_in_new,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
               ),
             ),
             Flexible(
               child: writeDiary(
                 titleController: titleController,
                 contentController: contentController,
+                diaryDate: diaryDate,
               ),
             ),
           ],
@@ -62,7 +202,9 @@ class writeDiaryScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(30.0))),
               backgroundColor:
                   MaterialStatePropertyAll(Theme.of(context).primaryColor)),
-          onPressed: () {},
+          onPressed: () {
+            upLoadDiary();
+          },
           child: const Text(
             '등록하기',
             style: TextStyle(color: Colors.white),
@@ -77,10 +219,12 @@ class writeDiaryScreen extends StatelessWidget {
 class writeDiary extends StatefulWidget {
   TextEditingController titleController;
   TextEditingController contentController;
+  DateTime diaryDate;
   writeDiary({
     super.key,
     required this.titleController,
     required this.contentController,
+    required this.diaryDate,
   });
 
   @override
@@ -125,8 +269,9 @@ class writeDiaryState extends State<writeDiary> {
                   ),
                   TextField(
                     controller: widget.titleController,
-                    decoration: const InputDecoration(
-                      hintText: '제목: 2023.04.06 일기',
+                    decoration: InputDecoration(
+                      hintText:
+                          '제목: ${DateFormat('yyyy.MM.dd').format(widget.diaryDate)} 일기',
                       fillColor: Colors.white,
                       filled: true,
                       border: InputBorder.none,
