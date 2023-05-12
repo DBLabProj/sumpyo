@@ -3,17 +3,26 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sumpyo/screens/login_screen.dart';
 
-class introScreen extends StatelessWidget {
+class introScreen extends StatefulWidget {
   const introScreen({super.key});
-  @override
-  void initState() {}
 
   @override
-  Widget build(BuildContext context) {
-    Timer(const Duration(milliseconds: 1500), () {
+  State<introScreen> createState() => _introScreenState();
+}
+
+class _introScreenState extends State<introScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Timer(const Duration(milliseconds: 3000), () {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const loginScreen()));
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
 
@@ -36,6 +45,13 @@ class introScreen extends StatelessWidget {
                     width: screenWidth * 0.616666,
                     height: screenHeight * 0.0859375,
                   ),
+                ),
+                const Text(
+                  '숨표',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold),
                 ),
                 const Expanded(child: SizedBox()),
                 Align(

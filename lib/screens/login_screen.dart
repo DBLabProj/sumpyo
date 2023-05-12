@@ -26,9 +26,11 @@ class _loginScreenState extends State<loginScreen> {
   static const storage = FlutterSecureStorage();
   @override
   void initState() {
+    print(1);
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      print(2);
       _asyncMethod();
     });
   }
