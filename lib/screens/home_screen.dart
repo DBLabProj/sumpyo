@@ -327,28 +327,34 @@ class diaryContainer extends StatefulWidget {
 class _diaryContainerState extends State<diaryContainer> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // height: MediaQuery.of(context).size.height.,
-      decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(30))),
-      padding: EdgeInsets.fromLTRB(
-          10,
-          MediaQuery.of(context).size.width * 0.035,
-          MediaQuery.of(context).size.width * 0.035,
-          0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [],
+    return Stack(children: [
+      Container(
+        // height: MediaQuery.of(context).size.height.,
+        decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.1),
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(30))),
+        padding: EdgeInsets.fromLTRB(
+            10,
+            MediaQuery.of(context).size.width * 0.035,
+            MediaQuery.of(context).size.width * 0.035,
+            0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [makeContainer(widget.diarys, widget.calendarDate)],
+        ),
       ),
-    );
+      Container(
+        decoration: const BoxDecoration(color: Colors.transparent),
+        child: Column(children: [Container()]),
+      ),
+    ]);
   }
 }
 
-Widget makeContainer(
-    AsyncSnapshot<Map<String, Diary>> snapshot, String calendarDate) {
-  if (snapshot.data!.containsKey(calendarDate)) {
-    Diary containerDiary = snapshot.data![calendarDate] as Diary;
+Widget makeContainer(Map<String, Diary> diarys, String calendarDate) {
+  if (diarys.containsKey(calendarDate)) {
+    Diary containerDiary = diarys[calendarDate] as Diary;
     return Column(
       // mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,7 +397,7 @@ class _bottomNaviState extends State<bottomNavi> {
   final screens = [
     //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
     const HomeScreen(),
-    const noticeScreen(),
+    noticeScreen(),
     const writeDiaryScreen(),
     const statisticsScreen(),
     const myPage(),

@@ -5,10 +5,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sumpyo/notification.dart';
 import 'package:sumpyo/screens/intro_screen.dart';
+import 'package:sumpyo/screens/notice_screen.dart';
 import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/home_screen.dart';
 import 'package:sumpyo/screens/mypage_screen.dart';
-import 'package:sumpyo/screens/statistics_screen.dart';
 import 'package:sumpyo/screens/analysis_screen.dart';
 
 void main() {
@@ -38,7 +38,7 @@ class _AppState extends State<App> {
     const HomeScreen(),
     const AnalysisScreen(),
     const writeDiaryScreen(),
-    const statisticsScreen(),
+    noticeScreen(),
     const myPage(),
   ];
   @override
