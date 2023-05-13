@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:sliding_up_panel2/sliding_up_panel2.dart';
 import 'package:sumpyo/apis/api.dart';
 import 'package:http/http.dart' as http;
 import 'package:sumpyo/models/diary.dart';
+import 'package:sumpyo/notification.dart';
 import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/mypage_screen.dart';
 import 'package:sumpyo/screens/notice_screen.dart';
@@ -31,14 +33,21 @@ class _HomeScreenState extends State<HomeScreen> {
   double topbarHeight = 0.0;
   CalendarFormat calFormat = CalendarFormat.month;
   DateTime _selectedDate = DateTime.now();
+  List<String> ableDiaryDays = [];
+  dynamic userInfo = '';
+  String userName = '';
   final GlobalKey _mainCalKey = GlobalKey();
   final GlobalKey contentKey = GlobalKey();
-  final Future<Map<String, Diary>> _diarys = getDiary();
-  List<String> ableDiaryDays = [];
+  Map<String, Diary> _diarys = {};
+
+  static const storage = FlutterSecureStorage();
   @override
   void initState() {
+    FlutterNotification.showNotification();
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await _asyncMethod();
+      _diarys = await getDiary({'userId': userName});
       monthHeight = getCalSize();
       contentHeight = getContentSize();
       // _diarys = getDiary();
@@ -47,18 +56,28 @@ class _HomeScreenState extends State<HomeScreen> {
         print(
           '컨텐츠높이:$contentHeight, 월간달력:$monthHeight, 최소높이:$minHeight',
         );
-        _diarys.then((value) => setState(() {
-              ableDiaryDays = value.keys.toList();
-            }));
+
+        ableDiaryDays = _diarys.keys.toList();
       });
     });
   }
 
-  static Future<Map<String, Diary>> getDiary() async {
+  _asyncMethod() async {
+    userInfo = await storage.read(key: 'login');
+    if (userInfo != null) {
+      var user = jsonDecode(userInfo);
+      userName = user['user_id'];
+    } else {
+      print('로그인이 필요합니다');
+    }
+  }
+
+  static Future<Map<String, Diary>> getDiary(
+      Map<String, String> userNameInfo) async {
     Map<String, Diary> diaryInstance = {};
     var res = await http.post(Uri.parse(RestAPI.getDiary),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"userId": "whdduq2302"}));
+        body: jsonEncode(userNameInfo));
     if (res.statusCode == 200) {
       var resDiary = jsonDecode(utf8.decode(res.bodyBytes));
       if (resDiary['result'] == 'Success') {
@@ -294,7 +313,7 @@ class _mainCalendarState extends State<mainCalendar> {
 // -----------------------------------일기 화면----------------------------------
 class diaryContainer extends StatefulWidget {
   String calendarDate;
-  final Future<Map<String, Diary>> diarys;
+  final Map<String, Diary> diarys;
   diaryContainer({
     super.key,
     required this.diarys,
@@ -320,20 +339,7 @@ class _diaryContainerState extends State<diaryContainer> {
           0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FutureBuilder(
-              future: widget.diarys,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return makeContainer(snapshot, widget.calendarDate);
-                }
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [Text('아직 일기가 없어요')],
-                );
-              }),
-        ],
+        children: const [],
       ),
     );
   }

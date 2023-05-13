@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sumpyo/l10n/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:sumpyo/notification.dart';
 import 'package:sumpyo/screens/intro_screen.dart';
 import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/home_screen.dart';
@@ -21,6 +22,14 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  @override
+  void initState() {
+    FlutterNotification.init();
+    Future.delayed(const Duration(seconds: 3),
+        FlutterNotification.requestNotificationPermission());
+    super.initState();
+  }
+
   double panelMaxHeight = 0.0;
   double panelMinHeight = 0.0;
   int visit = 0;

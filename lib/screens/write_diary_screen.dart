@@ -18,6 +18,8 @@ class writeDiaryScreen extends StatefulWidget {
 }
 
 class _writeDiaryScreenState extends State<writeDiaryScreen> {
+  double safeareaHeight = 100;
+
   TextEditingController diaryDateController = TextEditingController();
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
@@ -28,6 +30,7 @@ class _writeDiaryScreenState extends State<writeDiaryScreen> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _asyncMethod();
     });
@@ -145,6 +148,9 @@ class _writeDiaryScreenState extends State<writeDiaryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    safeareaHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        80;
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
@@ -153,44 +159,50 @@ class _writeDiaryScreenState extends State<writeDiaryScreen> {
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: const EdgeInsets.all(20),
-              alignment: Alignment.bottomLeft,
-              height: 25 * 2.4,
-              child: GestureDetector(
-                onTap: () {
-                  HapticFeedback.mediumImpact();
-                  _selectDate();
-                },
-                child: Row(
-                  children: [
-                    Text(
-                      DateFormat('yyyy년 MM월 dd일').format(diaryDate),
-                      style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
+        child: SingleChildScrollView(
+          child: Container(
+            constraints: BoxConstraints(maxHeight: safeareaHeight),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(20),
+                  alignment: Alignment.bottomLeft,
+                  height: 25 * 2.4,
+                  child: GestureDetector(
+                    onTap: () {
+                      HapticFeedback.mediumImpact();
+                      _selectDate();
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          DateFormat('yyyy년 MM월 dd일').format(diaryDate),
+                          style: const TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                        const Icon(
+                          Icons.open_in_new,
+                          color: Colors.white,
+                        ),
+                      ],
                     ),
-                    const Icon(
-                      Icons.open_in_new,
-                      color: Colors.white,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: writeDiary(
+                    titleController: titleController,
+                    contentController: contentController,
+                    diaryDate: diaryDate,
+                  ),
+                ),
+              ],
             ),
-            Flexible(
-              child: writeDiary(
-                titleController: titleController,
-                contentController: contentController,
-                diaryDate: diaryDate,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
       floatingActionButton: SizedBox(
@@ -235,86 +247,91 @@ class writeDiaryState extends State<writeDiary> {
   double titleFontSize = 20.0;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.732,
-      decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
-      padding: EdgeInsets.fromLTRB(
-          10,
-          MediaQuery.of(context).size.width * 0.035,
-          MediaQuery.of(context).size.width * 0.035,
-          0),
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.885,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    height: titleFontSize * 2,
-                    child: Text(
-                      'Title',
-                      style: TextStyle(
-                        fontSize: titleFontSize,
-                        fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.732,
+        decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
+        padding: EdgeInsets.fromLTRB(
+            10,
+            MediaQuery.of(context).size.width * 0.035,
+            MediaQuery.of(context).size.width * 0.035,
+            0),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.885,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      height: titleFontSize * 2,
+                      child: Text(
+                        'Title',
+                        style: TextStyle(
+                          fontSize: titleFontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  TextField(
-                    controller: widget.titleController,
-                    decoration: InputDecoration(
-                      hintText:
-                          '제목: ${DateFormat('yyyy.MM.dd').format(widget.diaryDate)} 일기',
-                      fillColor: Colors.white,
-                      filled: true,
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.885,
-              child: Column(
-                children: [
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    height: titleFontSize * 2,
-                    child: Text(
-                      'Story',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: titleFontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.55,
-                    child: TextFormField(
-                      controller: widget.contentController,
-                      minLines: null,
-                      maxLines: null,
-                      expands: true,
-                      decoration: const InputDecoration(
-                        hintText: '내용을 입력해주세요.',
+                    TextField(
+                      controller: widget.titleController,
+                      decoration: InputDecoration(
+                        hintText:
+                            '제목: ${DateFormat('yyyy.MM.dd').format(widget.diaryDate)} 일기',
                         fillColor: Colors.white,
                         filled: true,
                         border: InputBorder.none,
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.885,
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      height: titleFontSize * 2,
+                      child: Text(
+                        'Story',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: titleFontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.55,
+                      child: TextFormField(
+                        controller: widget.contentController,
+                        minLines: null,
+                        maxLines: null,
+                        expands: true,
+                        decoration: const InputDecoration(
+                          hintText: '내용을 입력해주세요.',
+                          fillColor: Colors.white,
+                          filled: true,
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
