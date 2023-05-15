@@ -2,18 +2,19 @@ import 'dart:convert';
 
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:sliding_up_panel2/sliding_up_panel2.dart';
 import 'package:sumpyo/apis/api.dart';
 import 'package:http/http.dart' as http;
 import 'package:sumpyo/models/diary.dart';
 import 'package:sumpyo/notification.dart';
+import 'package:sumpyo/screens/dev_Screen.dart';
 import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/mypage_screen.dart';
 import 'package:sumpyo/screens/notice_screen.dart';
-import 'package:sumpyo/screens/statistics_screen.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,21 +24,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool firstWeek = false;
-  bool firstMonth = false;
-  double contentHeight = 0.0;
-  double monthHeight = 0.0;
-  double weekHeight = 0.0;
-  double minHeight = 50.0;
-  double maxHeight = 500.0;
-  double topbarHeight = 0.0;
   CalendarFormat calFormat = CalendarFormat.month;
   DateTime _selectedDate = DateTime.now();
   List<String> ableDiaryDays = [];
   dynamic userInfo = '';
   String userName = '';
-  final GlobalKey _mainCalKey = GlobalKey();
-  final GlobalKey contentKey = GlobalKey();
   Map<String, Diary> _diarys = {};
 
   static const storage = FlutterSecureStorage();
@@ -48,15 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await _asyncMethod();
       _diarys = await getDiary({'userId': userName});
-      monthHeight = getCalSize();
-      contentHeight = getContentSize();
-      // _diarys = getDiary();
       setState(() {
-        minHeight = contentHeight - monthHeight - topbarHeight - 80;
-        print(
-          '컨텐츠높이:$contentHeight, 월간달력:$monthHeight, 최소높이:$minHeight',
-        );
-
         ableDiaryDays = _diarys.keys.toList();
       });
     });
@@ -107,76 +90,69 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  double getCalSize() {
-    RenderBox calBox =
-        _mainCalKey.currentContext!.findRenderObject() as RenderBox;
-    Size size = calBox.size;
-    return size.height;
-  }
-
-  double getContentSize() {
-    RenderBox calBox =
-        contentKey.currentContext!.findRenderObject() as RenderBox;
-    Size size = calBox.size;
-    return size.height;
-  }
-
   @override
   Widget build(BuildContext context) {
-    // // print(ableDiaryDays);
-    topbarHeight = MediaQuery.of(context).size.height * 0.15;
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       appBar: topAppBar(
         appBar: AppBar(),
       ),
       body: SafeArea(
-        //--------------------------------슬라이딩 패널--------------------------
-        child: SlidingUpPanel(
-          onPanelOpened: () {
-            setState(() {
-              calFormat = CalendarFormat.week;
-            });
-
-            if (!firstMonth) {
-              firstMonth = !firstMonth;
-              Future.delayed(const Duration(milliseconds: 500), () {
-                weekHeight = getCalSize();
-                setState(() {
-                  maxHeight = contentHeight - weekHeight - topbarHeight - 80;
-                });
-              });
-            }
-          },
-          onPanelClosed: () {
-            setState(() {
-              calFormat = CalendarFormat.month;
-            });
-          },
-          minHeight: minHeight,
-          maxHeight: maxHeight,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
-          color: Colors.white,
-          panelBuilder: () {
-            return diaryContainer(
-              calendarDate: DateFormat("yyyy-MM-dd").format(_selectedDate),
-              diarys: _diarys,
-            );
-          },
-          //-------------------------------바디 영역----------------------------
-          body: Column(
-            key: contentKey,
-            children: [
-              mainCalendar(
-                changeDate: changeDate,
-                ableDays: ableDiaryDays,
-                calendarFormat: calFormat,
-                mainCalKey: _mainCalKey,
-              ),
-            ],
+          child: Column(
+        children: [
+          mainCalendar(
+            changeDate: changeDate,
+            ableDays: ableDiaryDays,
+            calendarFormat: calFormat,
           ),
-        ),
-      ),
+          GestureDetector(
+            onVerticalDragUpdate: (details) {
+              setState(() {
+                details.localPosition.dy > 0
+                    ? calFormat = CalendarFormat.month
+                    : calFormat = CalendarFormat.week;
+              });
+            },
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.05,
+              width: MediaQuery.of(context).size.width,
+              child: Container(
+                color: Colors.transparent,
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: 50,
+                  height: 10,
+                  child: Container(
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.grey.shade400,
+                    ),
+                    child: const Text('  '),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(25.0),
+                  ),
+                  color: Colors.amber,
+                ),
+                child: diaryContainer(
+                  calendarDate: DateFormat("yyyy-MM-dd").format(_selectedDate),
+                  diarys: _diarys,
+                ),
+              ),
+            ),
+          )
+        ],
+      )),
     );
   }
 }
@@ -234,12 +210,10 @@ class topAppBar extends StatelessWidget implements PreferredSizeWidget {
 class mainCalendar extends StatefulWidget {
   CalendarFormat calendarFormat;
   List<String> ableDays;
-  GlobalKey mainCalKey;
   Function changeDate;
   mainCalendar({
     super.key,
     required this.calendarFormat,
-    required this.mainCalKey,
     required this.ableDays,
     required this.changeDate,
   });
@@ -255,7 +229,6 @@ class _mainCalendarState extends State<mainCalendar> {
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
-      key: widget.mainCalKey,
       locale: 'ko',
       focusedDay: focusedDay,
       firstDay: DateTime.utc(2000, 1, 1),
@@ -290,7 +263,6 @@ class _mainCalendarState extends State<mainCalendar> {
           color: Colors.transparent,
           border: Border.all(color: const Color(0xFFB9E1EC), width: 3),
           shape: BoxShape.circle,
-          // border: Border.all(color: const Color(0xFFB9E1EC), width: 3),
         ),
         defaultTextStyle: const TextStyle(color: Colors.white),
         weekendTextStyle: const TextStyle(color: Colors.white),
@@ -325,30 +297,148 @@ class diaryContainer extends StatefulWidget {
 }
 
 class _diaryContainerState extends State<diaryContainer> {
+  CardSwiperController swiperController = CardSwiperController();
+  late List<Widget> cards;
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  bool _onSwipe(
+      int previousIndex, int? currentIndex, CardSwiperDirection direction) {
+    debugPrint('The card $previousIndex was swiped to the ${direction.name}.');
+    return true;
+  }
+
+  bool _onUndo(
+      int? previousIndex, int currentIndex, CardSwiperDirection direction) {
+    debugPrint('The card $currentIndex was swiped to the ${direction.name}.');
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Container(
-        // height: MediaQuery.of(context).size.height.,
-        decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(30))),
-        padding: EdgeInsets.fromLTRB(
-            10,
-            MediaQuery.of(context).size.width * 0.035,
-            MediaQuery.of(context).size.width * 0.035,
-            0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [makeContainer(widget.diarys, widget.calendarDate)],
-        ),
+    cards = [
+      diaryPanel(diarys: widget.diarys, calendarDate: widget.calendarDate),
+      const diaryAlysisChart()
+    ];
+    return CardSwiper(
+      scale: 1,
+      // maxAngle: 360,
+      padding: const EdgeInsets.fromLTRB(0, 25, 0, 0),
+      isHorizontalSwipingEnabled: false,
+      cardBuilder: (context, index) => cards[index],
+      // direction: CardSwiperDirection.bottom,
+      cardsCount: cards.length,
+      numberOfCardsDisplayed: 2,
+      backCardOffset: const Offset(0, -30),
+      onSwipe: _onSwipe,
+      onUndo: _onUndo,
+    );
+  }
+}
+
+class diaryPanel extends StatelessWidget {
+  diaryPanel({
+    super.key,
+    required this.diarys,
+    required this.calendarDate,
+  });
+
+  Map<String, Diary> diarys;
+  String calendarDate;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // height: MediaQuery.of(context).size.height.,
+      decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
+      padding: EdgeInsets.fromLTRB(
+          10,
+          MediaQuery.of(context).size.width * 0.035,
+          MediaQuery.of(context).size.width * 0.035,
+          0),
+      child: makeContainer(diarys, calendarDate),
+    );
+  }
+}
+
+class diaryAlysisChart extends StatelessWidget {
+  const diaryAlysisChart({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    List<String> items = ['오늘', '어제', '일주일'];
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      decoration: const BoxDecoration(color: Colors.black),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '2023년 04월 06일',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const Text(
+            '오늘의 하루는 "슬픔"이에요.',
+            style: TextStyle(fontSize: 16, color: Colors.white),
+          ),
+          SfCartesianChart(
+            // 차트 테두리 두께
+            plotAreaBorderWidth: 0,
+            tooltipBehavior: TooltipBehavior(),
+            primaryXAxis: CategoryAxis(
+                multiLevelLabels: List.empty(),
+                axisLine: const AxisLine(width: 1, color: Colors.transparent),
+                majorGridLines: const MajorGridLines(width: 0),
+                majorTickLines: const MajorTickLines(
+                  size: 0,
+                )),
+            primaryYAxis: NumericAxis(
+              // 라벨 스타일
+              labelStyle: const TextStyle(color: Colors.transparent),
+              // 최소/최대/간격
+              minimum: 0,
+              maximum: 50,
+              interval: 25,
+              // 축선
+              axisLine: const AxisLine(color: Colors.transparent),
+              // 라벨 표시선
+              majorTickLines: const MajorTickLines(size: 0),
+              // 간격선
+              majorGridLines: MajorGridLines(
+                  width: 2,
+                  color: Colors.grey.withOpacity(0.5),
+                  dashArray: const [4]),
+            ),
+            series: <ChartSeries<emotionData, String>>[
+              ColumnSeries(
+                color: const Color(0xFFC8E9F3),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(15)),
+                dataSource: <emotionData>[
+                  emotionData('기쁨', 35),
+                  emotionData('분노', 28),
+                  emotionData('슬픔', 34),
+                  emotionData('당황', 32),
+                  emotionData('역겨움', 40)
+                ],
+                xValueMapper: (emotionData sales, _) => sales.labledEmotion,
+                yValueMapper: (emotionData sales, _) => sales.frequency,
+              )
+            ],
+          ),
+        ],
       ),
-      Container(
-        decoration: const BoxDecoration(color: Colors.transparent),
-        child: Column(children: [Container()]),
-      ),
-    ]);
+    );
   }
 }
 
@@ -386,20 +476,13 @@ class bottomNavi extends StatefulWidget {
   State<bottomNavi> createState() => _bottomNaviState();
 }
 
-class Event {
-  final String title;
-  const Event(this.title);
-  @override
-  String toString() => title;
-}
-
 class _bottomNaviState extends State<bottomNavi> {
   final screens = [
     //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
     const HomeScreen(),
     noticeScreen(),
     const writeDiaryScreen(),
-    const statisticsScreen(),
+    const devScreen(),
     const myPage(),
   ];
   int visit = 0;
