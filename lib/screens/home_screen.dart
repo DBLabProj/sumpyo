@@ -10,11 +10,11 @@ import 'package:sumpyo/apis/api.dart';
 import 'package:http/http.dart' as http;
 import 'package:sumpyo/models/diary.dart';
 import 'package:sumpyo/notification.dart';
-import 'package:sumpyo/screens/dev_Screen.dart';
 import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/mypage_screen.dart';
 import 'package:sumpyo/screens/notice_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_core/src/slider_controller.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,6 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   CalendarFormat calFormat = CalendarFormat.month;
+  bool isExpanded = false;
   DateTime _selectedDate = DateTime.now();
   List<String> ableDiaryDays = [];
   dynamic userInfo = '';
@@ -108,9 +109,13 @@ class _HomeScreenState extends State<HomeScreen> {
           GestureDetector(
             onVerticalDragUpdate: (details) {
               setState(() {
-                details.localPosition.dy > 0
-                    ? calFormat = CalendarFormat.month
-                    : calFormat = CalendarFormat.week;
+                if (details.localPosition.dy > 0) {
+                  calFormat = CalendarFormat.month;
+                  isExpanded = true;
+                } else {
+                  calFormat = CalendarFormat.week;
+                  isExpanded = false;
+                }
               });
             },
             child: SizedBox(
@@ -142,9 +147,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.vertical(
                     top: Radius.circular(25.0),
                   ),
-                  color: Colors.amber,
+                  color: Colors.transparent,
                 ),
                 child: diaryContainer(
+                  isExpanded: isExpanded,
                   calendarDate: DateFormat("yyyy-MM-dd").format(_selectedDate),
                   diarys: _diarys,
                 ),
@@ -284,12 +290,14 @@ class _mainCalendarState extends State<mainCalendar> {
 
 // -----------------------------------일기 화면----------------------------------
 class diaryContainer extends StatefulWidget {
+  bool isExpanded;
   String calendarDate;
   final Map<String, Diary> diarys;
   diaryContainer({
     super.key,
     required this.diarys,
     required this.calendarDate,
+    required this.isExpanded,
   });
 
   @override
@@ -320,18 +328,22 @@ class _diaryContainerState extends State<diaryContainer> {
   Widget build(BuildContext context) {
     cards = [
       diaryPanel(diarys: widget.diarys, calendarDate: widget.calendarDate),
-      const diaryAlysisChart()
+      diaryAlysisChart(
+        isExpanded: widget.isExpanded,
+        diarys: widget.diarys,
+        selectedDate: widget.calendarDate,
+      )
     ];
     return CardSwiper(
       scale: 1,
-      // maxAngle: 360,
+      maxAngle: 180,
       padding: const EdgeInsets.fromLTRB(0, 25, 0, 0),
       isHorizontalSwipingEnabled: false,
-      cardBuilder: (context, index) => cards[index],
+      cardBuilder: (context, index) => Container(child: cards[index]),
       // direction: CardSwiperDirection.bottom,
       cardsCount: cards.length,
       numberOfCardsDisplayed: 2,
-      backCardOffset: const Offset(0, -30),
+      backCardOffset: const Offset(0, -40),
       onSwipe: _onSwipe,
       onUndo: _onUndo,
     );
@@ -365,76 +377,413 @@ class diaryPanel extends StatelessWidget {
   }
 }
 
-class diaryAlysisChart extends StatelessWidget {
-  const diaryAlysisChart({
+class diaryAlysisChart extends StatefulWidget {
+  bool isExpanded;
+  Map<String, Diary> diarys;
+  String selectedDate;
+  diaryAlysisChart({
+    super.key,
+    required this.isExpanded,
+    required this.diarys,
+    required this.selectedDate,
+  });
+
+  @override
+  State<diaryAlysisChart> createState() => _diaryAlysisChartState();
+}
+
+class _diaryAlysisChartState extends State<diaryAlysisChart> {
+  List<emotionData> todayData = [
+    emotionData('기쁨', 0),
+    emotionData('분노', 0),
+    emotionData('슬픔', 0),
+    emotionData('당황', 0),
+    emotionData('역겨움', 0)
+  ];
+  List<emotionData> yesterdayData = [
+    emotionData('기쁨', 0),
+    emotionData('분노', 0),
+    emotionData('슬픔', 0),
+    emotionData('당황', 0),
+    emotionData('역겨움', 0)
+  ];
+  List<emotionData> beforeYesterdayData = [
+    emotionData('기쁨', 0),
+    emotionData('분노', 0),
+    emotionData('슬픔', 0),
+    emotionData('당황', 0),
+    emotionData('역겨움', 0)
+  ];
+  Diary todayDiary = Diary(0, '', '', '', DateTime.now(), '', 0, 0, 0, 0, 0);
+  String yesterdayDate = '';
+  String beforeYesterdayDate = '';
+  late SelectionBehavior _toDaySelection;
+  late SelectionBehavior _yesterDaySelection;
+  late SelectionBehavior _beforeYesterDaySelection;
+  int isSelected = 0;
+
+  changeSelected(int index) {
+    setState(() {
+      isSelected = index;
+    });
+    var tempDate = DateFormat('yyyy-MM-dd').parse(widget.selectedDate);
+    yesterdayDate =
+        DateFormat('yyyy-MM-dd').format(tempDate.add(const Duration(days: -1)));
+    beforeYesterdayDate =
+        DateFormat('yyyy-MM-dd').format(tempDate.add(const Duration(days: -2)));
+  }
+
+  @override
+  void initState() {
+    var tempDate = DateFormat('yyyy-MM-dd').parse(widget.selectedDate);
+    yesterdayDate =
+        DateFormat('yyyy-MM-dd').format(tempDate.add(const Duration(days: -1)));
+    beforeYesterdayDate =
+        DateFormat('yyyy-MM-dd').format(tempDate.add(const Duration(days: -2)));
+    _toDaySelection = SelectionBehavior(
+      enable: true,
+      toggleSelection: true,
+      unselectedOpacity: 0.3,
+      selectionController: RangeController(start: 0, end: 4),
+    );
+    _yesterDaySelection = SelectionBehavior(
+      enable: true,
+      toggleSelection: true,
+      unselectedOpacity: 0.3,
+      selectionController: RangeController(start: 0, end: 4),
+    );
+    _beforeYesterDaySelection = SelectionBehavior(
+      enable: true,
+      toggleSelection: true,
+      unselectedOpacity: 0.3,
+      selectionController: RangeController(start: 0, end: 4),
+    );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.diarys.containsKey(widget.selectedDate)) {
+      todayDiary = widget.diarys[widget.selectedDate] as Diary;
+      todayData = [
+        emotionData('기쁨', todayDiary.diary_happiness.toDouble()),
+        emotionData('분노', todayDiary.diary_anger.toDouble()),
+        emotionData('슬픔', todayDiary.diary_sadness.toDouble()),
+        emotionData('당황', todayDiary.diary_embarrassment.toDouble()),
+        emotionData('역겨움', todayDiary.diary_disgust.toDouble())
+      ];
+    }
+    if (widget.diarys.containsKey(yesterdayDate)) {
+      Diary yesterdayDiary = widget.diarys[yesterdayDate] as Diary;
+      yesterdayData = [
+        emotionData('기쁨', yesterdayDiary.diary_happiness.toDouble()),
+        emotionData('분노', yesterdayDiary.diary_anger.toDouble()),
+        emotionData('슬픔', yesterdayDiary.diary_sadness.toDouble()),
+        emotionData('당황', yesterdayDiary.diary_embarrassment.toDouble()),
+        emotionData('역겨움', yesterdayDiary.diary_disgust.toDouble())
+      ];
+    }
+    if (widget.diarys.containsKey(beforeYesterdayDate)) {
+      Diary beforeYesterdayDiary = widget.diarys[beforeYesterdayDate] as Diary;
+      beforeYesterdayData = [
+        emotionData('기쁨', beforeYesterdayDiary.diary_happiness.toDouble()),
+        emotionData('분노', beforeYesterdayDiary.diary_anger.toDouble()),
+        emotionData('슬픔', beforeYesterdayDiary.diary_sadness.toDouble()),
+        emotionData('당황', beforeYesterdayDiary.diary_embarrassment.toDouble()),
+        emotionData('역겨움', beforeYesterdayDiary.diary_disgust.toDouble())
+      ];
+    }
+    var todayColumn = ColumnSeries(
+      selectionBehavior: _toDaySelection,
+      color: const Color(0xFFC8E9F3),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+      dataSource: todayData,
+      xValueMapper: (emotionData eData, _) => eData.labledEmotion,
+      yValueMapper: (emotionData eData, _) => eData.frequency,
+    );
+
+    var yesterDayColumn = ColumnSeries(
+      selectionBehavior: _yesterDaySelection,
+      color: const Color(0xFFF6D7E2),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+      dataSource: yesterdayData,
+      xValueMapper: (emotionData eData, _) => eData.labledEmotion,
+      yValueMapper: (emotionData eData, _) => eData.frequency,
+    );
+    var beforeYesterDayColumn = ColumnSeries(
+      selectionBehavior: _beforeYesterDaySelection,
+      color: const Color.fromARGB(255, 37, 221, 141),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+      dataSource: beforeYesterdayData,
+      xValueMapper: (emotionData eData, _) => eData.labledEmotion,
+      yValueMapper: (emotionData eData, _) => eData.frequency,
+    );
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+      decoration: BoxDecoration(
+        // color: Colors.cyan.shade400,
+        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(30),
+        ),
+        boxShadow: [
+          const BoxShadow(
+            color: Colors.grey,
+            offset: Offset(4.0, 4.0),
+            blurRadius: 15.0,
+            spreadRadius: 1.0,
+          ),
+          BoxShadow(
+            color: Colors.grey.shade400,
+            offset: const Offset(-4.0, -4.0),
+            blurRadius: 5.0,
+            spreadRadius: 1.0,
+          )
+        ],
+      ),
+      child: SingleChildScrollView(
+        physics: widget.isExpanded
+            ? const AlwaysScrollableScrollPhysics()
+            : const NeverScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    DateFormat('yyyy년 MM월 dd일').format(
+                        DateFormat('yyyy-MM-dd').parse(widget.selectedDate)),
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text(
+                    "오늘의 하루는 '",
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                  Text(
+                    todayDiary.diary_emotion,
+                    style: const TextStyle(color: Colors.blue),
+                  ),
+                  const Text(
+                    "'이에요.",
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: const Text(
+                          '오늘의 감정 분표',
+                          style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff4c4c4c)),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SfCartesianChart(
+                    // selectionGesture: ActivationMode.singleTap,
+                    // 차트 테두리 두께
+                    plotAreaBorderWidth: 0,
+                    primaryXAxis: CategoryAxis(
+                        interactiveTooltip: const InteractiveTooltip(),
+                        multiLevelLabels: List.empty(),
+                        axisLine: const AxisLine(width: 0, color: Colors.black),
+                        majorGridLines: const MajorGridLines(width: 0),
+                        majorTickLines: const MajorTickLines(
+                          size: 0,
+                        )),
+                    primaryYAxis: NumericAxis(
+                      rangePadding: ChartRangePadding.none,
+                      // 라벨 스타일
+                      labelStyle: const TextStyle(
+                          color: Colors.transparent, fontSize: 0),
+                      // 최소/최대/간격
+                      minimum: 0,
+                      maximum: 50,
+                      interval: 25,
+                      // 축선
+                      axisLine: const AxisLine(color: Colors.transparent),
+                      // 라벨 표시선
+                      majorTickLines: const MajorTickLines(size: 0),
+                      // 간격선
+                      majorGridLines: MajorGridLines(
+                          width: 2,
+                          color: Colors.grey.withOpacity(0.5),
+                          dashArray: const [4]),
+                    ),
+                    axes: [
+                      CategoryAxis(
+                        name: 'x_second',
+                        opposedPosition: true,
+                        majorTickLines: const MajorTickLines(size: 0),
+                        labelStyle: const TextStyle(
+                            color: Colors.transparent, fontSize: 0),
+                        axisLine:
+                            const AxisLine(color: Color(0xFFE4E4E4), width: 2),
+                        majorGridLines: const MajorGridLines(width: 0),
+                      ),
+                      NumericAxis(
+                        name: 'y_second',
+                        opposedPosition: true,
+                        minimum: 0,
+                        maximum: 50,
+                        interval: 50,
+                        axisLine: const AxisLine(color: Colors.transparent),
+                        majorTickLines: const MajorTickLines(size: 0),
+                        labelStyle: const TextStyle(
+                            color: Colors.transparent, fontSize: 0),
+                      ),
+                    ],
+                    series: <ChartSeries<emotionData, String>>[
+                      // 오늘
+                      todayColumn,
+                      if (isSelected == 1)
+                        yesterDayColumn
+                      else if (isSelected == 2)
+                        beforeYesterDayColumn
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+                width: MediaQuery.of(context).size.width * 0.78,
+                height: MediaQuery.of(context).size.height * 0.04,
+                child: weekSelector(
+                  changeIndex: changeSelected,
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class weekSelector extends StatefulWidget {
+  Function changeIndex;
+  weekSelector({
+    required this.changeIndex,
     super.key,
   });
 
   @override
+  State<weekSelector> createState() => _weekSelectorState();
+}
+
+class _weekSelectorState extends State<weekSelector> {
+  ButtonStyle unselectedButton = const ButtonStyle(
+    backgroundColor: MaterialStatePropertyAll(Colors.white),
+    shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(30)))),
+  );
+  ButtonStyle selectedButton = const ButtonStyle();
+  List<bool> selected = [true, false, false];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      setState(() {
+        selectedButton = ButtonStyle(
+          backgroundColor:
+              MaterialStatePropertyAll(Theme.of(context).primaryColor),
+          shape: const MaterialStatePropertyAll(RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(30)))),
+        );
+      });
+    });
+  }
+
+  changeSelected(int index) {
+    for (int i = 0; i < selected.length; i++) {
+      selected[i] = i == index ? true : false;
+    }
+    widget.changeIndex(index);
+    setState(() {
+      selected;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    List<String> items = ['오늘', '어제', '일주일'];
+    TextStyle selectedText = const TextStyle(
+        color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15);
+    TextStyle unselectedText = TextStyle(
+        color: Theme.of(context).primaryColor,
+        fontWeight: FontWeight.bold,
+        fontSize: 15);
     return Container(
-      clipBehavior: Clip.hardEdge,
-      decoration: const BoxDecoration(color: Colors.black),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      width: MediaQuery.of(context).size.width * 0.5,
+      decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).primaryColor),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          const Text(
-            '2023년 04월 06일',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+          Expanded(
+            flex: 1,
+            child: TextButton(
+              style: selected[0] ? selectedButton : unselectedButton,
+              onPressed: () {
+                changeSelected(0);
+              },
+              child: Text(
+                '오늘',
+                style: selected[0] ? selectedText : unselectedText,
+              ),
             ),
           ),
-          const Text(
-            '오늘의 하루는 "슬픔"이에요.',
-            style: TextStyle(fontSize: 16, color: Colors.white),
-          ),
-          SfCartesianChart(
-            // 차트 테두리 두께
-            plotAreaBorderWidth: 0,
-            tooltipBehavior: TooltipBehavior(),
-            primaryXAxis: CategoryAxis(
-                multiLevelLabels: List.empty(),
-                axisLine: const AxisLine(width: 1, color: Colors.transparent),
-                majorGridLines: const MajorGridLines(width: 0),
-                majorTickLines: const MajorTickLines(
-                  size: 0,
-                )),
-            primaryYAxis: NumericAxis(
-              // 라벨 스타일
-              labelStyle: const TextStyle(color: Colors.transparent),
-              // 최소/최대/간격
-              minimum: 0,
-              maximum: 50,
-              interval: 25,
-              // 축선
-              axisLine: const AxisLine(color: Colors.transparent),
-              // 라벨 표시선
-              majorTickLines: const MajorTickLines(size: 0),
-              // 간격선
-              majorGridLines: MajorGridLines(
-                  width: 2,
-                  color: Colors.grey.withOpacity(0.5),
-                  dashArray: const [4]),
+          Expanded(
+            flex: 1,
+            child: TextButton(
+              style: selected[1] ? selectedButton : unselectedButton,
+              onPressed: () {
+                changeSelected(1);
+              },
+              child: Text(
+                '어제',
+                style: selected[1] ? selectedText : unselectedText,
+              ),
             ),
-            series: <ChartSeries<emotionData, String>>[
-              ColumnSeries(
-                color: const Color(0xFFC8E9F3),
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(15)),
-                dataSource: <emotionData>[
-                  emotionData('기쁨', 35),
-                  emotionData('분노', 28),
-                  emotionData('슬픔', 34),
-                  emotionData('당황', 32),
-                  emotionData('역겨움', 40)
-                ],
-                xValueMapper: (emotionData sales, _) => sales.labledEmotion,
-                yValueMapper: (emotionData sales, _) => sales.frequency,
-              )
-            ],
+          ),
+          Expanded(
+            flex: 1,
+            child: TextButton(
+              style: selected[2] ? selectedButton : unselectedButton,
+              onPressed: () {
+                changeSelected(2);
+                setState(() {});
+              },
+              child: Text(
+                '그제',
+                style: selected[2] ? selectedText : unselectedText,
+              ),
+            ),
           ),
         ],
       ),
@@ -482,7 +831,7 @@ class _bottomNaviState extends State<bottomNavi> {
     const HomeScreen(),
     noticeScreen(),
     const writeDiaryScreen(),
-    const devScreen(),
+    noticeScreen(),
     const myPage(),
   ];
   int visit = 0;
@@ -511,62 +860,6 @@ class _bottomNaviState extends State<bottomNavi> {
             visit = index;
           },
         ),
-      ),
-    );
-  }
-}
-
-// -----------------------------------일기 작성----------------------------------
-class writeDiary extends StatefulWidget {
-  const writeDiary({super.key});
-
-  @override
-  State<writeDiary> createState() => writeDiaryState();
-}
-
-class writeDiaryState extends State<writeDiary> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      // height: MediaQuery.of(context).size.height.,
-      decoration: BoxDecoration(
-          color: Theme.of(context).secondaryHeaderColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(30))),
-      padding: EdgeInsets.fromLTRB(
-          10,
-          MediaQuery.of(context).size.width * 0.035,
-          MediaQuery.of(context).size.width * 0.035,
-          0),
-      // EdgeInsets.symmetric(
-      //     horizontal: MediaQuery.of(context).size.width * 0.07),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            '2023년 04월 06일',
-          ),
-          const TextField(
-            decoration: InputDecoration(
-              hintText: '제목: 2023.04.06 일기',
-              fillColor: Colors.white,
-              filled: true,
-              border: InputBorder.none,
-            ),
-          ),
-          SizedBox(
-            child: TextFormField(
-              minLines: 10,
-              maxLines: 15,
-              decoration: const InputDecoration(
-                hintText: '내용을 입력해주세요.',
-                fillColor: Colors.white,
-                filled: true,
-                border: InputBorder.none,
-              ),
-            ),
-          )
-        ],
       ),
     );
   }

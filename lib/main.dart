@@ -30,8 +30,6 @@ class _AppState extends State<App> {
     super.initState();
   }
 
-  double panelMaxHeight = 0.0;
-  double panelMinHeight = 0.0;
   int visit = 0;
   final screens = [
     //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.

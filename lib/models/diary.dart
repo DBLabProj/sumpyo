@@ -6,6 +6,14 @@ class Diary {
   String diary_title;
   String diary_content;
   DateTime diary_date;
+  String diary_emotion;
+  int diary_happiness;
+  int diary_sadness;
+  int diary_disgust;
+  int diary_embarrassment;
+  int diary_anger;
+  // String diary_recommend;
+  // int diary_stress;
 
   Diary(
     this.diary_id,
@@ -13,22 +21,35 @@ class Diary {
     this.diary_title,
     this.diary_content,
     this.diary_date,
+    this.diary_emotion,
+    this.diary_happiness,
+    this.diary_sadness,
+    this.diary_disgust,
+    this.diary_embarrassment,
+    this.diary_anger,
+    // this.diary_recommend,
+    // this.diary_stress,
   );
 
   Diary.fromJson(Map<String, dynamic> json)
-      : diary_id = json['diaryId'],
-        user_name = json['userName'],
-        diary_title = json['diaryTitle'],
-        diary_content = json['diaryContent'],
-        diary_date = DateTime.parse(json['diaryDate']);
+      : diary_id = json['diary_id'],
+        user_name = json['user_name'],
+        diary_title = json['diary_title'],
+        diary_content = json['diary_content'],
+        diary_date = DateTime.parse(json['diary_date']),
+        diary_emotion = json['diary_emotion'],
+        diary_happiness = json['diary_happiness'],
+        diary_sadness = json['diary_sadness'],
+        diary_disgust = json['diary_disgust'],
+        diary_embarrassment = json['diary_embarrassment'],
+        diary_anger = json['diary_anger'];
 
   Map<String, dynamic> toJson() => {
-        'user_id': diary_id.toString(),
+        'diary_id': diary_id.toString(),
         'user_name': user_name,
-        'user_email': user_name,
-        'user_phone': diary_title,
-        'user_passwd': diary_content,
-        'user_birthday': (DateFormat('yyyy-MM-dd')).format(diary_date),
+        'diary_title': diary_title,
+        'diary_content': diary_content,
+        'diary_date': (DateFormat('yyyy-MM-dd')).format(diary_date),
       };
 }
 
@@ -52,4 +73,10 @@ class uploadDiary {
         'diaryContent': diaryContent,
         'diaryDate': (DateFormat('yyyy-MM-dd')).format(diaryDate),
       };
+}
+
+class emotionData {
+  emotionData(this.labledEmotion, this.frequency);
+  final String labledEmotion;
+  final double frequency;
 }

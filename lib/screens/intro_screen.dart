@@ -22,6 +22,12 @@ class _introScreenState extends State<introScreen> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
@@ -55,7 +61,7 @@ class _introScreenState extends State<introScreen> {
                 ),
                 const Expanded(child: SizedBox()),
                 Align(
-                  child: Text("© Copyright 2023, imzu와 아이들",
+                  child: Text("© Copyright 2023, SHARP",
                       style: TextStyle(
                         fontSize: screenWidth * (14 / 360),
                         color: const Color.fromRGBO(255, 255, 255, 0.6),

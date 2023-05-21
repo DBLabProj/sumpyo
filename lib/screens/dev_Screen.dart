@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:sumpyo/screens/home_screen.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
+class ChartData {
+  ChartData(this.x, this.y, this.y1);
+  final String x;
+  final double y;
+  final double y1;
+}
 
 class devScreen extends StatefulWidget {
   const devScreen({super.key});
@@ -10,86 +16,46 @@ class devScreen extends StatefulWidget {
 }
 
 class _devScreenState extends State<devScreen> {
-  DateTime _selectedDate = DateTime.now();
-  final GlobalKey calKey = GlobalKey();
-  CalendarFormat calFormat = CalendarFormat.month;
-  changeDate(DateTime selectedDate) {
-    setState(() {
-      _selectedDate = selectedDate;
-    });
+  late SelectionBehavior _selectionBehavior;
+
+  @override
+  void initState() {
+    _selectionBehavior = SelectionBehavior(enable: true);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Container(
-      color: Colors.amber,
-      child: Column(
-        children: [
-          mainCalendar(
-              calendarFormat: calFormat,
-              ableDays: const [],
-              changeDate: changeDate),
-          GestureDetector(
-            onVerticalDragUpdate: (details) {
-              setState(() {
-                details.localPosition.dy > 0
-                    ? calFormat = CalendarFormat.month
-                    : calFormat = CalendarFormat.week;
-              });
-            },
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.05,
-              width: MediaQuery.of(context).size.width,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.8),
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(25.0)),
-                ),
-                alignment: Alignment.center,
-                child: SizedBox(
-                  width: 50,
-                  height: 10,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Colors.grey.shade400,
-                    ),
-                    child: const Text('  '),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Card(
-              child: Container(
-                color: Colors.black,
-                child: Row(
-                  children: [
-                    Flexible(
-                      fit: FlexFit.tight,
-                      child: TextButton(
-                        style: const ButtonStyle(
-                            backgroundColor:
-                                MaterialStatePropertyAll(Colors.white)),
-                        child: const Text('Change'),
-                        onPressed: () {
-                          calFormat == CalendarFormat.month
-                              ? calFormat = CalendarFormat.week
-                              : calFormat = CalendarFormat.month;
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          )
-        ],
-      ),
+    final List<ChartData> chartData = [
+      ChartData('USA', 6, 8),
+      ChartData('China', 11, 7),
+      ChartData('UK', 9, 10),
+      ChartData('Japan', 14, 8),
+      ChartData('France', 10, 12),
+    ];
+    return Scaffold(
+        body: SfCartesianChart(
+      // Mode of selection
+      selectionType: SelectionType.cluster,
+      series: <ChartSeries<ChartData, String>>[
+        ColumnSeries<ChartData, String>(
+          dataSource: <ChartData>[
+            ChartData('USA', 6, 8),
+            ChartData('China', 11, 7),
+            ChartData('UK', 9, 10),
+            ChartData('Japan', 14, 8),
+            ChartData('France', 10, 12),
+          ],
+          selectionBehavior: _selectionBehavior,
+          xValueMapper: (ChartData data, _) => data.x,
+          yValueMapper: (ChartData data, _) => data.y,
+        ),
+        ColumnSeries<ChartData, String>(
+            dataSource: chartData,
+            selectionBehavior: _selectionBehavior,
+            xValueMapper: (ChartData data, _) => data.x,
+            yValueMapper: (ChartData data, _) => data.y1)
+      ],
     ));
   }
 }

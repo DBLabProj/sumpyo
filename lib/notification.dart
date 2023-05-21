@@ -45,6 +45,6 @@ class FlutterNotification {
       iOS: const DarwinNotificationDetails(badgeNumber: 1),
     );
     await flutterLocalNotificationsPlugin.show(
-        0, 'test title', 'test body', notificationDetails);
+        0, '테스트 알림 제목', '알림 테스트입니다.', notificationDetails);
   }
 }
