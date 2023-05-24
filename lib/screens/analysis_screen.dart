@@ -85,118 +85,72 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              width: 2,
+                      Column(
+                        children: [
+                          Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            width: MediaQuery.of(context).size.width * 0.885,
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                titleFontSize * 0.25,
+                                titleFontSize * 0.35,
+                                titleFontSize,
+                                titleFontSize * 0.2,
+                              ),
+                              child: Text(
+                                '오늘',
+                                style: TextStyle(
+                                  fontSize: titleFontSize,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        width: MediaQuery.of(context).size.width * 0.885,
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(
-                            titleFontSize * 0.25,
-                            titleFontSize * 0.35,
-                            titleFontSize,
-                            titleFontSize * 0.2,
-                          ),
-                          child: Text(
-                            '오늘',
-                            style: TextStyle(
-                              fontSize: titleFontSize,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
+                          recommendCard(titleFontSize: titleFontSize),
+                        ],
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: titleFontSize,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(titleFontSize),
+                      Column(
+                        children: [
+                          Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  width: 2,
+                                ),
+                              ),
                             ),
-                            color: Theme.of(context).primaryColor,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.7),
-                                blurRadius: 5.0,
-                                spreadRadius: 1.0,
-                                offset: const Offset(0, 7),
+                            width: MediaQuery.of(context).size.width * 0.885,
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                titleFontSize * 0.25,
+                                titleFontSize * 0.35,
+                                titleFontSize,
+                                titleFontSize * 0.2,
                               ),
-                            ],
+                              child: Text(
+                                '어제',
+                                style: TextStyle(
+                                  fontSize: titleFontSize,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(titleFontSize),
-                                child: Text(
-                                  '스트레스가 어쩌구\n관리가 필요한 머쩌구',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: titleFontSize,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.vertical(
-                                    bottom: Radius.circular(titleFontSize),
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(titleFontSize),
-                                  child: Row(
-                                    children: [
-                                      Image.asset('assets/Haribo.png'),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            left: titleFontSize),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '하리보 전시회',
-                                              style: TextStyle(
-                                                fontSize: titleFontSize,
-                                              ),
-                                            ),
-                                            const Text(
-                                              '대충 하리보 전시회 설명',
-                                            ),
-                                            const SizedBox(
-                                              height: 20,
-                                            ),
-                                            TextButton(
-                                              onPressed: () {},
-                                              style: TextButton.styleFrom(
-                                                  backgroundColor:
-                                                      Theme.of(context)
-                                                          .primaryColor),
-                                              child: const Text(
-                                                '분석 결과 보기',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+                          recommendCard(
+                            titleFontSize: titleFontSize,
+                            leisureName: '축구',
+                            leisureDescription:
+                                '여러사람들과 같이 축구하다보면 \n기분이 좋아질 수 있어요~😙',
+                            annotation: '화풀이로 축구해 보시는 거 어때요?',
+                            imageLocation: 'assets/soccer.jpg',
                           ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
@@ -204,6 +158,116 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class recommendCard extends StatelessWidget {
+  recommendCard({
+    super.key,
+    required this.titleFontSize,
+    this.leisureName = '하리보 전시회',
+    this.leisureDescription = '대충 하리보 전시회 설명',
+    this.annotation = '스트레스가 어쩌구\n관리가 필요한 머쩌구',
+    this.imageLocation = 'assets/Haribo.png',
+  });
+
+  final double titleFontSize;
+  String leisureName;
+  String leisureDescription;
+  String annotation;
+  String imageLocation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: titleFontSize,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(
+            Radius.circular(titleFontSize),
+          ),
+          color: Theme.of(context).primaryColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.7),
+              blurRadius: 5.0,
+              spreadRadius: 1.0,
+              offset: const Offset(0, 7),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(titleFontSize),
+              child: Text(
+                annotation,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: titleFontSize,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(titleFontSize),
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(titleFontSize),
+                child: Row(
+                  children: [
+                    Image.asset(
+                      imageLocation,
+                      width: 84,
+                      height: 118,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: titleFontSize),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            leisureName,
+                            style: TextStyle(
+                              fontSize: titleFontSize,
+                            ),
+                          ),
+                          Text(
+                            leisureDescription,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).primaryColor),
+                            child: const Text(
+                              '분석 결과 보기',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
