@@ -393,6 +393,7 @@ class diaryAlysisChart extends StatefulWidget {
 }
 
 class _diaryAlysisChartState extends State<diaryAlysisChart> {
+  List<String> formatValues = ['오늘', '어제', '그제'];
   List<emotionData> todayData = [
     emotionData('기쁨', 0),
     emotionData('분노', 0),
@@ -671,12 +672,10 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
                 ],
               ),
             ),
-            SizedBox(
-                width: MediaQuery.of(context).size.width * 0.78,
-                height: MediaQuery.of(context).size.height * 0.04,
-                child: weekSelector(
-                  changeIndex: changeSelected,
-                )),
+            formatSelector(
+              changeIndex: changeSelected,
+              formatValues: formatValues,
+            ),
           ],
         ),
       ),
@@ -684,18 +683,20 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
   }
 }
 
-class weekSelector extends StatefulWidget {
+class formatSelector extends StatefulWidget {
   Function changeIndex;
-  weekSelector({
+  List<String> formatValues;
+  formatSelector({
     required this.changeIndex,
+    required this.formatValues,
     super.key,
   });
 
   @override
-  State<weekSelector> createState() => _weekSelectorState();
+  State<formatSelector> createState() => _formatSelectorState();
 }
 
-class _weekSelectorState extends State<weekSelector> {
+class _formatSelectorState extends State<formatSelector> {
   ButtonStyle unselectedButton = const ButtonStyle(
     backgroundColor: MaterialStatePropertyAll(Colors.white),
     shape: MaterialStatePropertyAll(RoundedRectangleBorder(
@@ -736,56 +737,60 @@ class _weekSelectorState extends State<weekSelector> {
         color: Theme.of(context).primaryColor,
         fontWeight: FontWeight.bold,
         fontSize: 15);
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.5,
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).primaryColor),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Expanded(
-            flex: 1,
-            child: TextButton(
-              style: selected[0] ? selectedButton : unselectedButton,
-              onPressed: () {
-                changeSelected(0);
-              },
-              child: Text(
-                '오늘',
-                style: selected[0] ? selectedText : unselectedText,
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.78,
+      height: MediaQuery.of(context).size.height * 0.04,
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.5,
+        decoration: BoxDecoration(
+          border: Border.all(color: Theme.of(context).primaryColor),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Expanded(
+              flex: 1,
+              child: TextButton(
+                style: selected[0] ? selectedButton : unselectedButton,
+                onPressed: () {
+                  changeSelected(0);
+                },
+                child: Text(
+                  widget.formatValues[0],
+                  style: selected[0] ? selectedText : unselectedText,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: TextButton(
-              style: selected[1] ? selectedButton : unselectedButton,
-              onPressed: () {
-                changeSelected(1);
-              },
-              child: Text(
-                '어제',
-                style: selected[1] ? selectedText : unselectedText,
+            Expanded(
+              flex: 1,
+              child: TextButton(
+                style: selected[1] ? selectedButton : unselectedButton,
+                onPressed: () {
+                  changeSelected(1);
+                },
+                child: Text(
+                  widget.formatValues[1],
+                  style: selected[1] ? selectedText : unselectedText,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: TextButton(
-              style: selected[2] ? selectedButton : unselectedButton,
-              onPressed: () {
-                changeSelected(2);
-                setState(() {});
-              },
-              child: Text(
-                '그제',
-                style: selected[2] ? selectedText : unselectedText,
+            Expanded(
+              flex: 1,
+              child: TextButton(
+                style: selected[2] ? selectedButton : unselectedButton,
+                onPressed: () {
+                  changeSelected(2);
+                  setState(() {});
+                },
+                child: Text(
+                  widget.formatValues[2],
+                  style: selected[2] ? selectedText : unselectedText,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -829,9 +834,9 @@ class _bottomNaviState extends State<bottomNavi> {
   final screens = [
     //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
     const HomeScreen(),
-    noticeScreen(),
+    const noticeScreen(),
     const writeDiaryScreen(),
-    noticeScreen(),
+    const noticeScreen(),
     const myPage(),
   ];
   int visit = 0;
