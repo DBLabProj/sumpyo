@@ -12,4 +12,5 @@ class RestAPI {
   static const signup = "$hostConnect/signup/";
   static const uploadDiary = "$hostConnect/uploadDiary/";
   static const getDiary = "$hostConnect/getDiary/";
+  static const getAnalysis = "$hostConnect/getAnalysisDemo/";
 }

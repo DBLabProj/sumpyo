@@ -44,3 +44,15 @@ class loginUser {
         'user_passwd': user_passwd,
       };
 }
+
+class sendUser {
+  String userId = '';
+
+  sendUser(
+    this.userId,
+  );
+
+  Map<String, dynamic> toJson() => {
+        'userId': userId,
+      };
+}

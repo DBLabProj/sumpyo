@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:sumpyo/models/user.dart';
+import 'package:sumpyo/apis/api.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:http/http.dart' as http;
 
 class noticeScreen extends StatefulWidget {
   const noticeScreen({super.key});
@@ -10,9 +16,16 @@ class noticeScreen extends StatefulWidget {
 }
 
 class _noticeScreenState extends State<noticeScreen> {
+  String userName = '';
+  List<int> happinessData = [];
+  List<int> angerData = [];
+  List<int> disgustData = [];
+  List<int> embarrassmentData = [];
+  List<int> sadnessData = [];
+
+  static const storage = FlutterSecureStorage();
   // final List<bool> _selectedTerm = <bool>[true, false, false];
   Color chartBarColor = const Color(0xFFC8E9F3);
-
   Color happyLineColor = const Color(0xFFF3BCD0);
   Color sadnessLineColor = const Color(0xFFA1D6E2);
   Color scaredLineColor = const Color(0xFFD0ACEC);
@@ -26,6 +39,15 @@ class _noticeScreenState extends State<noticeScreen> {
   bool scaredBtnIsPushed = false;
   bool disgustBtnIsPushed = false;
   bool embarrassedBtnIsPushed = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      loadAccount();
+    });
+    loadEmotion();
+  }
 
   void pushedBtnType(String BtnType) {
     if (BtnType == "행복") {
@@ -55,16 +77,36 @@ class _noticeScreenState extends State<noticeScreen> {
     }
   }
 
+  loadEmotion() async {
+    sendUser userId = sendUser(userName);
+    var res = await http.post(Uri.parse(RestAPI.getAnalysis),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(userId.toJson()));
+    if (res.statusCode == 200) {
+      var data = jsonDecode(res.body);
+
+      happinessData =
+          (data["happinessData"] as List).map((e) => e as int).toList();
+      sadnessData = (data["sadnessData"] as List).map((e) => e as int).toList();
+      angerData = (data["angerData"] as List).map((e) => e as int).toList();
+      disgustData = (data["disgustData"] as List).map((e) => e as int).toList();
+      embarrassmentData =
+          (data["embarrassmentData"] as List).map((e) => e as int).toList();
+    }
+  }
+
+  loadAccount() async {
+    var acc = await storage.read(key: 'login');
+    if (acc != null) {
+      var user = jsonDecode(acc);
+      userName = user['user_id'];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // const List<Widget> term = <Widget>[
-    //   Text('주간'),
-    //   Text('월간'),
-    //   Text('연간'),
-    // ];
-
     List<EmotionData> happyData = [
-      EmotionData('행복', DateTime.utc(2023, 3, 31), 0),
+      EmotionData('행복', DateTime.utc(2023, 3, 31), happinessData[0].toDouble()),
       EmotionData('행복', DateTime.utc(2023, 4, 1), 2),
       EmotionData('행복', DateTime.utc(2023, 4, 2), 0),
       EmotionData('행복', DateTime.utc(2023, 4, 3), 6),
