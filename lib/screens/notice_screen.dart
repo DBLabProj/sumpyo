@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sumpyo/screens/home_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class noticeScreen extends StatefulWidget {
@@ -10,6 +11,7 @@ class noticeScreen extends StatefulWidget {
 }
 
 class _noticeScreenState extends State<noticeScreen> {
+  List<String> formatValues = ['일주일', '월간', '연간'];
   // final List<bool> _selectedTerm = <bool>[true, false, false];
   Color chartBarColor = const Color(0xFFC8E9F3);
 
@@ -26,6 +28,12 @@ class _noticeScreenState extends State<noticeScreen> {
   bool scaredBtnIsPushed = false;
   bool disgustBtnIsPushed = false;
   bool embarrassedBtnIsPushed = false;
+  int selectIndex = 0;
+  changeIndex(int index) {
+    setState(() {
+      selectIndex = index;
+    });
+  }
 
   void pushedBtnType(String BtnType) {
     if (BtnType == "행복") {
@@ -57,12 +65,6 @@ class _noticeScreenState extends State<noticeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // const List<Widget> term = <Widget>[
-    //   Text('주간'),
-    //   Text('월간'),
-    //   Text('연간'),
-    // ];
-
     List<EmotionData> happyData = [
       EmotionData('행복', DateTime.utc(2023, 3, 31), 0),
       EmotionData('행복', DateTime.utc(2023, 4, 1), 2),
@@ -117,306 +119,333 @@ class _noticeScreenState extends State<noticeScreen> {
       EmotionData('당황', DateTime.utc(2023, 4, 5), 3),
       EmotionData('당황', DateTime.utc(2023, 4, 6), 9),
     ];
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 300,
-              width: 300,
-              child: SfCartesianChart(
-                tooltipBehavior: TooltipBehavior(),
-                primaryXAxis: CategoryAxis(
-                  majorGridLines: const MajorGridLines(width: 0),
-                  majorTickLines: const MajorTickLines(
-                    size: 0,
+    List<EmotionData> stressData = [
+      EmotionData('Stress', DateTime.utc(2023, 3, 31), 7),
+      EmotionData('Stress', DateTime.utc(2023, 4, 1), 3),
+      EmotionData('Stress', DateTime.utc(2023, 4, 2), 5),
+      EmotionData('Stress', DateTime.utc(2023, 4, 3), 4),
+      EmotionData('Stress', DateTime.utc(2023, 4, 4), 7),
+      EmotionData('Stress', DateTime.utc(2023, 4, 5), 3),
+      EmotionData('Stress', DateTime.utc(2023, 4, 6), 9),
+    ];
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 0,
+        toolbarHeight: 0,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.15,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  alignment: Alignment.centerLeft,
+                  child: const Text(
+                    '요즘 감정 상태예요!!',
+                    style: TextStyle(fontSize: 24, color: Colors.white),
                   ),
                 ),
-                primaryYAxis: NumericAxis(
-                  labelStyle: const TextStyle(color: Colors.transparent),
-                  minimum: 0,
-                  maximum: 50,
-                  interval: 25,
-                  axisLine: const AxisLine(color: Colors.transparent),
-                  majorTickLines: const MajorTickLines(size: 0),
-                  majorGridLines: const MajorGridLines(
-                      width: 3, color: Colors.red, dashArray: [4]),
-                  // isVisible: true,
-                ),
-                series: <ChartSeries<SalesData, String>>[
-                  ColumnSeries(
-                    color: chartBarColor,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(15),
-                    ),
-                    dataSource: <SalesData>[
-                      SalesData('행복', 35),
-                      SalesData('슬픔', 28),
-                      SalesData('공포', 34),
-                      SalesData('혐오', 32),
-                      SalesData('분노', 40),
-                      SalesData('당황', 40),
-                    ],
-                    xValueMapper: (SalesData sales, _) => sales.year,
-                    yValueMapper: (SalesData sales, _) => sales.sales,
-                  )
-                ],
               ),
-            ),
-            // Container(
-            //   child: ToggleButtons(
-            //     onPressed: (int index) {
-            //       setState(
-            //         () {
-            //           for (int i = 0; i < _selectedTerm.length; i++) {
-            //             _selectedTerm[i] = i == index;
-            //           }
-            //         },
-            //       );
-            //     },
-            //     borderWidth: 1.5,
-            //     disabledBorderColor: Colors.white,
-            //     borderColor: Theme.of(context).primaryColor,
-            //     borderRadius: const BorderRadius.all(Radius.circular(20)),
-            //     selectedBorderColor: Theme.of(context).primaryColor,
-            //     selectedColor: Colors.white,
-            //     fillColor: Theme.of(context).primaryColor,
-            //     color: Theme.of(context).primaryColor,
-            //     constraints: const BoxConstraints(
-            //       minHeight: 40.0,
-            //       minWidth: 80.0,
-            //     ),
-            //     isSelected: _selectedTerm,
-            //     children: term,
-            //   ),
-            // ),
-            const SizedBox(
-              height: 5,
-            ),
-            SizedBox(
-              height: 300,
-              width: 400,
-              child: SfCartesianChart(
-                margin: const EdgeInsets.all(30),
-                backgroundColor: Theme.of(context).primaryColor,
-                plotAreaBackgroundColor: Colors.white,
-                primaryXAxis: DateTimeCategoryAxis(
-                  labelStyle: const TextStyle(
-                    color: Colors.white,
-                  ),
-                  majorTickLines: const MajorTickLines(
-                    size: 0,
-                  ),
-                  dateFormat: DateFormat('M.d'),
-                  interval: 1,
-                  majorGridLines: const MajorGridLines(
-                    color: Color.fromRGBO(255, 255, 255, 0),
-                  ),
-                ),
-                primaryYAxis: NumericAxis(
-                  majorTickLines: const MajorTickLines(
-                    size: 0,
-                  ),
-                  majorGridLines: const MajorGridLines(
-                    color: Color.fromRGBO(255, 255, 255, 0),
-                  ),
-                  labelStyle: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                  ),
-                  minimum: 0,
-                  maximum: 10,
-                  interval: 2,
-                ),
-                series: <ChartSeries>[
-                  LineSeries<EmotionData, DateTime>(
-                    isVisible: happyBtnIsPushed,
-                    dataSource: happyData,
-                    color: happyLineColor,
-                    xValueMapper: (EmotionData sales, _) => sales.date,
-                    yValueMapper: (EmotionData sales, _) => sales.count,
-                    markerSettings: const MarkerSettings(
-                      isVisible: true,
-                      shape: DataMarkerType.circle,
-                      height: 5,
-                      width: 5,
-                    ),
-                  ),
-                  LineSeries<EmotionData, DateTime>(
-                    isVisible: sadnessBtnIsPushed,
-                    dataSource: SadnessData,
-                    color: sadnessLineColor,
-                    xValueMapper: (EmotionData sales, _) => sales.date,
-                    yValueMapper: (EmotionData sales, _) => sales.count,
-                    markerSettings: const MarkerSettings(
-                      isVisible: true,
-                      shape: DataMarkerType.circle,
-                      height: 5,
-                      width: 5,
-                    ),
-                  ),
-                  LineSeries<EmotionData, DateTime>(
-                    isVisible: scaredBtnIsPushed,
-                    dataSource: scaredData,
-                    color: scaredLineColor,
-                    xValueMapper: (EmotionData sales, _) => sales.date,
-                    yValueMapper: (EmotionData sales, _) => sales.count,
-                    markerSettings: const MarkerSettings(
-                      isVisible: true,
-                      shape: DataMarkerType.circle,
-                      height: 5,
-                      width: 5,
-                    ),
-                  ),
-                  LineSeries<EmotionData, DateTime>(
-                    isVisible: disgustBtnIsPushed,
-                    dataSource: disgustData,
-                    color: disgustLineColor,
-                    xValueMapper: (EmotionData sales, _) => sales.date,
-                    yValueMapper: (EmotionData sales, _) => sales.count,
-                    markerSettings: const MarkerSettings(
-                      isVisible: true,
-                      shape: DataMarkerType.circle,
-                      height: 5,
-                      width: 5,
-                    ),
-                  ),
-                  LineSeries<EmotionData, DateTime>(
-                    isVisible: angerBtnIsPushed,
-                    dataSource: angerData,
-                    color: angerLineColor,
-                    xValueMapper: (EmotionData sales, _) => sales.date,
-                    yValueMapper: (EmotionData sales, _) => sales.count,
-                    markerSettings: const MarkerSettings(
-                      isVisible: true,
-                      shape: DataMarkerType.circle,
-                      height: 5,
-                      width: 5,
-                    ),
-                  ),
-                  LineSeries<EmotionData, DateTime>(
-                    isVisible: embarrassedBtnIsPushed,
-                    dataSource: embarrassedData,
-                    color: embarrassedLineColor,
-                    xValueMapper: (EmotionData sales, _) => sales.date,
-                    yValueMapper: (EmotionData sales, _) => sales.count,
-                    markerSettings: const MarkerSettings(
-                      isVisible: true,
-                      shape: DataMarkerType.circle,
-                      height: 5,
-                      width: 5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Container(
-              margin: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
+              Container(
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                decoration: const BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(
-                    color: Theme.of(context).primaryColor,
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.circular(5)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  emotionBtn(
-                    emotion: '행복',
-                    changeState: pushedBtnType,
-                  ),
-                  emotionBtn(
-                    emotion: '슬픔',
-                    changeState: pushedBtnType,
-                  ),
-                  emotionBtn(
-                    emotion: '공포',
-                    changeState: pushedBtnType,
-                  ),
-                  emotionBtn(
-                    emotion: '혐오',
-                    changeState: pushedBtnType,
-                  ),
-                  emotionBtn(
-                    emotion: '분노',
-                    changeState: pushedBtnType,
-                  ),
-                  emotionBtn(
-                    emotion: '당황',
-                    changeState: pushedBtnType,
-                  ),
-                ],
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+                ),
+                child: Column(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '·기분 추이 그래프',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        formatSelector(
+                          changeIndex: changeIndex,
+                          formatValues: formatValues,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        SizedBox(
+                          height: 300,
+                          width: 400,
+                          child: SfCartesianChart(
+                            margin: const EdgeInsets.all(30),
+                            backgroundColor: Theme.of(context).primaryColor,
+                            plotAreaBackgroundColor: Colors.white,
+                            primaryXAxis: DateTimeCategoryAxis(
+                              labelStyle: const TextStyle(
+                                color: Colors.white,
+                              ),
+                              majorTickLines: const MajorTickLines(
+                                size: 0,
+                              ),
+                              dateFormat: DateFormat('M.d'),
+                              interval: 1,
+                              majorGridLines: const MajorGridLines(
+                                color: Color.fromRGBO(255, 255, 255, 0),
+                              ),
+                            ),
+                            primaryYAxis: NumericAxis(
+                              majorTickLines: const MajorTickLines(
+                                size: 0,
+                              ),
+                              majorGridLines: const MajorGridLines(
+                                color: Color.fromRGBO(255, 255, 255, 0),
+                              ),
+                              labelStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                              ),
+                              minimum: 0,
+                              maximum: 10,
+                              interval: 2,
+                            ),
+                            series: <ChartSeries>[
+                              LineSeries<EmotionData, DateTime>(
+                                isVisible: happyBtnIsPushed,
+                                dataSource: happyData,
+                                color: happyLineColor,
+                                xValueMapper: (EmotionData sales, _) =>
+                                    sales.date,
+                                yValueMapper: (EmotionData sales, _) =>
+                                    sales.count,
+                                markerSettings: const MarkerSettings(
+                                  isVisible: true,
+                                  shape: DataMarkerType.circle,
+                                  height: 5,
+                                  width: 5,
+                                ),
+                              ),
+                              LineSeries<EmotionData, DateTime>(
+                                isVisible: sadnessBtnIsPushed,
+                                dataSource: SadnessData,
+                                color: sadnessLineColor,
+                                xValueMapper: (EmotionData sales, _) =>
+                                    sales.date,
+                                yValueMapper: (EmotionData sales, _) =>
+                                    sales.count,
+                                markerSettings: const MarkerSettings(
+                                  isVisible: true,
+                                  shape: DataMarkerType.circle,
+                                  height: 5,
+                                  width: 5,
+                                ),
+                              ),
+                              LineSeries<EmotionData, DateTime>(
+                                isVisible: scaredBtnIsPushed,
+                                dataSource: scaredData,
+                                color: scaredLineColor,
+                                xValueMapper: (EmotionData sales, _) =>
+                                    sales.date,
+                                yValueMapper: (EmotionData sales, _) =>
+                                    sales.count,
+                                markerSettings: const MarkerSettings(
+                                  isVisible: true,
+                                  shape: DataMarkerType.circle,
+                                  height: 5,
+                                  width: 5,
+                                ),
+                              ),
+                              LineSeries<EmotionData, DateTime>(
+                                isVisible: disgustBtnIsPushed,
+                                dataSource: disgustData,
+                                color: disgustLineColor,
+                                xValueMapper: (EmotionData sales, _) =>
+                                    sales.date,
+                                yValueMapper: (EmotionData sales, _) =>
+                                    sales.count,
+                                markerSettings: const MarkerSettings(
+                                  isVisible: true,
+                                  shape: DataMarkerType.circle,
+                                  height: 5,
+                                  width: 5,
+                                ),
+                              ),
+                              LineSeries<EmotionData, DateTime>(
+                                isVisible: angerBtnIsPushed,
+                                dataSource: angerData,
+                                color: angerLineColor,
+                                xValueMapper: (EmotionData sales, _) =>
+                                    sales.date,
+                                yValueMapper: (EmotionData sales, _) =>
+                                    sales.count,
+                                markerSettings: const MarkerSettings(
+                                  isVisible: true,
+                                  shape: DataMarkerType.circle,
+                                  height: 5,
+                                  width: 5,
+                                ),
+                              ),
+                              LineSeries<EmotionData, DateTime>(
+                                isVisible: embarrassedBtnIsPushed,
+                                dataSource: embarrassedData,
+                                color: embarrassedLineColor,
+                                xValueMapper: (EmotionData sales, _) =>
+                                    sales.date,
+                                yValueMapper: (EmotionData sales, _) =>
+                                    sales.count,
+                                markerSettings: const MarkerSettings(
+                                  isVisible: true,
+                                  shape: DataMarkerType.circle,
+                                  height: 5,
+                                  width: 5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(
+                                color: Theme.of(context).primaryColor,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              emotionBtn(
+                                emotion: '행복',
+                                changeState: pushedBtnType,
+                              ),
+                              emotionBtn(
+                                emotion: '슬픔',
+                                changeState: pushedBtnType,
+                              ),
+                              emotionBtn(
+                                emotion: '공포',
+                                changeState: pushedBtnType,
+                              ),
+                              emotionBtn(
+                                emotion: '혐오',
+                                changeState: pushedBtnType,
+                              ),
+                              emotionBtn(
+                                emotion: '분노',
+                                changeState: pushedBtnType,
+                              ),
+                              emotionBtn(
+                                emotion: '당황',
+                                changeState: pushedBtnType,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Divider(),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '·스트레스 추이 그래프\n',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        stressGraph(
+                          stressData: stressData,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-// class termSelector extends StatefulWidget {
-//   String term;
-//   termSelector({
-//     super.key,
-//     required this.term,
-//   });
+class stressGraph extends StatelessWidget {
+  List<EmotionData> stressData;
+  stressGraph({
+    super.key,
+    required this.stressData,
+  });
 
-//   @override
-//   State<termSelector> createState() => _termSelectorState();
-// }
-
-// class _termSelectorState extends State<termSelector> {
-//   bool isPushed = false;
-//   static const List<String> selections = <String>[
-//     '주간',
-//     '월간',
-//     '연간',
-//   ];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Expanded(
-//       child: TextButton(
-//         onPressed: () {
-//           setState(() {
-//             isPushed = !isPushed;
-//           });
-//         },
-//         style: isPushed
-//             ? TextButton.styleFrom(
-//                 padding: const EdgeInsets.all(13),
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(50),
-//                 ),
-//                 backgroundColor: Theme.of(context).primaryColor,
-//                 foregroundColor: Colors.white,
-//                 textStyle: const TextStyle(
-//                   fontSize: 15,
-//                   color: Colors.white,
-//                 ),
-//               )
-//             : TextButton.styleFrom(
-//                 padding: const EdgeInsets.all(13),
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(50),
-//                 ),
-//                 backgroundColor: Colors.white,
-//                 foregroundColor: Theme.of(context).primaryColor,
-//                 textStyle: TextStyle(
-//                   fontSize: 15,
-//                   color: Theme.of(context).primaryColor,
-//                 ),
-//               ),
-//         child: Text(widget.term),
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 300,
+      width: 400,
+      child: SfCartesianChart(
+        margin: const EdgeInsets.all(30),
+        backgroundColor: Theme.of(context).primaryColor,
+        plotAreaBackgroundColor: Colors.white,
+        primaryXAxis: DateTimeCategoryAxis(
+          labelStyle: const TextStyle(
+            color: Colors.white,
+          ),
+          majorTickLines: const MajorTickLines(
+            size: 0,
+          ),
+          dateFormat: DateFormat('M.d'),
+          interval: 1,
+          majorGridLines: const MajorGridLines(
+            color: Color.fromRGBO(255, 255, 255, 0),
+          ),
+        ),
+        primaryYAxis: NumericAxis(
+          majorTickLines: const MajorTickLines(
+            size: 0,
+          ),
+          majorGridLines: const MajorGridLines(
+            color: Color.fromRGBO(255, 255, 255, 0),
+          ),
+          labelStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 13,
+          ),
+          minimum: 0,
+          maximum: 10,
+          interval: 2,
+        ),
+        series: <ChartSeries>[
+          LineSeries<EmotionData, DateTime>(
+            // isVisible: happyBtnIsPushed,
+            dataSource: stressData,
+            // color: happyLineColor,
+            xValueMapper: (EmotionData emotion, _) => emotion.date,
+            yValueMapper: (EmotionData emotion, _) => emotion.count,
+            markerSettings: const MarkerSettings(
+              isVisible: true,
+              shape: DataMarkerType.circle,
+              height: 5,
+              width: 5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class emotionBtn extends StatefulWidget {
   String emotion;
@@ -441,7 +470,6 @@ class _emotionBtnState extends State<emotionBtn> {
         widget.changeState(widget.emotion);
         setState(() {
           isPushed = !isPushed;
-          // test = !test;
         });
       },
       style: isPushed
@@ -464,12 +492,6 @@ class _emotionBtnState extends State<emotionBtn> {
       child: Text(widget.emotion),
     );
   }
-}
-
-class SalesData {
-  SalesData(this.year, this.sales);
-  final String year;
-  final double sales;
 }
 
 class EmotionData {
