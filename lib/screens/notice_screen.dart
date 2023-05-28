@@ -19,6 +19,7 @@ class noticeScreen extends StatefulWidget {
 class _noticeScreenState extends State<noticeScreen> {
   List<String> formatValues = ['일주일', '월간', '연간'];
   String userName = '';
+  DateTime now = DateTime.now();
   List<int> happinessData = [];
   List<int> angerData = [];
   List<int> disgustData = [];
@@ -55,7 +56,6 @@ class _noticeScreenState extends State<noticeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       loadAccount();
     });
-    loadEmotion();
   }
 
   void pushedBtnType(String BtnType) {
@@ -94,13 +94,12 @@ class _noticeScreenState extends State<noticeScreen> {
     if (res.statusCode == 200) {
       var data = jsonDecode(res.body);
 
-      happinessData =
-          (data["happinessData"] as List).map((e) => e as int).toList();
-      sadnessData = (data["sadnessData"] as List).map((e) => e as int).toList();
-      angerData = (data["angerData"] as List).map((e) => e as int).toList();
-      disgustData = (data["disgustData"] as List).map((e) => e as int).toList();
+      happinessData = (data["happiness"] as List).map((e) => e as int).toList();
+      sadnessData = (data["sadness"] as List).map((e) => e as int).toList();
+      angerData = (data["anger"] as List).map((e) => e as int).toList();
+      disgustData = (data["disgust"] as List).map((e) => e as int).toList();
       embarrassmentData =
-          (data["embarrassmentData"] as List).map((e) => e as int).toList();
+          (data["embarrassment"] as List).map((e) => e as int).toList();
     }
   }
 
@@ -114,69 +113,111 @@ class _noticeScreenState extends State<noticeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<EmotionData> happyData = [
-      EmotionData('행복', DateTime.utc(2023, 3, 31), happinessData[0].toDouble()),
-      EmotionData('행복', DateTime.utc(2023, 4, 1), 2),
-      EmotionData('행복', DateTime.utc(2023, 4, 2), 0),
-      EmotionData('행복', DateTime.utc(2023, 4, 3), 6),
-      EmotionData('행복', DateTime.utc(2023, 4, 4), 4),
-      EmotionData('행복', DateTime.utc(2023, 4, 5), 8),
-      EmotionData('행복', DateTime.utc(2023, 4, 6), 2),
-    ];
-    List<EmotionData> SadnessData = [
-      EmotionData('슬픔', DateTime.utc(2023, 3, 31), 2),
-      EmotionData('슬픔', DateTime.utc(2023, 4, 1), 5),
-      EmotionData('슬픔', DateTime.utc(2023, 4, 2), 1),
-      EmotionData('슬픔', DateTime.utc(2023, 4, 3), 0),
-      EmotionData('슬픔', DateTime.utc(2023, 4, 4), 1),
-      EmotionData('슬픔', DateTime.utc(2023, 4, 5), 9),
-      EmotionData('슬픔', DateTime.utc(2023, 4, 6), 3),
-    ];
-    List<EmotionData> angerData = [
-      EmotionData('분노', DateTime.utc(2023, 3, 31), 5),
-      EmotionData('분노', DateTime.utc(2023, 4, 1), 1),
-      EmotionData('분노', DateTime.utc(2023, 4, 2), 0),
-      EmotionData('분노', DateTime.utc(2023, 4, 3), 3),
-      EmotionData('분노', DateTime.utc(2023, 4, 4), 7),
-      EmotionData('분노', DateTime.utc(2023, 4, 5), 2),
-      EmotionData('분노', DateTime.utc(2023, 4, 6), 10),
-    ];
-    List<EmotionData> scaredData = [
-      EmotionData('공포', DateTime.utc(2023, 3, 31), 1),
-      EmotionData('공포', DateTime.utc(2023, 4, 1), 8),
-      EmotionData('공포', DateTime.utc(2023, 4, 2), 0),
-      EmotionData('공포', DateTime.utc(2023, 4, 3), 0),
-      EmotionData('공포', DateTime.utc(2023, 4, 4), 1),
-      EmotionData('공포', DateTime.utc(2023, 4, 5), 5),
-      EmotionData('공포', DateTime.utc(2023, 4, 6), 7),
-    ];
-    List<EmotionData> disgustData = [
-      EmotionData('혐오', DateTime.utc(2023, 3, 31), 3),
-      EmotionData('혐오', DateTime.utc(2023, 4, 1), 2),
-      EmotionData('혐오', DateTime.utc(2023, 4, 2), 7),
-      EmotionData('혐오', DateTime.utc(2023, 4, 3), 7),
-      EmotionData('혐오', DateTime.utc(2023, 4, 4), 0),
-      EmotionData('혐오', DateTime.utc(2023, 4, 5), 9),
-      EmotionData('혐오', DateTime.utc(2023, 4, 6), 2),
-    ];
-    List<EmotionData> embarrassedData = [
-      EmotionData('당황', DateTime.utc(2023, 3, 31), 7),
-      EmotionData('당황', DateTime.utc(2023, 4, 1), 3),
-      EmotionData('당황', DateTime.utc(2023, 4, 2), 5),
-      EmotionData('당황', DateTime.utc(2023, 4, 3), 4),
-      EmotionData('당황', DateTime.utc(2023, 4, 4), 7),
-      EmotionData('당황', DateTime.utc(2023, 4, 5), 3),
-      EmotionData('당황', DateTime.utc(2023, 4, 6), 9),
-    ];
-    List<EmotionData> stressData = [
-      EmotionData('Stress', DateTime.utc(2023, 3, 31), 7),
-      EmotionData('Stress', DateTime.utc(2023, 4, 1), 3),
-      EmotionData('Stress', DateTime.utc(2023, 4, 2), 5),
-      EmotionData('Stress', DateTime.utc(2023, 4, 3), 4),
-      EmotionData('Stress', DateTime.utc(2023, 4, 4), 7),
-      EmotionData('Stress', DateTime.utc(2023, 4, 5), 3),
-      EmotionData('Stress', DateTime.utc(2023, 4, 6), 9),
-    ];
+    setState(() {
+      loadEmotion();
+    });
+
+    List<EmotionData> happyData = [];
+    List<EmotionData> sadData = [];
+    List<EmotionData> angryData = [];
+    List<EmotionData> disgustedData = [];
+    List<EmotionData> embarrassData = [];
+
+    for (int i = 0; i < happinessData.length; i++) {
+      happyData.add(EmotionData(
+          "행복",
+          now.add(Duration(days: (i - happinessData.length + 1))),
+          happinessData[i].toDouble()));
+    }
+    for (int i = 0; i < sadnessData.length; i++) {
+      sadData.add(EmotionData(
+          "슬픔",
+          now.add(Duration(days: (i - sadnessData.length + 1))),
+          sadnessData[i].toDouble()));
+    }
+    for (int i = 0; i < angerData.length; i++) {
+      angryData.add(EmotionData(
+          "분노",
+          now.add(Duration(days: (i - angerData.length + 1))),
+          angerData[i].toDouble()));
+    }
+    for (int i = 0; i < disgustData.length; i++) {
+      disgustedData.add(EmotionData(
+          "혐오",
+          now.add(Duration(days: (i - disgustData.length + 1))),
+          disgustData[i].toDouble()));
+    }
+    print(disgustData);
+    for (int i = 0; i < embarrassmentData.length; i++) {
+      embarrassData.add(EmotionData(
+          "당황",
+          DateTime.now()
+              .add(Duration(days: (i - embarrassmentData.length + 1))),
+          embarrassmentData[i].toDouble()));
+    }
+    //  List<EmotionData> happyData = [
+    //    EmotionData('행복', DateTime.utc(2023, 3, 31), happinessData[0].toDouble()),
+    //    EmotionData('행복', DateTime.utc(2023, 4, 1), 2),
+    //    EmotionData('행복', DateTime.utc(2023, 4, 2), 0),
+    //    EmotionData('행복', DateTime.utc(2023, 4, 3), 6),
+    //    EmotionData('행복', DateTime.utc(2023, 4, 4), 4),
+    //    EmotionData('행복', DateTime.utc(2023, 4, 5), 8),
+    //    EmotionData('행복', DateTime.now(), 2),
+    //  ];
+    // List<EmotionData> SadnessData = [
+    //   EmotionData('슬픔', DateTime.utc(2023, 3, 31), 2),
+    //   EmotionData('슬픔', DateTime.utc(2023, 4, 1), 5),
+    //   EmotionData('슬픔', DateTime.utc(2023, 4, 2), 1),
+    //   EmotionData('슬픔', DateTime.utc(2023, 4, 3), 0),
+    //   EmotionData('슬픔', DateTime.utc(2023, 4, 4), 1),
+    //   EmotionData('슬픔', DateTime.utc(2023, 4, 5), 9),
+    //   EmotionData('슬픔', DateTime.utc(2023, 4, 6), 3),
+    // ];
+    // List<EmotionData> angerData = [
+    //   EmotionData('분노', DateTime.utc(2023, 3, 31), 5),
+    //   EmotionData('분노', DateTime.utc(2023, 4, 1), 1),
+    //   EmotionData('분노', DateTime.utc(2023, 4, 2), 0),
+    //   EmotionData('분노', DateTime.utc(2023, 4, 3), 3),
+    //   EmotionData('분노', DateTime.utc(2023, 4, 4), 7),
+    //   EmotionData('분노', DateTime.utc(2023, 4, 5), 2),
+    //   EmotionData('분노', DateTime.utc(2023, 4, 6), 10),
+    // ];
+    // List<EmotionData> scaredData = [
+    //   EmotionData('공포', DateTime.utc(2023, 3, 31), 1),
+    //   EmotionData('공포', DateTime.utc(2023, 4, 1), 8),
+    //   EmotionData('공포', DateTime.utc(2023, 4, 2), 0),
+    //   EmotionData('공포', DateTime.utc(2023, 4, 3), 0),
+    //   EmotionData('공포', DateTime.utc(2023, 4, 4), 1),
+    //   EmotionData('공포', DateTime.utc(2023, 4, 5), 5),
+    //   EmotionData('공포', DateTime.utc(2023, 4, 6), 7),
+    // ];
+    // List<EmotionData> disgustData = [
+    //   EmotionData('혐오', DateTime.utc(2023, 3, 31), 3),
+    //   EmotionData('혐오', DateTime.utc(2023, 4, 1), 2),
+    //   EmotionData('혐오', DateTime.utc(2023, 4, 2), 7),
+    //   EmotionData('혐오', DateTime.utc(2023, 4, 3), 7),
+    //   EmotionData('혐오', DateTime.utc(2023, 4, 4), 0),
+    //   EmotionData('혐오', DateTime.utc(2023, 4, 5), 9),
+    //   EmotionData('혐오', DateTime.utc(2023, 4, 6), 2),
+    // ];
+    // List<EmotionData> embarrassedData = [
+    //   EmotionData('당황', DateTime.utc(2023, 3, 31), 7),
+    //   EmotionData('당황', DateTime.utc(2023, 4, 1), 3),
+    //   EmotionData('당황', DateTime.utc(2023, 4, 2), 5),
+    //   EmotionData('당황', DateTime.utc(2023, 4, 3), 4),
+    //   EmotionData('당황', DateTime.utc(2023, 4, 4), 7),
+    //   EmotionData('당황', DateTime.utc(2023, 4, 5), 3),
+    //   EmotionData('당황', DateTime.utc(2023, 4, 6), 9),
+    // ];
+    // List<EmotionData> stressData = [
+    //   EmotionData('Stress', DateTime.utc(2023, 3, 31), 7),
+    //   EmotionData('Stress', DateTime.utc(2023, 4, 1), 3),
+    //   EmotionData('Stress', DateTime.utc(2023, 4, 2), 5),
+    //   EmotionData('Stress', DateTime.utc(2023, 4, 3), 4),
+    //   EmotionData('Stress', DateTime.utc(2023, 4, 4), 7),
+    //   EmotionData('Stress', DateTime.utc(2023, 4, 5), 3),
+    //   EmotionData('Stress', DateTime.utc(2023, 4, 6), 9),
+    // ];
 
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
@@ -282,7 +323,7 @@ class _noticeScreenState extends State<noticeScreen> {
                               ),
                               LineSeries<EmotionData, DateTime>(
                                 isVisible: sadnessBtnIsPushed,
-                                dataSource: SadnessData,
+                                dataSource: sadData,
                                 color: sadnessLineColor,
                                 xValueMapper: (EmotionData sales, _) =>
                                     sales.date,
@@ -296,23 +337,8 @@ class _noticeScreenState extends State<noticeScreen> {
                                 ),
                               ),
                               LineSeries<EmotionData, DateTime>(
-                                isVisible: scaredBtnIsPushed,
-                                dataSource: scaredData,
-                                color: scaredLineColor,
-                                xValueMapper: (EmotionData sales, _) =>
-                                    sales.date,
-                                yValueMapper: (EmotionData sales, _) =>
-                                    sales.count,
-                                markerSettings: const MarkerSettings(
-                                  isVisible: true,
-                                  shape: DataMarkerType.circle,
-                                  height: 5,
-                                  width: 5,
-                                ),
-                              ),
-                              LineSeries<EmotionData, DateTime>(
                                 isVisible: disgustBtnIsPushed,
-                                dataSource: disgustData,
+                                dataSource: disgustedData,
                                 color: disgustLineColor,
                                 xValueMapper: (EmotionData sales, _) =>
                                     sales.date,
@@ -327,7 +353,7 @@ class _noticeScreenState extends State<noticeScreen> {
                               ),
                               LineSeries<EmotionData, DateTime>(
                                 isVisible: angerBtnIsPushed,
-                                dataSource: angerData,
+                                dataSource: angryData,
                                 color: angerLineColor,
                                 xValueMapper: (EmotionData sales, _) =>
                                     sales.date,
@@ -342,7 +368,7 @@ class _noticeScreenState extends State<noticeScreen> {
                               ),
                               LineSeries<EmotionData, DateTime>(
                                 isVisible: embarrassedBtnIsPushed,
-                                dataSource: embarrassedData,
+                                dataSource: embarrassData,
                                 color: embarrassedLineColor,
                                 xValueMapper: (EmotionData sales, _) =>
                                     sales.date,
@@ -408,17 +434,17 @@ class _noticeScreenState extends State<noticeScreen> {
                     const Divider(),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
+                      children: const [
+                        Text(
                           '·스트레스 추이 그래프\n',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        stressGraph(
-                          stressData: stressData,
-                        ),
+                        // stressGraph(
+                        //   stressData: stressData,
+                        // ),
                       ],
                     ),
                   ],
