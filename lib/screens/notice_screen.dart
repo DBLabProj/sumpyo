@@ -124,6 +124,7 @@ class _noticeScreenState extends State<noticeScreen> {
     List<EmotionData> angryData = [];
     List<EmotionData> disgustedData = [];
     List<EmotionData> embarrassData = [];
+    List<EmotionData> stressData = [];
 
     for (int i = 0; i < happinessData.length; i++) {
       happyData.add(EmotionData(
@@ -153,8 +154,13 @@ class _noticeScreenState extends State<noticeScreen> {
     for (int i = 0; i < embarrassmentData.length; i++) {
       embarrassData.add(EmotionData(
           "당황",
-          DateTime.now()
-              .add(Duration(days: (i - embarrassmentData.length + 1))),
+          now.add(Duration(days: (i - embarrassmentData.length + 1))),
+          embarrassmentData[i].toDouble()));
+    }
+    for (int i = 0; i < angryData.length; i++) {
+      stressData.add(EmotionData(
+          "stress",
+          now.add(Duration(days: (i - angryData.length + 1))),
           embarrassmentData[i].toDouble()));
     }
     return Scaffold(
@@ -241,7 +247,7 @@ class _noticeScreenState extends State<noticeScreen> {
                                 fontSize: 13,
                               ),
                               minimum: 0,
-                              maximum: 10,
+                              maximum: 25,
                               interval: 2,
                             ),
                             series: <ChartSeries>[
@@ -376,17 +382,17 @@ class _noticeScreenState extends State<noticeScreen> {
                     const Divider(),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
+                      children: [
+                        const Text(
                           '·스트레스 추이 그래프\n',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        // stressGraph(
-                        //   stressData: stressData,
-                        // ),
+                        stressGraph(
+                          stressData: stressData,
+                        ),
                       ],
                     ),
                   ],
@@ -441,7 +447,7 @@ class stressGraph extends StatelessWidget {
             fontSize: 13,
           ),
           minimum: 0,
-          maximum: 10,
+          maximum: 20,
           interval: 2,
         ),
         series: <ChartSeries>[
