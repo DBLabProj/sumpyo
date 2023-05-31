@@ -19,7 +19,7 @@ class noticeScreen extends StatefulWidget {
 class _noticeScreenState extends State<noticeScreen> {
   List<String> formatValues = ['일주일', '월간', '연간'];
   String userName = '';
-  List<int> happinessData = [];
+  List<int> happinessData = [0, 0, 0, 0, 0, 0, 0];
   List<int> angerData = [];
   List<int> disgustData = [];
   List<int> embarrassmentData = [];
@@ -42,11 +42,6 @@ class _noticeScreenState extends State<noticeScreen> {
   bool disgustBtnIsPushed = false;
   bool embarrassedBtnIsPushed = false;
   int selectIndex = 0;
-  changeIndex(int index) {
-    setState(() {
-      selectIndex = index;
-    });
-  }
 
   @override
   void initState() {
@@ -54,8 +49,8 @@ class _noticeScreenState extends State<noticeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       loadAccount();
+      loadEmotion();
     });
-    loadEmotion();
   }
 
   void pushedBtnType(String BtnType) {
@@ -86,6 +81,12 @@ class _noticeScreenState extends State<noticeScreen> {
     }
   }
 
+  changeIndex(int index) {
+    setState(() {
+      selectIndex = index;
+    });
+  }
+
   loadEmotion() async {
     sendUser userId = sendUser(userName);
     var res = await http.post(Uri.parse(RestAPI.getAnalysis),
@@ -93,14 +94,15 @@ class _noticeScreenState extends State<noticeScreen> {
         body: jsonEncode(userId.toJson()));
     if (res.statusCode == 200) {
       var data = jsonDecode(res.body);
-
-      happinessData =
-          (data["happinessData"] as List).map((e) => e as int).toList();
-      sadnessData = (data["sadnessData"] as List).map((e) => e as int).toList();
-      angerData = (data["angerData"] as List).map((e) => e as int).toList();
-      disgustData = (data["disgustData"] as List).map((e) => e as int).toList();
-      embarrassmentData =
-          (data["embarrassmentData"] as List).map((e) => e as int).toList();
+      setState(() {
+        happinessData =
+            (data["happiness"] as List).map((e) => e as int).toList();
+        sadnessData = (data["sadness"] as List).map((e) => e as int).toList();
+        angerData = (data["anger"] as List).map((e) => e as int).toList();
+        disgustData = (data["disgust"] as List).map((e) => e as int).toList();
+        embarrassmentData =
+            (data["embarrassment"] as List).map((e) => e as int).toList();
+      });
     }
   }
 
@@ -114,6 +116,7 @@ class _noticeScreenState extends State<noticeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(happinessData[0]);
     List<EmotionData> happyData = [
       EmotionData('행복', DateTime.utc(2023, 3, 31), happinessData[0].toDouble()),
       EmotionData('행복', DateTime.utc(2023, 4, 1), 2),
@@ -187,6 +190,7 @@ class _noticeScreenState extends State<noticeScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: Column(
             children: [
               SizedBox(
@@ -370,34 +374,37 @@ class _noticeScreenState extends State<noticeScreen> {
                                 width: 1,
                               ),
                               borderRadius: BorderRadius.circular(5)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              emotionBtn(
-                                emotion: '행복',
-                                changeState: pushedBtnType,
-                              ),
-                              emotionBtn(
-                                emotion: '슬픔',
-                                changeState: pushedBtnType,
-                              ),
-                              emotionBtn(
-                                emotion: '공포',
-                                changeState: pushedBtnType,
-                              ),
-                              emotionBtn(
-                                emotion: '혐오',
-                                changeState: pushedBtnType,
-                              ),
-                              emotionBtn(
-                                emotion: '분노',
-                                changeState: pushedBtnType,
-                              ),
-                              emotionBtn(
-                                emotion: '당황',
-                                changeState: pushedBtnType,
-                              ),
-                            ],
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.95,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                emotionBtn(
+                                  emotion: '행복',
+                                  changeState: pushedBtnType,
+                                ),
+                                emotionBtn(
+                                  emotion: '슬픔',
+                                  changeState: pushedBtnType,
+                                ),
+                                emotionBtn(
+                                  emotion: '공포',
+                                  changeState: pushedBtnType,
+                                ),
+                                emotionBtn(
+                                  emotion: '혐오',
+                                  changeState: pushedBtnType,
+                                ),
+                                emotionBtn(
+                                  emotion: '분노',
+                                  changeState: pushedBtnType,
+                                ),
+                                emotionBtn(
+                                  emotion: '당황',
+                                  changeState: pushedBtnType,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],

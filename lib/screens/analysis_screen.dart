@@ -50,6 +50,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       body: SafeArea(
         key: contentKey,
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,

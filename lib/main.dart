@@ -36,7 +36,7 @@ class _AppState extends State<App> {
     const HomeScreen(),
     const AnalysisScreen(),
     const writeDiaryScreen(),
-    noticeScreen(),
+    const noticeScreen(),
     const myPage(),
   ];
   @override
@@ -45,15 +45,12 @@ class _AppState extends State<App> {
       body: screens[visit],
       bottomNavigationBar: SizedBox(
         height: 80,
-        child: BottomBarCreative(
+        child: BottomBarDefault(
           backgroundColor: Colors.white,
           items: items,
-          color: Colors.black,
+          color: Colors.black.withOpacity(0.5),
           colorSelected: Theme.of(context).primaryColor,
           indexSelected: visit,
-          // styleDivider: StyleDivider.bottom,
-          isFloating: true,
-          highlightStyle: const HighlightStyle(elevation: 2, sizeLarge: true),
           onTap: (index) => setState(
             () {
               visit = index;
@@ -65,11 +62,11 @@ class _AppState extends State<App> {
   }
 }
 
-// -----------------------------------하단 바-----------------------------------
+// ---------------------------------하단 바 아이템---------------------------------
 const List<TabItem> items = [
   TabItem(icon: Icons.calendar_month_outlined),
   TabItem(icon: Icons.notifications_none_outlined),
-  TabItem(icon: Icons.circle),
+  TabItem(icon: Icons.open_in_new_rounded),
   TabItem(icon: Icons.bar_chart_rounded),
   TabItem(icon: Icons.supervised_user_circle),
 ];

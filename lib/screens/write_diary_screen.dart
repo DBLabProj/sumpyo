@@ -160,6 +160,7 @@ class _writeDiaryScreenState extends State<writeDiaryScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: Container(
             constraints: BoxConstraints(maxHeight: safeareaHeight),
             child: Column(

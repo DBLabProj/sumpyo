@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -9,10 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:sumpyo/apis/api.dart';
 import 'package:http/http.dart' as http;
 import 'package:sumpyo/models/diary.dart';
-import 'package:sumpyo/notification.dart';
-import 'package:sumpyo/screens/write_diary_screen.dart';
-import 'package:sumpyo/screens/mypage_screen.dart';
-import 'package:sumpyo/screens/notice_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_core/src/slider_controller.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -35,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static const storage = FlutterSecureStorage();
   @override
   void initState() {
-    FlutterNotification.showNotification();
+    // FlutterNotification.showNotification();
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await _asyncMethod();
@@ -67,15 +62,12 @@ class _HomeScreenState extends State<HomeScreen> {
       if (resDiary['result'] == 'Success') {
         Fluttertoast.showToast(msg: '성공적으로 불러왔습니다.');
         final List<dynamic> diarys = resDiary['diarys'];
-        print(diarys);
         for (var diary in diarys) {
           final instance = Diary.fromJson(diary);
           String diaryDate =
               DateFormat('yyyy-MM-dd').format(instance.diary_date);
-          print(instance.diary_content);
           diaryInstance.addAll({diaryDate: instance});
         }
-        print(diaryInstance);
         return diaryInstance;
       } else {
         Fluttertoast.showToast(msg: '불러오는중 오류가 발생했습니다.');
@@ -118,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               });
             },
+            // 당기기? 바
             child: SizedBox(
               height: MediaQuery.of(context).size.height * 0.05,
               width: MediaQuery.of(context).size.width,
@@ -162,15 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-// -----------------------------------하단 바-----------------------------------
-const List<TabItem> items = [
-  TabItem(icon: Icons.calendar_month_outlined),
-  TabItem(icon: Icons.notifications_none_outlined),
-  TabItem(icon: Icons.circle),
-  TabItem(icon: Icons.bar_chart_rounded),
-  TabItem(icon: Icons.supervised_user_circle),
-];
 
 // -----------------------------------상단 바------------------------------------
 class topAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -364,15 +348,31 @@ class diaryPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       // height: MediaQuery.of(context).size.height.,
-      decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            offset: const Offset(4.0, 4.0),
+            blurRadius: 15.0,
+            spreadRadius: 1.0,
+          ),
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            offset: const Offset(-4.0, -4.0),
+            blurRadius: 5.0,
+            spreadRadius: 1.0,
+          )
+        ],
+      ),
       padding: EdgeInsets.fromLTRB(
           10,
           MediaQuery.of(context).size.width * 0.035,
           MediaQuery.of(context).size.width * 0.035,
           0),
-      child: makeContainer(diarys, calendarDate),
+      child: makeContainer(diarys[calendarDate]),
     );
   }
 }
@@ -394,27 +394,10 @@ class diaryAlysisChart extends StatefulWidget {
 
 class _diaryAlysisChartState extends State<diaryAlysisChart> {
   List<String> formatValues = ['오늘', '어제', '그제'];
-  List<emotionData> todayData = [
-    emotionData('기쁨', 0),
-    emotionData('분노', 0),
-    emotionData('슬픔', 0),
-    emotionData('당황', 0),
-    emotionData('역겨움', 0)
-  ];
-  List<emotionData> yesterdayData = [
-    emotionData('기쁨', 0),
-    emotionData('분노', 0),
-    emotionData('슬픔', 0),
-    emotionData('당황', 0),
-    emotionData('역겨움', 0)
-  ];
-  List<emotionData> beforeYesterdayData = [
-    emotionData('기쁨', 0),
-    emotionData('분노', 0),
-    emotionData('슬픔', 0),
-    emotionData('당황', 0),
-    emotionData('역겨움', 0)
-  ];
+  late List<emotionData> todayData;
+  late List<emotionData> yesterdayData;
+  late List<emotionData> beforeYesterdayData;
+
   Diary todayDiary = Diary(0, '', '', '', DateTime.now(), '', 0, 0, 0, 0, 0);
   String yesterdayDate = '';
   String beforeYesterdayDate = '';
@@ -423,17 +406,6 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
   late SelectionBehavior _beforeYesterDaySelection;
   int isSelected = 0;
 
-  changeSelected(int index) {
-    setState(() {
-      isSelected = index;
-    });
-    var tempDate = DateFormat('yyyy-MM-dd').parse(widget.selectedDate);
-    yesterdayDate =
-        DateFormat('yyyy-MM-dd').format(tempDate.add(const Duration(days: -1)));
-    beforeYesterdayDate =
-        DateFormat('yyyy-MM-dd').format(tempDate.add(const Duration(days: -2)));
-  }
-
   @override
   void initState() {
     var tempDate = DateFormat('yyyy-MM-dd').parse(widget.selectedDate);
@@ -441,102 +413,92 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
         DateFormat('yyyy-MM-dd').format(tempDate.add(const Duration(days: -1)));
     beforeYesterdayDate =
         DateFormat('yyyy-MM-dd').format(tempDate.add(const Duration(days: -2)));
-    _toDaySelection = SelectionBehavior(
-      enable: true,
-      toggleSelection: true,
-      unselectedOpacity: 0.3,
-      selectionController: RangeController(start: 0, end: 4),
-    );
-    _yesterDaySelection = SelectionBehavior(
-      enable: true,
-      toggleSelection: true,
-      unselectedOpacity: 0.3,
-      selectionController: RangeController(start: 0, end: 4),
-    );
-    _beforeYesterDaySelection = SelectionBehavior(
-      enable: true,
-      toggleSelection: true,
-      unselectedOpacity: 0.3,
-      selectionController: RangeController(start: 0, end: 4),
-    );
+    _toDaySelection = selectionBehaviorInit();
+    _yesterDaySelection = selectionBehaviorInit();
+    _beforeYesterDaySelection = selectionBehaviorInit();
+    todayData = dailyDateInit();
+    yesterdayData = dailyDateInit();
+    beforeYesterdayData = dailyDateInit();
     super.initState();
+  }
+
+  changeSelected(int index) {
+    setState(() {
+      isSelected = index;
+      var tempDate = DateFormat('yyyy-MM-dd').parse(widget.selectedDate);
+      yesterdayDate = DateFormat('yyyy-MM-dd')
+          .format(tempDate.add(const Duration(days: -1)));
+      beforeYesterdayDate = DateFormat('yyyy-MM-dd')
+          .format(tempDate.add(const Duration(days: -2)));
+    });
+  }
+
+  List<emotionData> dailyDateInit() {
+    return [
+      emotionData('기쁨', 0),
+      emotionData('분노', 0),
+      emotionData('슬픔', 0),
+      emotionData('당황', 0),
+      emotionData('역겨움', 0)
+    ];
+  }
+
+  SelectionBehavior selectionBehaviorInit() {
+    return SelectionBehavior(
+      enable: true,
+      toggleSelection: true,
+      unselectedOpacity: 0.3,
+      selectionController: RangeController(start: 0, end: 4),
+    );
+  }
+
+  List<emotionData> getEmotionData(Diary targetDiary) {
+    return [
+      emotionData('기쁨', targetDiary.diary_happiness.toDouble()),
+      emotionData('분노', targetDiary.diary_anger.toDouble()),
+      emotionData('슬픔', targetDiary.diary_sadness.toDouble()),
+      emotionData('당황', targetDiary.diary_embarrassment.toDouble()),
+      emotionData('역겨움', targetDiary.diary_disgust.toDouble())
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.diarys.containsKey(widget.selectedDate)) {
       todayDiary = widget.diarys[widget.selectedDate] as Diary;
-      todayData = [
-        emotionData('기쁨', todayDiary.diary_happiness.toDouble()),
-        emotionData('분노', todayDiary.diary_anger.toDouble()),
-        emotionData('슬픔', todayDiary.diary_sadness.toDouble()),
-        emotionData('당황', todayDiary.diary_embarrassment.toDouble()),
-        emotionData('역겨움', todayDiary.diary_disgust.toDouble())
-      ];
+      todayData = getEmotionData(todayDiary);
     }
     if (widget.diarys.containsKey(yesterdayDate)) {
       Diary yesterdayDiary = widget.diarys[yesterdayDate] as Diary;
-      yesterdayData = [
-        emotionData('기쁨', yesterdayDiary.diary_happiness.toDouble()),
-        emotionData('분노', yesterdayDiary.diary_anger.toDouble()),
-        emotionData('슬픔', yesterdayDiary.diary_sadness.toDouble()),
-        emotionData('당황', yesterdayDiary.diary_embarrassment.toDouble()),
-        emotionData('역겨움', yesterdayDiary.diary_disgust.toDouble())
-      ];
+      yesterdayData = getEmotionData(yesterdayDiary);
     }
     if (widget.diarys.containsKey(beforeYesterdayDate)) {
       Diary beforeYesterdayDiary = widget.diarys[beforeYesterdayDate] as Diary;
-      beforeYesterdayData = [
-        emotionData('기쁨', beforeYesterdayDiary.diary_happiness.toDouble()),
-        emotionData('분노', beforeYesterdayDiary.diary_anger.toDouble()),
-        emotionData('슬픔', beforeYesterdayDiary.diary_sadness.toDouble()),
-        emotionData('당황', beforeYesterdayDiary.diary_embarrassment.toDouble()),
-        emotionData('역겨움', beforeYesterdayDiary.diary_disgust.toDouble())
-      ];
+      beforeYesterdayData = getEmotionData(beforeYesterdayDiary);
     }
-    var todayColumn = ColumnSeries(
-      selectionBehavior: _toDaySelection,
-      color: const Color(0xFFC8E9F3),
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-      dataSource: todayData,
-      xValueMapper: (emotionData eData, _) => eData.labledEmotion,
-      yValueMapper: (emotionData eData, _) => eData.frequency,
-    );
-
-    var yesterDayColumn = ColumnSeries(
-      selectionBehavior: _yesterDaySelection,
-      color: const Color(0xFFF6D7E2),
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-      dataSource: yesterdayData,
-      xValueMapper: (emotionData eData, _) => eData.labledEmotion,
-      yValueMapper: (emotionData eData, _) => eData.frequency,
-    );
-    var beforeYesterDayColumn = ColumnSeries(
-      selectionBehavior: _beforeYesterDaySelection,
-      color: const Color.fromARGB(255, 37, 221, 141),
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-      dataSource: beforeYesterdayData,
-      xValueMapper: (emotionData eData, _) => eData.labledEmotion,
-      yValueMapper: (emotionData eData, _) => eData.frequency,
-    );
+    var todayColumn =
+        makeColumn(_toDaySelection, const Color(0xFFC8E9F3), todayData);
+    var yesterDayColumn =
+        makeColumn(_yesterDaySelection, const Color(0xFFF6D7E2), yesterdayData);
+    var beforeYesterDayColumn = makeColumn(_beforeYesterDaySelection,
+        const Color.fromARGB(255, 37, 221, 141), beforeYesterdayData);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
       decoration: BoxDecoration(
-        // color: Colors.cyan.shade400,
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(30),
         ),
         boxShadow: [
-          const BoxShadow(
-            color: Colors.grey,
-            offset: Offset(4.0, 4.0),
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            offset: const Offset(4.0, 4.0),
             blurRadius: 15.0,
             spreadRadius: 1.0,
           ),
           BoxShadow(
-            color: Colors.grey.shade400,
+            color: Colors.grey.withOpacity(0.2),
             offset: const Offset(-4.0, -4.0),
             blurRadius: 5.0,
             spreadRadius: 1.0,
@@ -607,7 +569,6 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
                     ],
                   ),
                   SfCartesianChart(
-                    // selectionGesture: ActivationMode.singleTap,
                     // 차트 테두리 두께
                     plotAreaBorderWidth: 0,
                     primaryXAxis: CategoryAxis(
@@ -679,6 +640,18 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
           ],
         ),
       ),
+    );
+  }
+
+  ColumnSeries<emotionData, String> makeColumn(
+      SelectionBehavior selection, Color graphColor, List<emotionData> data) {
+    return ColumnSeries(
+      selectionBehavior: selection,
+      color: graphColor,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+      dataSource: data,
+      xValueMapper: (emotionData eData, _) => eData.labledEmotion,
+      yValueMapper: (emotionData eData, _) => eData.frequency,
     );
   }
 }
@@ -796,76 +769,28 @@ class _formatSelectorState extends State<formatSelector> {
   }
 }
 
-Widget makeContainer(Map<String, Diary> diarys, String calendarDate) {
-  if (diarys.containsKey(calendarDate)) {
-    Diary containerDiary = diarys[calendarDate] as Diary;
+Widget makeContainer(Diary? diary) {
+  if (diary != null) {
     return Column(
-      // mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // 일기 일자
-        Text(DateFormat('yyyy년 MM월 dd일').format(containerDiary.diary_date)),
+        Text(DateFormat('yyyy년 MM월 dd일').format(diary.diary_date)),
         const SizedBox(
           height: 20,
         ),
         // 일기 제목
-        Text(containerDiary.diary_title),
+        Text(diary.diary_title),
         const SizedBox(
           height: 20,
         ),
         // 일기 내용
-        Text(containerDiary.diary_content),
+        Text(diary.diary_content),
       ],
     );
-  }
-  return Container(
-    child: const Text('아직 일기가 없어요.'),
-  );
-}
-
-class bottomNavi extends StatefulWidget {
-  const bottomNavi({super.key});
-
-  @override
-  State<bottomNavi> createState() => _bottomNaviState();
-}
-
-class _bottomNaviState extends State<bottomNavi> {
-  final screens = [
-    //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
-    const HomeScreen(),
-    const noticeScreen(),
-    const writeDiaryScreen(),
-    const noticeScreen(),
-    const myPage(),
-  ];
-  int visit = 0;
-  double height = 30;
-  Color bgColor = Colors.white;
-  Color color2 = Colors.black;
-  @override
-  Widget build(BuildContext context) {
-    Color colorSelect = Theme.of(context).primaryColor;
-    return SizedBox(
-      height: 80,
-      child: BottomBarCreative(
-        backgroundColor: bgColor,
-        items: items,
-        color: color2,
-        colorSelected: colorSelect,
-        indexSelected: visit,
-        // styleDivider: StyleDivider.bottom,
-        isFloating: true,
-        highlightStyle: const HighlightStyle(
-          elevation: 2,
-          sizeLarge: true,
-        ),
-        onTap: (index) => setState(
-          () {
-            visit = index;
-          },
-        ),
-      ),
+  } else {
+    return Container(
+      child: const Text('아직 일기가 없어요.'),
     );
   }
 }
