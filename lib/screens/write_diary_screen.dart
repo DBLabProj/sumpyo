@@ -52,7 +52,6 @@ class _writeDiaryScreenState extends State<writeDiaryScreen> {
       contentController.text,
       diaryDate,
     );
-    print(diary.toJson());
     try {
       var res = await http.post(Uri.parse(RestAPI.uploadDiary),
           headers: {"Content-Type": "application/json"},
