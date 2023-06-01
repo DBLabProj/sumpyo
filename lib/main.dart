@@ -5,18 +5,19 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sumpyo/notification.dart';
 import 'package:sumpyo/screens/intro_screen.dart';
-import 'package:sumpyo/screens/notice_screen.dart';
+import 'package:sumpyo/screens/analysis_screen.dart';
 import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/home_screen.dart';
 import 'package:sumpyo/screens/mypage_screen.dart';
-import 'package:sumpyo/screens/analysis_screen.dart';
+import 'package:sumpyo/screens/notice_screen.dart';
 
 void main() {
   runApp(const loginApp());
 }
 
 class App extends StatefulWidget {
-  const App({super.key});
+  int visit;
+  App({super.key, this.visit = 0});
   @override
   State<App> createState() => _AppState();
 }
@@ -30,19 +31,18 @@ class _AppState extends State<App> {
     super.initState();
   }
 
-  int visit = 0;
   final screens = [
     //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
-    const HomeScreen(),
-    const AnalysisScreen(),
-    const writeDiaryScreen(),
+    HomeScreen(),
     const noticeScreen(),
+    const writeDiaryScreen(),
+    const analysisScreen(),
     const myPage(),
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: screens[visit],
+      body: screens[widget.visit],
       bottomNavigationBar: SizedBox(
         height: 80,
         child: BottomBarDefault(
@@ -50,10 +50,10 @@ class _AppState extends State<App> {
           items: items,
           color: Colors.black.withOpacity(0.5),
           colorSelected: Theme.of(context).primaryColor,
-          indexSelected: visit,
+          indexSelected: widget.visit,
           onTap: (index) => setState(
             () {
-              visit = index;
+              widget.visit = index;
             },
           ),
         ),
@@ -82,6 +82,16 @@ class _loginAppState extends State<loginApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: '/splash',
+      routes: {
+        '/': (context) => App(),
+        '/login': (context) => const loginApp(),
+        '/splash': (context) => const introScreen(),
+        '/writeDiary': (context) => const writeDiaryScreen(),
+        '/mypage': (context) => const myPage(),
+        '/notice': (context) => const noticeScreen(),
+        '/analysis': (context) => const analysisScreen()
+      },
       debugShowCheckedModeBanner: false,
       supportedLocales: L10n.all,
       localizationsDelegates: const [
@@ -95,7 +105,7 @@ class _loginAppState extends State<loginApp> {
         secondaryHeaderColor: const Color(0xFFE8EEF9),
         dividerColor: const Color(0xffCCCCCC),
       ),
-      home: const introScreen(),
+      // home: const introScreen(),
     );
   }
 }

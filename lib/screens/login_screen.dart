@@ -71,7 +71,7 @@ class _loginScreenState extends State<loginScreen> {
               pwController.clear();
             });
             Navigator.push(
-                context, MaterialPageRoute(builder: (content) => const App()));
+                context, MaterialPageRoute(builder: (content) => App()));
           } else if (resSignup['result'] == 'Failed.') {
             Fluttertoast.showToast(msg: '아이디와 비밀번호를 확인해주세요.');
           } else {
