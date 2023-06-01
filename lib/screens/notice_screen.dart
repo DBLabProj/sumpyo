@@ -38,9 +38,53 @@ class _noticeScreenState extends State<noticeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    screenSize = MediaQuery.of(context).size.height -
-        MediaQuery.of(context).padding.top -
-        80;
+    setState(() {
+      loadEmotion();
+    });
+
+    List<EmotionData> happyData = [];
+    List<EmotionData> sadData = [];
+    List<EmotionData> angryData = [];
+    List<EmotionData> disgustedData = [];
+    List<EmotionData> embarrassData = [];
+    List<EmotionData> stressData = [];
+
+    for (int i = 0; i < happinessData.length; i++) {
+      happyData.add(EmotionData(
+          "행복",
+          now.add(Duration(days: (i - happinessData.length + 1))),
+          happinessData[i].toDouble()));
+    }
+    for (int i = 0; i < sadnessData.length; i++) {
+      sadData.add(EmotionData(
+          "슬픔",
+          now.add(Duration(days: (i - sadnessData.length + 1))),
+          sadnessData[i].toDouble()));
+    }
+    for (int i = 0; i < angerData.length; i++) {
+      angryData.add(EmotionData(
+          "분노",
+          now.add(Duration(days: (i - angerData.length + 1))),
+          angerData[i].toDouble()));
+    }
+    for (int i = 0; i < disgustData.length; i++) {
+      disgustedData.add(EmotionData(
+          "혐오",
+          now.add(Duration(days: (i - disgustData.length + 1))),
+          disgustData[i].toDouble()));
+    }
+    for (int i = 0; i < embarrassmentData.length; i++) {
+      embarrassData.add(EmotionData(
+          "당황",
+          now.add(Duration(days: (i - embarrassmentData.length + 1))),
+          embarrassmentData[i].toDouble()));
+    }
+    for (int i = 0; i < angryData.length; i++) {
+      stressData.add(EmotionData(
+          "stress",
+          now.add(Duration(days: (i - angryData.length + 1))),
+          embarrassmentData[i].toDouble()));
+    }
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
