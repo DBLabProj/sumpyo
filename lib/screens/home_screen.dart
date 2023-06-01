@@ -86,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).primaryColor,
       appBar: topAppBar(
         appBar: AppBar(),
@@ -103,10 +104,10 @@ class _HomeScreenState extends State<HomeScreen> {
               setState(() {
                 if (details.localPosition.dy > 0) {
                   calFormat = CalendarFormat.month;
-                  isExpanded = true;
+                  isExpanded = false;
                 } else {
                   calFormat = CalendarFormat.week;
-                  isExpanded = false;
+                  isExpanded = true;
                 }
               });
             },
@@ -405,7 +406,6 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
   late SelectionBehavior _yesterDaySelection;
   late SelectionBehavior _beforeYesterDaySelection;
   int isSelected = 0;
-
   @override
   void initState() {
     var tempDate = DateFormat('yyyy-MM-dd').parse(widget.selectedDate);
@@ -464,6 +464,7 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
 
   @override
   Widget build(BuildContext context) {
+    print('컨테이너: ${widget.isExpanded.toString()}');
     if (widget.diarys.containsKey(widget.selectedDate)) {
       todayDiary = widget.diarys[widget.selectedDate] as Diary;
       todayData = getEmotionData(todayDiary);
@@ -482,7 +483,6 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
         makeColumn(_yesterDaySelection, const Color(0xFFF6D7E2), yesterdayData);
     var beforeYesterDayColumn = makeColumn(_beforeYesterDaySelection,
         const Color.fromARGB(255, 37, 221, 141), beforeYesterdayData);
-
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
       decoration: BoxDecoration(
@@ -711,10 +711,9 @@ class _formatSelectorState extends State<formatSelector> {
         fontWeight: FontWeight.bold,
         fontSize: 15);
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.78,
       height: MediaQuery.of(context).size.height * 0.04,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.5,
+        // clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           border: Border.all(color: Theme.of(context).primaryColor),
           borderRadius: BorderRadius.circular(30),
@@ -785,7 +784,13 @@ Widget makeContainer(Diary? diary) {
           height: 20,
         ),
         // 일기 내용
-        Text(diary.diary_content),
+        Flexible(
+          flex: 1,
+          child: Text(
+            diary.diary_content,
+            overflow: TextOverflow.clip,
+          ),
+        ),
       ],
     );
   } else {
