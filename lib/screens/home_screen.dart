@@ -87,8 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
-      appBar: topAppBar(
-        appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        toolbarHeight: 0,
       ),
       body: SafeArea(
           child: Column(
@@ -170,23 +171,6 @@ class topAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0.0,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.menu_rounded,
-              size: 40,
-            ),
-            color: Colors.white,
-            onPressed: () {},
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.account_circle_rounded,
-                size: 40,
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -520,7 +504,8 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
                 children: [
                   Text(
                     DateFormat('yyyy년 MM월 dd일').format(
-                        DateFormat('yyyy-MM-dd').parse(widget.selectedDate)),
+                      DateFormat('yyyy-MM-dd').parse(widget.selectedDate),
+                    ),
                     style: const TextStyle(
                       color: Colors.black54,
                       fontSize: 20,
@@ -771,26 +756,49 @@ class _formatSelectorState extends State<formatSelector> {
 
 Widget makeContainer(Diary? diary) {
   if (diary != null) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // 일기 일자
-        Text(DateFormat('yyyy년 MM월 dd일').format(diary.diary_date)),
-        const SizedBox(
-          height: 20,
-        ),
-        // 일기 제목
-        Text(diary.diary_title),
-        const SizedBox(
-          height: 20,
-        ),
-        // 일기 내용
-        Text(diary.diary_content),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 일기 일자
+          Text(
+            DateFormat('yyyy년 MM월 dd일').format(diary.diary_date),
+            style: const TextStyle(
+              color: Colors.black54,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          // 일기 제목
+          Text(diary.diary_title),
+          const SizedBox(
+            height: 20,
+          ),
+          // 일기 내용
+          Text(diary.diary_content),
+        ],
+      ),
     );
   } else {
     return Container(
-      child: const Text('아직 일기가 없어요.'),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Text(
+            '아직 작성된 일기가 없어요.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black38,
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

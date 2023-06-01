@@ -150,7 +150,6 @@ class _noticeScreenState extends State<noticeScreen> {
           now.add(Duration(days: (i - disgustData.length + 1))),
           disgustData[i].toDouble()));
     }
-    print(disgustData);
     for (int i = 0; i < embarrassmentData.length; i++) {
       embarrassData.add(EmotionData(
           "당황",
@@ -352,10 +351,6 @@ class _noticeScreenState extends State<noticeScreen> {
                                 ),
                                 emotionBtn(
                                   emotion: '슬픔',
-                                  changeState: pushedBtnType,
-                                ),
-                                emotionBtn(
-                                  emotion: '공포',
                                   changeState: pushedBtnType,
                                 ),
                                 emotionBtn(
