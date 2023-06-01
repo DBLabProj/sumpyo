@@ -249,15 +249,19 @@ class recommendCard extends StatelessWidget {
                           const SizedBox(
                             height: 20,
                           ),
-                          TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).primaryColor),
-                            child: const Text(
-                              '분석 결과 보기',
-                              style: TextStyle(
-                                color: Colors.white,
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.45,
+                            height: MediaQuery.of(context).size.height * 0.035,
+                            child: TextButton(
+                              onPressed: () {},
+                              style: TextButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor),
+                              child: const Text(
+                                '분석 결과 보기',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           )

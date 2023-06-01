@@ -187,7 +187,7 @@ class _noticeScreenState extends State<noticeScreen> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
@@ -198,7 +198,7 @@ class _noticeScreenState extends State<noticeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          '·기분 추이 그래프',
+                          '· 기분 추이 그래프',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
