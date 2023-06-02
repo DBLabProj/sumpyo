@@ -6,23 +6,27 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sumpyo/notification.dart';
 import 'package:sumpyo/screens/intro_screen.dart';
 import 'package:sumpyo/screens/analysis_screen.dart';
+import 'package:sumpyo/screens/signup_screen.dart';
 import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/home_screen.dart';
 import 'package:sumpyo/screens/mypage_screen.dart';
 import 'package:sumpyo/screens/notice_screen.dart';
 
 void main() {
-  runApp(const loginApp());
+  runApp(const App());
 }
 
-class App extends StatefulWidget {
+class appFrame extends StatefulWidget {
   int visit;
-  App({super.key, this.visit = 0});
+  DateTime selectedDate;
+  appFrame({super.key, frame, this.visit = 0, selectedDate})
+      : selectedDate = (selectedDate ?? DateTime.now());
   @override
-  State<App> createState() => _AppState();
+  State<appFrame> createState() => _appFrameState();
 }
 
-class _AppState extends State<App> {
+class _appFrameState extends State<appFrame> {
+  GlobalKey bottom = GlobalKey();
   @override
   void initState() {
     FlutterNotification.init();
@@ -31,16 +35,31 @@ class _AppState extends State<App> {
     super.initState();
   }
 
-  final screens = [
-    //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
-    HomeScreen(),
-    const noticeScreen(),
-    const writeDiaryScreen(),
-    const analysisScreen(),
-    const myPage(),
-  ];
+  // final screens = [
+  //   //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
+  //   HomeScreen(),
+  //   const noticeScreen(),
+  //   const writeDiaryScreen(),
+  //   const analysisScreen(),
+  //   const myPage(),
+  // ];
   @override
   Widget build(BuildContext context) {
+    viewDiary(DateTime date) {
+      setState(() {
+        widget.visit = 0;
+        widget.selectedDate = date;
+      });
+    }
+
+    var screens = [
+      //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
+      HomeScreen(selectedDate: widget.selectedDate),
+      noticeScreen(viewDiary: viewDiary),
+      const writeDiaryScreen(),
+      const analysisScreen(),
+      const myPage(),
+    ];
     return Scaffold(
       body: screens[widget.visit],
       bottomNavigationBar: SizedBox(
@@ -53,6 +72,7 @@ class _AppState extends State<App> {
           indexSelected: widget.visit,
           onTap: (index) => setState(
             () {
+              if (index == 0) widget.selectedDate = DateTime.now();
               widget.visit = index;
             },
           ),
@@ -71,26 +91,28 @@ const List<TabItem> items = [
   TabItem(icon: Icons.supervised_user_circle),
 ];
 
-class loginApp extends StatefulWidget {
-  const loginApp({super.key});
+class App extends StatefulWidget {
+  const App({super.key});
 
   @override
-  State<loginApp> createState() => _loginAppState();
+  State<App> createState() => _AppState();
 }
 
-class _loginAppState extends State<loginApp> {
+class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       initialRoute: '/splash',
       routes: {
-        '/': (context) => App(),
-        '/login': (context) => const loginApp(),
+        '/': (context) => appFrame(),
+        '/login': (context) => const App(),
         '/splash': (context) => const introScreen(),
         '/writeDiary': (context) => const writeDiaryScreen(),
         '/mypage': (context) => const myPage(),
-        '/notice': (context) => const noticeScreen(),
-        '/analysis': (context) => const analysisScreen()
+        '/notice': (context) => noticeScreen(),
+        '/analysis': (context) => const analysisScreen(),
+        '/sginup': (context) => const signUpPage(),
+        '/sginup/sec': (context) => const secondPage(),
       },
       debugShowCheckedModeBanner: false,
       supportedLocales: L10n.all,
@@ -105,7 +127,6 @@ class _loginAppState extends State<loginApp> {
         secondaryHeaderColor: const Color(0xFFE8EEF9),
         dividerColor: const Color(0xffCCCCCC),
       ),
-      // home: const introScreen(),
     );
   }
 }

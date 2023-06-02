@@ -90,9 +90,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
+        elevation: 0.0,
         backgroundColor: Theme.of(context).primaryColor,
         toolbarHeight: 0,
       ),
@@ -100,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
         children: [
           mainCalendar(
+            focusedDay: widget.selectedDate,
             changeDate: changeDate,
             ableDays: ableDiaryDays,
             calendarFormat: calFormat,
@@ -191,12 +192,14 @@ class mainCalendar extends StatefulWidget {
   CalendarFormat calendarFormat;
   List<String> ableDays;
   Function changeDate;
+  DateTime focusedDay;
   mainCalendar({
     super.key,
     required this.calendarFormat,
     required this.ableDays,
     required this.changeDate,
-  });
+    focusedDay,
+  }) : focusedDay = (focusedDay ?? DateTime.now());
 
   @override
   State<mainCalendar> createState() => _mainCalendarState();
@@ -204,13 +207,17 @@ class mainCalendar extends StatefulWidget {
 
 class _mainCalendarState extends State<mainCalendar> {
   DateTime? selectedDay;
-  DateTime focusedDay = DateTime.now();
+  @override
+  void initState() {
+    super.initState();
+    selectedDay = widget.focusedDay;
+  }
 
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
       locale: 'ko',
-      focusedDay: focusedDay,
+      focusedDay: widget.focusedDay,
       firstDay: DateTime.utc(2000, 1, 1),
       lastDay: DateTime.utc(2050, 12, 31),
       calendarFormat: widget.calendarFormat,
@@ -254,7 +261,7 @@ class _mainCalendarState extends State<mainCalendar> {
         setState(() {
           widget.calendarFormat = CalendarFormat.week;
           this.selectedDay = selectedDay;
-          this.focusedDay = focusedDay;
+          widget.focusedDay = focusedDay;
           widget.changeDate(selectedDay);
         });
       },

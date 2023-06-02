@@ -6,7 +6,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sumpyo/apis/api.dart';
 import 'package:sumpyo/main.dart';
 import 'package:sumpyo/models/user.dart';
-import 'package:sumpyo/screens/signup_screen.dart';
 import 'package:sumpyo/widgets/loginWidget.dart';
 import 'package:http/http.dart' as http;
 
@@ -71,7 +70,7 @@ class _loginScreenState extends State<loginScreen> {
               pwController.clear();
             });
             Navigator.push(
-                context, MaterialPageRoute(builder: (content) => App()));
+                context, MaterialPageRoute(builder: (content) => appFrame()));
           } else if (resSignup['result'] == 'Failed.') {
             Fluttertoast.showToast(msg: '아이디와 비밀번호를 확인해주세요.');
           } else {
@@ -246,8 +245,7 @@ class _loginButtonState extends State<loginButton> {
               backgroundColor: const MaterialStatePropertyAll(Colors.white),
             ),
             onPressed: () {
-              Navigator.push((context),
-                  MaterialPageRoute(builder: (context) => const signUpPage()));
+              Navigator.pushNamed(context, '/sginup');
             },
             child: Text(
               '회원가입',

@@ -13,6 +13,26 @@ import 'package:http/http.dart' as http;
 
 import '../apis/api.dart';
 
+var userNameController = TextEditingController();
+var domainName = 'google.com';
+var emailController = TextEditingController();
+var phoneController = TextEditingController();
+var pwController = TextEditingController();
+var pwCheckController = TextEditingController();
+var birthdayController = DateTime.now();
+var genderController = '';
+changeBrithday(DateTime birthday) {
+  birthdayController = birthday;
+}
+
+changeGender(int index) {
+  index == 0 ? genderController = '남성' : genderController = '여성';
+}
+
+changeDomain(String domain) {
+  domainName = domain;
+}
+
 class signUpPage extends StatefulWidget {
   const signUpPage({super.key});
 
@@ -23,57 +43,28 @@ class signUpPage extends StatefulWidget {
 class _signUppageState extends State<signUpPage> {
   var formKey = GlobalKey<FormState>();
   bool isSecondPage = false;
-  var userNameController = TextEditingController();
-  var domainName = 'google.com';
-  var emailController = TextEditingController();
-  var phoneController = TextEditingController();
-  var pwController = TextEditingController();
-  var pwCheckController = TextEditingController();
-  var birthdayController = DateTime.now();
-  var genderController = '';
-
-  changeBrithday(DateTime birthday) {
-    birthdayController = birthday;
-  }
-
-  changeGender(int index) {
-    setState(() {
-      index == 0 ? genderController = '남성' : genderController = '여성';
-    });
-  }
-
-  changeDomain(String domain) {
-    setState(() {
-      domainName = domain;
-    });
-  }
-
-  changePage() {
-    setState(() {
-      isSecondPage = !isSecondPage;
-    });
-  }
 
   checkUsername() async {
-    try {
-      var response = await http.post(Uri.parse(API.validateName),
-          body: {'user_name': userNameController.text.trim()});
+    saveInfo();
+    // try {
+    //   var response = await http.post(Uri.parse(API.validateName),
+    //       body: {'user_name': userNameController.text.trim()});
 
-      if (response.statusCode == 200) {
-        var responseBody = jsonDecode(response.body);
+    //   if (response.statusCode == 200) {
+    //     var responseBody = jsonDecode(response.body);
 
-        if (responseBody['existName'] == true) {
-          Fluttertoast.showToast(
-            msg: "이미 존재하는 사용자 이름입니다.",
-          );
-        } else {
-          saveInfo();
-        }
-      }
-    } catch (e) {
-      print(e.toString());
-      Fluttertoast.showToast(msg: e.toString());
-    }
+    //     if (responseBody['existName'] == true) {
+    //       Fluttertoast.showToast(
+    //         msg: "이미 존재하는 사용자 이름입니다.",
+    //       );
+    //     } else {
+    //       saveInfo();
+    //     }
+    //   }
+    // } catch (e) {
+    //   print(e.toString());
+    //   Fluttertoast.showToast(msg: e.toString());
+    // }
   }
 
   saveInfo() async {
@@ -156,23 +147,31 @@ class _signUppageState extends State<signUpPage> {
                     child: GestureDetector(
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
-                        child: isSecondPage
-                            ? secondPage(
-                                emailController: emailController,
-                                changeDomain: changeDomain,
-                                changeGender: changeGender,
-                                changePage: changePage,
-                                domain: domainName,
-                                changeBrithday: changeBrithday,
-                                phoneController: phoneController,
-                                checkUsername: checkUsername,
-                              )
-                            : firstPage(
-                                changePage: changePage,
-                                idController: userNameController,
-                                pwCheckController: pwController,
-                                pwController: pwCheckController,
-                              ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                              '회원가입',
+                              style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w300,
+                                  color: Theme.of(context).primaryColor),
+                            ),
+                            signupIdBox(
+                              icon: const Icon(Icons.account_circle_outlined),
+                              controller: userNameController,
+                            ),
+                            signupPwBox(
+                              pwController: pwController,
+                              pwCheckController: pwCheckController,
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.pushNamed(context, '/sginup/sec'),
+                              child: const Text('다음'),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -188,12 +187,12 @@ class _signUppageState extends State<signUpPage> {
 
 // 회원가입 제출
 class submitSignUp extends StatelessWidget {
-  String domain;
-  Function checkUsername;
-  submitSignUp({
+  // String domain;
+  // Function checkUsername;
+  const submitSignUp({
     super.key,
-    required this.domain,
-    required this.checkUsername,
+    // required this.domain,
+    // required this.checkUsername,
   });
 
   @override
@@ -209,9 +208,7 @@ class submitSignUp extends StatelessWidget {
         backgroundColor: const MaterialStatePropertyAll(Colors.white),
       ),
       onPressed: () {
-        // Navigator.push((context),
-        // MaterialPageRoute(builder: (context) => const signUpPage()));
-        checkUsername();
+        // checkUsername();
       },
       child: Text(
         '회원가입',
@@ -225,12 +222,12 @@ class submitSignUp extends StatelessWidget {
 
 // 이메일
 class emailTextbox extends StatefulWidget {
-  var emailController;
-  Function changeDomain;
-  emailTextbox({
+  // var emailController;
+  // Function changeDomain;
+  const emailTextbox({
     super.key,
-    required this.emailController,
-    required this.changeDomain,
+    // required this.emailController,
+    // required this.changeDomain,
   });
 
   @override
@@ -242,7 +239,7 @@ class _emailTextboxState extends State<emailTextbox> {
   String _selectedValue = 'google.com';
   @override
   Widget build(BuildContext context) {
-    String email = widget.emailController.text + '@' + _selectedValue;
+    String email = '${emailController.text}@$_selectedValue';
     return Container(
       decoration: BoxDecoration(
           border: Border(
@@ -255,7 +252,7 @@ class _emailTextboxState extends State<emailTextbox> {
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.3,
             child: TextFormField(
-              controller: widget.emailController,
+              controller: emailController,
               inputFormatters: [
                 FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
               ],
@@ -279,7 +276,7 @@ class _emailTextboxState extends State<emailTextbox> {
               onChanged: (value) {
                 setState(() {
                   _selectedValue = value!;
-                  widget.changeDomain(value);
+                  changeDomain(value);
                 });
               },
             ),
@@ -330,8 +327,11 @@ class _phoneTextboxState extends State<phoneTextbox> {
 
 // 성별 버튼
 class genderSelectButton extends StatefulWidget {
-  Function genderChange;
-  genderSelectButton({super.key, required this.genderChange});
+  // Function genderChange;
+  const genderSelectButton({
+    super.key,
+    // required this.genderChange,
+  });
 
   @override
   State<genderSelectButton> createState() => _genderSelectButtonState();
@@ -380,8 +380,11 @@ class _genderSelectButtonState extends State<genderSelectButton> {
 
 // 생일
 class brithdaySelector extends StatefulWidget {
-  Function changeBrithday;
-  brithdaySelector({super.key, required this.changeBrithday});
+  // Function changeBrithday;
+  const brithdaySelector({
+    super.key,
+    // required this.changeBrithday,
+  });
 
   @override
   State<brithdaySelector> createState() => _brithdaySelectorState();
@@ -494,16 +497,16 @@ class _brithdaySelectorState extends State<brithdaySelector> {
 }
 
 class firstPage extends StatefulWidget {
-  Function changePage;
-  TextEditingController idController;
-  TextEditingController pwController;
-  TextEditingController pwCheckController;
-  firstPage({
+  // Function changePage;
+  // TextEditingController idController;
+  // TextEditingController pwController;
+  // TextEditingController pwCheckController;
+  const firstPage({
     super.key,
-    required this.changePage,
-    required this.idController,
-    required this.pwController,
-    required this.pwCheckController,
+    // required this.changePage,
+    // required this.idController,
+    // required this.pwController,
+    // required this.pwCheckController,
   });
 
   @override
@@ -513,55 +516,16 @@ class firstPage extends StatefulWidget {
 class _firstPageState extends State<firstPage> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Text(
-          '회원가입',
-          style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w300,
-              color: Theme.of(context).primaryColor),
-        ),
-        signupIdBox(
-          icon: const Icon(Icons.account_circle_outlined),
-          controller: widget.idController,
-        ),
-        signupPwBox(
-          pwController: widget.pwController,
-          pwCheckController: widget.pwCheckController,
-        ),
-        TextButton(
-          onPressed: () {
-            widget.changePage();
-          },
-          child: const Text('다음'),
-        ),
-      ],
-    );
+    return const Scaffold();
   }
 }
 
 // 다음 화면(두번째)
 class secondPage extends StatefulWidget {
-  String domain;
-  Function changeDomain;
-  TextEditingController emailController;
-  Function changeGender;
-  Function changePage;
-  Function changeBrithday;
-  Function checkUsername;
-  TextEditingController phoneController;
-  secondPage({
+  // String domain;
+
+  const secondPage({
     super.key,
-    required this.emailController,
-    required this.changeDomain,
-    required this.changeGender,
-    required this.changePage,
-    required this.domain,
-    required this.changeBrithday,
-    required this.phoneController,
-    required this.checkUsername,
   });
 
   @override
@@ -571,56 +535,103 @@ class secondPage extends StatefulWidget {
 class _secondPageState extends State<secondPage> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureDetector(
-                onTap: () => widget.changePage(),
-                child: const Icon(Icons.arrow_back_ios)),
-            Text(
-              '회원가입',
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w300,
-                  color: Theme.of(context).primaryColor),
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.white,
+    ));
+    double contentHeight =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0.0,
+        toolbarHeight: 0,
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: SizedBox(
+            height: contentHeight,
+            child: Stack(
+              children: [
+                const loginBackground(),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                      MediaQuery.of(context).size.width * 0.05,
+                      MediaQuery.of(context).size.height * 0.21,
+                      MediaQuery.of(context).size.width * 0.05,
+                      MediaQuery.of(context).size.height * 0.05),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    color: Colors.white,
+                    child: GestureDetector(
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                    onTap: () {},
+                                    child: const Icon(Icons.arrow_back_ios)),
+                                Text(
+                                  '회원가입',
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w300,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                                const Text(
+                                  '  ',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const emailTextbox(
+                                // emailController: emailController,
+                                // changeDomain: changeDomain,
+                                ),
+                            phoneTextbox(
+                              phoneController: phoneController,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.4,
+                                  child: const genderSelectButton(
+                                      // genderChange: widget.changeGender,
+                                      ),
+                                ),
+                                SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    child: const brithdaySelector(
+                                        // changeBrithday: widget.changeBrithday,
+                                        )),
+                              ],
+                            ),
+                            const submitSignUp(
+                                // checkUsername: widget.checkUsername,
+                                )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const Text(
-              '  ',
-              style: TextStyle(
-                fontSize: 30,
-              ),
-            ),
-          ],
+          ),
         ),
-        emailTextbox(
-          emailController: widget.emailController,
-          changeDomain: widget.changeDomain,
-        ),
-        phoneTextbox(
-          phoneController: widget.phoneController,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.4,
-              child: genderSelectButton(
-                genderChange: widget.changeGender,
-              ),
-            ),
-            SizedBox(
-                width: MediaQuery.of(context).size.width * 0.4,
-                child: brithdaySelector(changeBrithday: widget.changeBrithday)),
-          ],
-        ),
-        submitSignUp(
-          domain: widget.domain,
-          checkUsername: widget.checkUsername,
-        )
-      ],
+      ),
     );
   }
 }

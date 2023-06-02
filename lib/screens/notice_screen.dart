@@ -1,25 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:sumpyo/screens/home_screen.dart';
+
+garbage() {}
 
 class noticeScreen extends StatefulWidget {
-  const noticeScreen({super.key});
+  Function viewDiary;
+  noticeScreen({super.key, this.viewDiary = garbage});
 
   @override
   State<noticeScreen> createState() => _noticeScreenState();
 }
 
 class _noticeScreenState extends State<noticeScreen> {
-  final GlobalKey contentKey = GlobalKey();
   double titleFontSize = 20.0;
   double containerHeight = 100.0;
   double screenSize = 0.0;
-
-  double getContentSize() {
-    RenderBox calBox =
-        contentKey.currentContext!.findRenderObject() as RenderBox;
-    Size size = calBox.size;
-    return size.height;
-  }
 
   @override
   void initState() {
@@ -38,53 +32,9 @@ class _noticeScreenState extends State<noticeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      loadEmotion();
-    });
-
-    List<EmotionData> happyData = [];
-    List<EmotionData> sadData = [];
-    List<EmotionData> angryData = [];
-    List<EmotionData> disgustedData = [];
-    List<EmotionData> embarrassData = [];
-    List<EmotionData> stressData = [];
-
-    for (int i = 0; i < happinessData.length; i++) {
-      happyData.add(EmotionData(
-          "행복",
-          now.add(Duration(days: (i - happinessData.length + 1))),
-          happinessData[i].toDouble()));
-    }
-    for (int i = 0; i < sadnessData.length; i++) {
-      sadData.add(EmotionData(
-          "슬픔",
-          now.add(Duration(days: (i - sadnessData.length + 1))),
-          sadnessData[i].toDouble()));
-    }
-    for (int i = 0; i < angerData.length; i++) {
-      angryData.add(EmotionData(
-          "분노",
-          now.add(Duration(days: (i - angerData.length + 1))),
-          angerData[i].toDouble()));
-    }
-    for (int i = 0; i < disgustData.length; i++) {
-      disgustedData.add(EmotionData(
-          "혐오",
-          now.add(Duration(days: (i - disgustData.length + 1))),
-          disgustData[i].toDouble()));
-    }
-    for (int i = 0; i < embarrassmentData.length; i++) {
-      embarrassData.add(EmotionData(
-          "당황",
-          now.add(Duration(days: (i - embarrassmentData.length + 1))),
-          embarrassmentData[i].toDouble()));
-    }
-    for (int i = 0; i < angryData.length; i++) {
-      stressData.add(EmotionData(
-          "stress",
-          now.add(Duration(days: (i - angryData.length + 1))),
-          embarrassmentData[i].toDouble()));
-    }
+    screenSize = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        80;
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
@@ -93,7 +43,6 @@ class _noticeScreenState extends State<noticeScreen> {
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SafeArea(
-        key: contentKey,
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
           child: Column(
@@ -158,7 +107,9 @@ class _noticeScreenState extends State<noticeScreen> {
                               ),
                             ),
                           ),
-                          recommendCard(titleFontSize: titleFontSize),
+                          recommendCard(
+                              viewDiary: widget.viewDiary,
+                              titleFontSize: titleFontSize),
                         ],
                       ),
                       Column(
@@ -189,10 +140,11 @@ class _noticeScreenState extends State<noticeScreen> {
                             ),
                           ),
                           recommendCard(
+                            viewDiary: widget.viewDiary,
                             titleFontSize: titleFontSize,
                             leisureName: '축구',
                             leisureDescription:
-                                '여러사람들과 같이 축구하다보면 \n기분이 좋아질 수 있어요~😙',
+                                '여러사람들과 같이 축구하다보면 기분이 좋아질 수 있어요~😙',
                             annotation: '화풀이로 축구해 보시는 거 어때요?',
                             imageLocation: 'assets/soccer.jpg',
                           ),
@@ -218,8 +170,9 @@ class recommendCard extends StatelessWidget {
     this.leisureDescription = '대충 하리보 전시회 설명',
     this.annotation = '스트레스가 어쩌구\n관리가 필요한 머쩌구',
     this.imageLocation = 'assets/Haribo.png',
+    this.viewDiary = garbage,
   });
-
+  Function viewDiary;
   final double titleFontSize;
   String leisureName;
   String leisureDescription;
@@ -288,24 +241,24 @@ class recommendCard extends StatelessWidget {
                               fontSize: titleFontSize,
                             ),
                           ),
-                          Text(
-                            leisureDescription,
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.4,
+                            child: Text(
+                              leisureDescription,
+                              maxLines: 3,
+                              style: const TextStyle(
+                                  overflow: TextOverflow.ellipsis),
+                            ),
                           ),
                           const SizedBox(
                             height: 20,
                           ),
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.45,
+                            width: MediaQuery.of(context).size.width * 0.4,
                             height: MediaQuery.of(context).size.height * 0.035,
                             child: TextButton(
                               onPressed: () {
-                                Navigator.push(
-                                    (context),
-                                    MaterialPageRoute(
-                                        builder: (builder) => HomeScreen(
-                                              selectedDate:
-                                                  DateTime.utc(2023, 5, 31),
-                                            )));
+                                viewDiary(DateTime.utc(2023, 5, 31));
                               },
                               style: TextButton.styleFrom(
                                   backgroundColor:
