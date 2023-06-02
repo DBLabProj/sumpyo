@@ -219,12 +219,25 @@ class _mainCalendarState extends State<mainCalendar> {
         return isSameDay(selectedDay, day);
       },
       headerStyle: HeaderStyle(
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
         headerPadding: EdgeInsets.symmetric(
             vertical: MediaQuery.of(context).size.height * 0.03,
             horizontal: MediaQuery.of(context).size.width * 0.05),
         leftChevronVisible: false,
         rightChevronVisible: false,
         formatButtonVisible: false,
+      ),
+      daysOfWeekStyle: const DaysOfWeekStyle(
+        weekdayStyle: TextStyle(
+          color: Colors.white,
+        ),
+        weekendStyle: TextStyle(
+          color: Colors.white70,
+        ),
       ),
       calendarStyle: CalendarStyle(
         markersMaxCount: 1,
@@ -468,7 +481,7 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
     var beforeYesterDayColumn = makeColumn(_beforeYesterDaySelection,
         const Color.fromARGB(255, 37, 221, 141), beforeYesterdayData);
     return Container(
-      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+      padding: const EdgeInsets.fromLTRB(10, 15, 10, 0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(
@@ -493,136 +506,140 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
         physics: widget.isExpanded
             ? const AlwaysScrollableScrollPhysics()
             : const NeverScrollableScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    DateFormat('yyyy년 MM월 dd일').format(
-                      DateFormat('yyyy-MM-dd').parse(widget.selectedDate),
-                    ),
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text(
-                    "오늘의 하루는 '",
-                    style: TextStyle(fontSize: 16, color: Colors.black),
-                  ),
-                  Text(
-                    todayDiary.diary_emotion,
-                    style: const TextStyle(color: Colors.blue),
-                  ),
-                  const Text(
-                    "'이에요.",
-                    style: TextStyle(fontSize: 16, color: Colors.black),
-                  )
-                ],
-              ),
-            ),
-            Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                        child: const Text(
-                          '오늘의 감정 분표',
-                          style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xff4c4c4c)),
-                        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(10, 15, 0, 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      DateFormat('yyyy년 MM월 dd일').format(
+                        DateFormat('yyyy-MM-dd').parse(widget.selectedDate),
                       ),
-                    ],
-                  ),
-                  SfCartesianChart(
-                    // 차트 테두리 두께
-                    plotAreaBorderWidth: 0,
-                    primaryXAxis: CategoryAxis(
-                        interactiveTooltip: const InteractiveTooltip(),
-                        multiLevelLabels: List.empty(),
-                        axisLine: const AxisLine(width: 0, color: Colors.black),
-                        majorGridLines: const MajorGridLines(width: 0),
-                        majorTickLines: const MajorTickLines(
-                          size: 0,
-                        )),
-                    primaryYAxis: NumericAxis(
-                      rangePadding: ChartRangePadding.none,
-                      // 라벨 스타일
-                      labelStyle: const TextStyle(
-                          color: Colors.transparent, fontSize: 0),
-                      // 최소/최대/간격
-                      minimum: 0,
-                      maximum: 50,
-                      interval: 25,
-                      // 축선
-                      axisLine: const AxisLine(color: Colors.transparent),
-                      // 라벨 표시선
-                      majorTickLines: const MajorTickLines(size: 0),
-                      // 간격선
-                      majorGridLines: MajorGridLines(
-                          width: 2,
-                          color: Colors.grey.withOpacity(0.5),
-                          dashArray: const [4]),
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    axes: [
-                      CategoryAxis(
-                        name: 'x_second',
-                        opposedPosition: true,
-                        majorTickLines: const MajorTickLines(size: 0),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(10, 0, 0, 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "오늘의 하루는 '",
+                      style: TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                    Text(
+                      todayDiary.diary_emotion,
+                      style: const TextStyle(color: Colors.blue),
+                    ),
+                    const Text(
+                      "'이에요.",
+                      style: TextStyle(fontSize: 16, color: Colors.black),
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                          child: const Text(
+                            '오늘의 감정 분표',
+                            style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xff4c4c4c)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SfCartesianChart(
+                      // 차트 테두리 두께
+                      plotAreaBorderWidth: 0,
+                      primaryXAxis: CategoryAxis(
+                          interactiveTooltip: const InteractiveTooltip(),
+                          multiLevelLabels: List.empty(),
+                          axisLine:
+                              const AxisLine(width: 0, color: Colors.black),
+                          majorGridLines: const MajorGridLines(width: 0),
+                          majorTickLines: const MajorTickLines(
+                            size: 0,
+                          )),
+                      primaryYAxis: NumericAxis(
+                        rangePadding: ChartRangePadding.none,
+                        // 라벨 스타일
                         labelStyle: const TextStyle(
                             color: Colors.transparent, fontSize: 0),
-                        axisLine:
-                            const AxisLine(color: Color(0xFFE4E4E4), width: 2),
-                        majorGridLines: const MajorGridLines(width: 0),
-                      ),
-                      NumericAxis(
-                        name: 'y_second',
-                        opposedPosition: true,
+                        // 최소/최대/간격
                         minimum: 0,
                         maximum: 50,
-                        interval: 50,
+                        interval: 25,
+                        // 축선
                         axisLine: const AxisLine(color: Colors.transparent),
+                        // 라벨 표시선
                         majorTickLines: const MajorTickLines(size: 0),
-                        labelStyle: const TextStyle(
-                            color: Colors.transparent, fontSize: 0),
+                        // 간격선
+                        majorGridLines: MajorGridLines(
+                            width: 2,
+                            color: Colors.grey.withOpacity(0.5),
+                            dashArray: const [4]),
                       ),
-                    ],
-                    series: <ChartSeries<emotionData, String>>[
-                      // 오늘
-                      todayColumn,
-                      if (isSelected == 1)
-                        yesterDayColumn
-                      else if (isSelected == 2)
-                        beforeYesterDayColumn
-                    ],
-                  ),
-                ],
+                      axes: [
+                        CategoryAxis(
+                          name: 'x_second',
+                          opposedPosition: true,
+                          majorTickLines: const MajorTickLines(size: 0),
+                          labelStyle: const TextStyle(
+                              color: Colors.transparent, fontSize: 0),
+                          axisLine: const AxisLine(
+                              color: Color(0xFFE4E4E4), width: 2),
+                          majorGridLines: const MajorGridLines(width: 0),
+                        ),
+                        NumericAxis(
+                          name: 'y_second',
+                          opposedPosition: true,
+                          minimum: 0,
+                          maximum: 50,
+                          interval: 50,
+                          axisLine: const AxisLine(color: Colors.transparent),
+                          majorTickLines: const MajorTickLines(size: 0),
+                          labelStyle: const TextStyle(
+                              color: Colors.transparent, fontSize: 0),
+                        ),
+                      ],
+                      series: <ChartSeries<emotionData, String>>[
+                        // 오늘
+                        todayColumn,
+                        if (isSelected == 1)
+                          yesterDayColumn
+                        else if (isSelected == 2)
+                          beforeYesterDayColumn
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            formatSelector(
-              changeIndex: changeSelected,
-              formatValues: formatValues,
-            ),
-          ],
+              formatSelector(
+                changeIndex: changeSelected,
+                formatValues: formatValues,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -790,19 +807,40 @@ Widget makeContainer(Diary? diary) {
     );
   } else {
     return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Text(
-            '아직 작성된 일기가 없어요.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black38,
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 50,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/write_diary.gif',
+              height: 100,
+              width: 100,
+              color: Colors.white.withOpacity(0.4),
+              colorBlendMode: BlendMode.modulate,
             ),
-          ),
-        ],
+            // const Text(
+            //   '아직 작성된 일기가 없어요',
+            //   textAlign: TextAlign.center,
+            //   style: TextStyle(
+            //     color: Colors.black38,
+            //     fontSize: 20,
+            //     fontWeight: FontWeight.bold,
+            //   ),
+            // ),
+            const Text(
+              '오늘 하루를 돌아보면서\n떠오르는 이야기를 적어보세요',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black38,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
