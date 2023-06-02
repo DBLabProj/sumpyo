@@ -13,7 +13,11 @@ import 'package:syncfusion_flutter_core/src/slider_controller.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  DateTime? selectedDate;
+  HomeScreen({
+    super.key,
+    selectedDate,
+  }) : selectedDate = (selectedDate ?? DateTime.now());
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -21,7 +25,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   CalendarFormat calFormat = CalendarFormat.month;
   bool isExpanded = false;
-  DateTime _selectedDate = DateTime.now();
+  // DateTime widget.selectedDate = DateTime.now();
   List<String> ableDiaryDays = [];
   dynamic userInfo = '';
   String userName = '';
@@ -79,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   changeDate(DateTime selectedDate) {
     setState(() {
-      _selectedDate = selectedDate;
+      widget.selectedDate = selectedDate;
     });
   }
 
@@ -146,7 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: diaryContainer(
                   isExpanded: isExpanded,
-                  calendarDate: DateFormat("yyyy-MM-dd").format(_selectedDate),
+                  calendarDate:
+                      DateFormat("yyyy-MM-dd").format(widget.selectedDate!),
                   diarys: _diarys,
                 ),
               ),
