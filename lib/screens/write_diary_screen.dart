@@ -59,9 +59,11 @@ class _writeDiaryScreenState extends State<writeDiaryScreen> {
       if (res.statusCode == 200) {
         var resDiary = jsonDecode(res.body);
         if (resDiary['result'] == 'Success') {
-          Fluttertoast.showToast(msg: '성공적으로 등록되었습니다.');
+          Fluttertoast.showToast(msg: '일기가 성공적으로 등록되었습니다.');
+        } else if (resDiary['result'] == 'Updated') {
+          Fluttertoast.showToast(msg: '일기가 성공적으로 갱신되었습니다.');
         } else {
-          Fluttertoast.showToast(msg: '등록중 오류가 발생했습니다.');
+          Fluttertoast.showToast(msg: '일기 등록중 오류가 발생했습니다.');
         }
       }
     } catch (e) {

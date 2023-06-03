@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 
 class Diary {
   int diary_id;
-  String user_name;
+  String user_id;
   String diary_title;
   String diary_content;
   DateTime diary_date;
@@ -17,7 +17,7 @@ class Diary {
 
   Diary(
     this.diary_id,
-    this.user_name,
+    this.user_id,
     this.diary_title,
     this.diary_content,
     this.diary_date,
@@ -33,7 +33,7 @@ class Diary {
 
   Diary.fromJson(Map<String, dynamic> json)
       : diary_id = json['diary_id'],
-        user_name = json['user_name'],
+        user_id = json['user_id'],
         diary_title = json['diary_title'],
         diary_content = json['diary_content'],
         diary_date = DateTime.parse(json['diary_date']),
@@ -46,7 +46,7 @@ class Diary {
 
   Map<String, dynamic> toJson() => {
         'diary_id': diary_id.toString(),
-        'user_name': user_name,
+        'user_id': user_id,
         'diary_title': diary_title,
         'diary_content': diary_content,
         'diary_date': (DateFormat('yyyy-MM-dd')).format(diary_date),
