@@ -45,30 +45,38 @@ class _writeDiaryScreenState extends State<writeDiaryScreen> {
   }
 
   upLoadDiary() async {
-    uploadDiary diary = uploadDiary(
-      1,
-      userId,
-      titleController.text,
-      contentController.text,
-      diaryDate,
-    );
-    try {
-      var res = await http.post(Uri.parse(RestAPI.uploadDiary),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(diary));
-      if (res.statusCode == 200) {
-        var resDiary = jsonDecode(res.body);
-        if (resDiary['result'] == 'Success') {
-          Fluttertoast.showToast(msg: '일기가 성공적으로 등록되었습니다.');
-        } else if (resDiary['result'] == 'Updated') {
-          Fluttertoast.showToast(msg: '일기가 성공적으로 갱신되었습니다.');
-        } else {
-          Fluttertoast.showToast(msg: '일기 등록중 오류가 발생했습니다.');
-        }
+    if (contentController.text != "") {
+      if (titleController.text == "") {
+        titleController.text = DateFormat('M월 d일 일기').format(diaryDate);
       }
-    } catch (e) {
-      print(e.toString());
-      Fluttertoast.showToast(msg: e.toString());
+      uploadDiary diary = uploadDiary(
+        1,
+        userId,
+        titleController.text,
+        contentController.text,
+        diaryDate,
+      );
+
+      try {
+        var res = await http.post(Uri.parse(RestAPI.uploadDiary),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode(diary));
+        if (res.statusCode == 200) {
+          var resDiary = jsonDecode(res.body);
+          if (resDiary['result'] == 'Success') {
+            Fluttertoast.showToast(msg: '일기가 성공적으로 등록되었습니다.');
+          } else if (resDiary['result'] == 'Updated') {
+            Fluttertoast.showToast(msg: '일기가 성공적으로 갱신되었습니다.');
+          } else {
+            Fluttertoast.showToast(msg: '일기 등록 중 오류가 발생했습니다.');
+          }
+        }
+      } catch (e) {
+        print(e.toString());
+        Fluttertoast.showToast(msg: e.toString());
+      }
+    } else {
+      Fluttertoast.showToast(msg: '일기 내용을 입력해주세요.');
     }
   }
 
