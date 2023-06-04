@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sumpyo/screens/edit_account_info.dart';
 import 'package:sumpyo/screens/manageData.dart';
 
@@ -12,6 +15,33 @@ class myPage extends StatefulWidget {
 }
 
 class _mypage_screState extends State<myPage> {
+  dynamic userInfo = '';
+  var userName = '';
+  final storage = const FlutterSecureStorage();
+  _asyncMethod() async {
+    // read 함수로 key값에 맞는 정보를 불러오고 데이터타입은 String 타입
+    // 데이터가 없을때는 null을 반환
+    userInfo = await storage.read(key: 'account');
+    // user의 정보가 있다면 로그인 후 들어가는 첫 페이지로 넘어가게 합니다.
+    if (userInfo != null) {
+      var user = jsonDecode(userInfo);
+      setState(() {
+        userName = user['user_name']!;
+      });
+    } else {
+      print('로그인이 필요합니다');
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _asyncMethod();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,16 +87,16 @@ class _mypage_screState extends State<myPage> {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: Column(
-                              children: const [
+                              children: [
                                 Text(
-                                  '샤프님은',
-                                  style: TextStyle(
+                                  '$userName님은',
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 22,
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                                Text(
+                                const Text(
                                   '일반 회원이에요',
                                   style: TextStyle(
                                     color: Colors.white,
@@ -145,7 +175,7 @@ class _mypage_screState extends State<myPage> {
                         children: [
                           changeInfo(
                             ico: Icons.person_outline_outlined,
-                            info: "아이디",
+                            info: "닉네임",
                           ),
                           changeInfo(
                             ico: Icons.email_outlined,
@@ -195,11 +225,67 @@ class _mypage_screState extends State<myPage> {
                         ],
                       ),
                     ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Card(
+                      child: Column(
+                        children: const [logout()],
+                      ),
+                    ),
                   ],
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class logout extends StatelessWidget {
+  const logout({
+    super.key,
+  });
+  final storage = const FlutterSecureStorage();
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        storage.deleteAll();
+        Navigator.pushNamedAndRemoveUntil(
+            (context), '/login', (route) => false);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(
+            color: Theme.of(context).dividerColor,
+          )),
+          color: const Color.fromARGB(1, 255, 255, 255),
+        ),
+        padding: const EdgeInsets.all(15),
+        child: Row(
+          children: const [
+            Icon(
+              Icons.exit_to_app_rounded,
+              size: 30,
+              color: Color.fromRGBO(124, 124, 124, 1),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 10,
+              ),
+              child: Text(
+                '로그아웃',
+                style: TextStyle(
+                  color: Color.fromRGBO(124, 124, 124, 1),
+                  fontSize: 17,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

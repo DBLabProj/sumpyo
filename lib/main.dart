@@ -35,6 +35,12 @@ class _appFrameState extends State<appFrame> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   // final screens = [
   //   //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
   //   HomeScreen(),
@@ -106,13 +112,13 @@ class _AppState extends State<App> {
       routes: {
         '/': (context) => appFrame(),
         '/login': (context) => const App(),
-        '/splash': (context) => const introScreen(),
+        '/splash': (context) => introScreen(),
         '/writeDiary': (context) => const writeDiaryScreen(),
         '/mypage': (context) => const myPage(),
         '/notice': (context) => noticeScreen(),
         '/analysis': (context) => const analysisScreen(),
-        '/sginup': (context) => const signUpPage(),
-        '/sginup/sec': (context) => const secondPage(),
+        '/signup': (context) => const signUpPage(),
+        '/signup/sec': (context) => const secondPage(),
       },
       debugShowCheckedModeBanner: false,
       supportedLocales: L10n.all,

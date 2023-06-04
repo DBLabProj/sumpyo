@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _asyncMethod() async {
-    userInfo = await storage.read(key: 'login');
+    userInfo = await storage.read(key: 'account');
     if (userInfo != null) {
       var user = jsonDecode(userInfo);
       userName = user['user_id'];
@@ -403,6 +403,7 @@ class diaryAlysisChart extends StatefulWidget {
 }
 
 class _diaryAlysisChartState extends State<diaryAlysisChart> {
+  int highest = 0;
   List<String> formatValues = ['오늘', '어제', '그제'];
   late List<emotionData> todayData;
   late List<emotionData> yesterdayData;
@@ -599,8 +600,8 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
                             color: Colors.transparent, fontSize: 0),
                         // 최소/최대/간격
                         minimum: 0,
-                        maximum: 50,
-                        interval: 25,
+                        maximum: 15,
+                        interval: 7,
                         // 축선
                         axisLine: const AxisLine(color: Colors.transparent),
                         // 라벨 표시선
@@ -626,8 +627,8 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
                           name: 'y_second',
                           opposedPosition: true,
                           minimum: 0,
-                          maximum: 50,
-                          interval: 50,
+                          maximum: 30,
+                          interval: 15,
                           axisLine: const AxisLine(color: Colors.transparent),
                           majorTickLines: const MajorTickLines(size: 0),
                           labelStyle: const TextStyle(
@@ -727,7 +728,6 @@ class _formatSelectorState extends State<formatSelector> {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.04,
       child: Container(
-        // clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           border: Border.all(color: Theme.of(context).primaryColor),
           borderRadius: BorderRadius.circular(30),

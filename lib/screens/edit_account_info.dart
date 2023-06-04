@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sumpyo/apis/api.dart';
 import 'package:sumpyo/screens/signup_screen.dart';
+import 'package:http/http.dart' as http;
 
 class editAccount extends StatefulWidget {
   String dataType;
@@ -158,12 +164,63 @@ class manageData extends StatelessWidget {
   }
 }
 
-class editInfoWidget extends StatelessWidget {
+class editInfoWidget extends StatefulWidget {
   String dataType;
   editInfoWidget({
     super.key,
     required this.dataType,
   });
+
+  @override
+  State<editInfoWidget> createState() => _editInfoWidgetState();
+}
+
+class _editInfoWidgetState extends State<editInfoWidget> {
+  final storage = const FlutterSecureStorage();
+  TextEditingController controller = TextEditingController();
+  String userId = '';
+  String colName = '';
+  String value = '';
+  @override
+  void initState() {
+    // TODO: implement initState
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _asyncMethod();
+    });
+    super.initState();
+  }
+
+  _asyncMethod() async {
+    // read 함수로 key값에 맞는 정보를 불러오고 데이터타입은 String 타입
+    // 데이터가 없을때는 null을 반환
+    var userInfo = await storage.read(key: 'account');
+    // user의 정보가 있다면 로그인 후 들어가는 첫 페이지로 넘어가게 합니다.
+    if (userInfo != null) {
+      var user = jsonDecode(userInfo);
+      userId = user['user_id']!;
+    } else {
+      print('로그인이 필요합니다');
+    }
+  }
+
+  changeUserInfo(String userId, String colName, String value) async {
+    if (colName.isEmpty || value.isEmpty) {
+      Fluttertoast.showToast(msg: '값을 입력해주세요.');
+    } else {
+      var res = await http.post(Uri.parse(RestAPI.changeUserInfo),
+          body: jsonEncode(
+              {'userId': userId, 'changeCol': colName, 'changeValue': value}),
+          headers: {'Content-Type': 'application/json'});
+      if (res.statusCode == 200) {
+        var re = jsonDecode(res.body);
+        if (re['result'] == 'Success') {
+          Fluttertoast.showToast(
+              msg: '닉네임이 $value로 성공적으로 변경되었습니다.', textColor: Colors.redAccent);
+          Navigator.pop(context);
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +245,7 @@ class editInfoWidget extends StatelessWidget {
                 width: 20,
               ),
               Text(
-                '$dataType 변경',
+                '${widget.dataType} 변경',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -208,36 +265,58 @@ class editInfoWidget extends StatelessWidget {
             children: [
               // 기존 정보
               existingInfo(
-                title: dataType,
+                title: widget.dataType,
               ),
               // 새로운 정보
               newInfo(
-                title: dataType,
+                controller: controller,
+                title: widget.dataType,
               ),
               // 제출 버튼
-              Container(
-                margin: const EdgeInsets.symmetric(
-                  vertical: 20,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                        "변경하기",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
+              GestureDetector(
+                onTap: () {
+                  switch (widget.dataType) {
+                    case '닉네임':
+                      colName = 'user_nickname';
+                      break;
+                    case '이메일':
+                      colName = 'user_email';
+                      break;
+                    case '휴대전화':
+                      colName = 'user_phone';
+                      break;
+                    case '비밀번호':
+                      colName = 'user_passwd';
+                      break;
+                    default:
+                      break;
+                  }
+                  changeUserInfo(userId, colName, controller.text);
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 20,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          "변경하기",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -249,10 +328,12 @@ class editInfoWidget extends StatelessWidget {
 }
 
 class newInfo extends StatefulWidget {
+  TextEditingController controller;
   String title;
   newInfo({
     super.key,
     required this.title,
+    required this.controller,
   });
 
   @override
@@ -260,15 +341,6 @@ class newInfo extends StatefulWidget {
 }
 
 class _newInfoState extends State<newInfo> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController pwController = TextEditingController();
-  TextEditingController pwCheckController = TextEditingController();
-  TextEditingController idController = TextEditingController();
-  changeDomain(var value) {
-    // print(value);
-  }
-
   late Widget inputBox;
   dataSet(String title) {
     if (title == "이메일") {
@@ -278,18 +350,17 @@ class _newInfoState extends State<newInfo> {
             // changeDomain: changeDomain
             );
       });
-    } else if (title == "아이디") {
+    } else if (title == "닉네임") {
       setState(() {
-        inputBox = signupIdBox(
-          icon: const Icon(Icons.account_circle_outlined),
-          controller: idController,
+        inputBox = signupNickBox(
+          controller: widget.controller,
         );
       });
     } else if (title == "휴대폰번호") {
       setState(
         () {
           inputBox = phoneTextbox(
-            phoneController: phoneController,
+            phoneController: widget.controller,
           );
         },
       );

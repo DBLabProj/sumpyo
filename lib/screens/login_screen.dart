@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sumpyo/apis/api.dart';
-import 'package:sumpyo/main.dart';
 import 'package:sumpyo/models/user.dart';
 import 'package:sumpyo/widgets/loginWidget.dart';
 import 'package:http/http.dart' as http;
+
+bool rememberMe = false;
 
 class loginScreen extends StatefulWidget {
   // Function kill;
@@ -56,21 +57,31 @@ class _loginScreenState extends State<loginScreen> {
             headers: {"Content-Type": "application/json"},
             body: jsonEncode(user.toJson()));
         if (res.statusCode == 200) {
-          var resSignup = jsonDecode(res.body);
+          var resSignup = jsonDecode(utf8.decode(res.bodyBytes));
           if (resSignup['result'] == 'Success') {
-            var account = jsonEncode({
+            if (rememberMe == true) {
+              var account = jsonEncode({
+                'user_id': idController.text,
+                'user_passwd': pwController.text
+              });
+              await storage.write(key: 'login', value: account);
+            }
+            print(resSignup['userName']);
+            var loginInfo = jsonEncode({
               'user_id': idController.text,
-              'user_passwd': pwController.text
+              'user_name': resSignup['userName'],
+              'user_phone': resSignup['userPhone'],
+              'user_email': resSignup['userEmail'],
+              'user_gender': resSignup['userGender'],
+              'user_birth': resSignup['userBirth'],
             });
-            await storage.write(key: 'login', value: account);
-            print(storage.read(key: 'login'));
+            await storage.write(key: 'account', value: loginInfo);
             Fluttertoast.showToast(msg: 'login successfully');
             setState(() {
               idController.clear();
               pwController.clear();
             });
-            Navigator.push(
-                context, MaterialPageRoute(builder: (content) => appFrame()));
+            Navigator.pushNamedAndRemoveUntil((context), '/', (route) => false);
           } else if (resSignup['result'] == 'Failed.') {
             Fluttertoast.showToast(msg: '아이디와 비밀번호를 확인해주세요.');
           } else {
@@ -163,7 +174,6 @@ class loginToolBox extends StatefulWidget {
 }
 
 class _loginToolBoxState extends State<loginToolBox> {
-  bool? rememberMe = false;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -175,7 +185,7 @@ class _loginToolBoxState extends State<loginToolBox> {
               value: rememberMe,
               onChanged: ((value) {
                 setState(() {
-                  rememberMe = value;
+                  rememberMe = value!;
                 });
               }),
             ),

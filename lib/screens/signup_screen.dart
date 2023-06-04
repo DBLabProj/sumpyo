@@ -13,10 +13,11 @@ import 'package:http/http.dart' as http;
 
 import '../apis/api.dart';
 
-var userNameController = TextEditingController();
+var userIdController = TextEditingController();
 var domainName = 'google.com';
 var emailController = TextEditingController();
 var phoneController = TextEditingController();
+var nicknameController = TextEditingController();
 var pwController = TextEditingController();
 var pwCheckController = TextEditingController();
 var birthdayController = DateTime.now();
@@ -70,7 +71,8 @@ class _signUppageState extends State<signUpPage> {
   saveInfo() async {
     SignupUser userModel = SignupUser(
       1,
-      userNameController.text.trim(),
+      userIdController.text.trim(),
+      userIdController.text.trim(),
       '${emailController.text.trim()}@${domainName.trim()}',
       phoneController.text.trim(),
       pwController.text.trim(),
@@ -87,7 +89,7 @@ class _signUppageState extends State<signUpPage> {
         if (resSignup['result'] == 'Success') {
           Fluttertoast.showToast(msg: 'Signup successfully');
           setState(() {
-            userNameController.clear();
+            userIdController.clear();
             emailController.clear();
             pwController.clear();
             Navigator.push(
@@ -159,16 +161,22 @@ class _signUppageState extends State<signUpPage> {
                             ),
                             signupIdBox(
                               icon: const Icon(Icons.account_circle_outlined),
-                              controller: userNameController,
+                              controller: userIdController,
+                            ),
+                            signupNickBox(
+                              controller: nicknameController,
                             ),
                             signupPwBox(
                               pwController: pwController,
                               pwCheckController: pwCheckController,
                             ),
-                            TextButton(
-                              onPressed: () =>
-                                  Navigator.pushNamed(context, '/sginup/sec'),
-                              child: const Text('다음'),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () =>
+                                    Navigator.pushNamed(context, '/sginup/sec'),
+                                child: const Text('다음'),
+                              ),
                             ),
                           ],
                         ),
@@ -653,35 +661,22 @@ class signupIdBox extends StatefulWidget {
 class _signupIdBoxState extends State<signupIdBox> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom:
-                  BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          widget.icon,
-          Flexible(
-            child: TextFormField(
-              controller: widget.controller,
-              inputFormatters: [
-                FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
-              ],
-              decoration: const InputDecoration(
-                  labelText: '아이디', border: InputBorder.none),
-            ),
-          ),
-          ElevatedButton(
+    return TextFormField(
+      controller: widget.controller,
+      inputFormatters: [
+        FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
+      ],
+      decoration: InputDecoration(
+          labelText: '아이디',
+          prefixIcon: widget.icon,
+          suffixIcon: ElevatedButton(
             onPressed: () {},
             style: ButtonStyle(
               backgroundColor:
                   MaterialStatePropertyAll(Theme.of(context).primaryColor),
             ),
             child: const Text('중복 확인'),
-          )
-        ],
-      ),
+          )),
     );
   }
 }
@@ -706,74 +701,56 @@ class _signupPwBoxState extends State<signupPwBox> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Container(
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-                      width: 1.5, color: Colors.grey.withOpacity(0.4)))),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              keyImg,
-              Flexible(
-                child: TextFormField(
-                  obscureText: true,
-                  controller: widget.pwController,
-                  decoration: const InputDecoration(
-                      labelText: '비밀번호', border: InputBorder.none),
-                ),
-              ),
-            ],
-          ),
+        TextFormField(
+          obscureText: true,
+          controller: widget.pwController,
+          decoration: InputDecoration(prefixIcon: keyImg, labelText: '비밀번호'),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(
-                          width: 1.5, color: Colors.grey.withOpacity(0.4)))),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  keyImg,
-                  Flexible(
-                    child: TextFormField(
-                      obscureText: true,
-                      controller: widget.pwCheckController,
-                      decoration: const InputDecoration(
-                          labelText: '비밀번호 확인', border: InputBorder.none),
-                      onChanged: (value) {
-                        if (widget.pwCheckController.text !=
-                            widget.pwController.text) {
-                          setState(() {
-                            isDiff = true;
-                          });
-                        } else {
-                          setState(
-                            () {
-                              isDiff = false;
-                            },
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            isDiff
-                ? const Text(
-                    '* 비밀번호가 일치하지 않습니다',
-                    style: TextStyle(color: Colors.red),
-                    // textAlign: TextAlign.end,
-                  )
-                : const Text(''),
-          ],
-        ),
+        TextFormField(
+            obscureText: true,
+            controller: widget.pwCheckController,
+            decoration:
+                InputDecoration(prefixIcon: keyImg, labelText: '비밀번호 확인'),
+            onChanged: (value) {
+              if (widget.pwCheckController.text != widget.pwController.text) {
+                setState(() {
+                  isDiff = true;
+                });
+              } else {
+                setState(
+                  () {
+                    isDiff = false;
+                  },
+                );
+              }
+            }),
+        isDiff
+            ? const Text(
+                '* 비밀번호가 일치하지 않습니다',
+                style: TextStyle(color: Colors.red),
+                textAlign: TextAlign.end,
+              )
+            : const Text(''),
       ],
+    );
+  }
+}
+
+class signupNickBox extends StatelessWidget {
+  TextEditingController controller;
+  signupNickBox({super.key, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.admin_panel_settings_rounded),
+        // hintText: '닉네임',
+        labelText: '닉네임',
+      ),
+      controller: controller,
     );
   }
 }
