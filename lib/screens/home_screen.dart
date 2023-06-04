@@ -802,7 +802,15 @@ Widget makeContainer(Diary? diary) {
             height: 20,
           ),
           // 일기 제목
-          Text(diary.diary_title),
+
+          Text(
+            diary.diary_title,
+            style: const TextStyle(
+              color: Color(0xFF1E1E1E),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(
             height: 20,
           ),
@@ -812,6 +820,10 @@ Widget makeContainer(Diary? diary) {
             child: Text(
               diary.diary_content,
               overflow: TextOverflow.clip,
+              style: const TextStyle(
+                color: Color(0xFF1E1E1E),
+                fontSize: 14,
+              ),
             ),
           ),
         ],
