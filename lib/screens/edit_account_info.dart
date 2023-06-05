@@ -214,8 +214,7 @@ class _editInfoWidgetState extends State<editInfoWidget> {
       if (res.statusCode == 200) {
         var re = jsonDecode(res.body);
         if (re['result'] == 'Success') {
-          Fluttertoast.showToast(
-              msg: '닉네임이 $value로 성공적으로 변경되었습니다.', textColor: Colors.redAccent);
+          Fluttertoast.showToast(msg: '닉네임이 "$value"로 성공적으로 변경되었습니다.');
           Navigator.pop(context);
         }
       }
@@ -282,7 +281,7 @@ class _editInfoWidgetState extends State<editInfoWidget> {
                     case '이메일':
                       colName = 'user_email';
                       break;
-                    case '휴대전화':
+                    case '휴대폰번호':
                       colName = 'user_phone';
                       break;
                     case '비밀번호':
@@ -291,6 +290,7 @@ class _editInfoWidgetState extends State<editInfoWidget> {
                     default:
                       break;
                   }
+                  print(controller.text);
                   changeUserInfo(userId, colName, controller.text);
                 },
                 child: Container(

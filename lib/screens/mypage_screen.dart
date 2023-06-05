@@ -54,6 +54,7 @@ class _mypage_screState extends State<myPage> {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: Stack(
             children: [
               Container(

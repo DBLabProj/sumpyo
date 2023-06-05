@@ -58,24 +58,26 @@ class _HomeScreenState extends State<HomeScreen> {
   static Future<Map<String, Diary>> getDiary(
       Map<String, String> userNameInfo) async {
     Map<String, Diary> diaryInstance = {};
-    var res = await http.post(Uri.parse(RestAPI.getDiary),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(userNameInfo));
-    if (res.statusCode == 200) {
-      var resDiary = jsonDecode(utf8.decode(res.bodyBytes));
-      if (resDiary['result'] == 'Success') {
-        Fluttertoast.showToast(msg: '성공적으로 불러왔습니다.');
-        final List<dynamic> diarys = resDiary['diarys'];
-        for (var diary in diarys) {
-          final instance = Diary.fromJson(diary);
-          String diaryDate =
-              DateFormat('yyyy-MM-dd').format(instance.diary_date);
-          diaryInstance.addAll({diaryDate: instance});
+    if (userNameInfo['userId'] != '') {
+      var res = await http.post(Uri.parse(RestAPI.getDiary),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(userNameInfo));
+      if (res.statusCode == 200) {
+        var resDiary = jsonDecode(utf8.decode(res.bodyBytes));
+        if (resDiary['result'] == 'Success') {
+          Fluttertoast.showToast(msg: '성공적으로 불러왔습니다.');
+          final List<dynamic> diarys = resDiary['diarys'];
+          for (var diary in diarys) {
+            final instance = Diary.fromJson(diary);
+            String diaryDate =
+                DateFormat('yyyy-MM-dd').format(instance.diary_date);
+            diaryInstance.addAll({diaryDate: instance});
+          }
+          return diaryInstance;
+        } else {
+          Fluttertoast.showToast(msg: '불러오는중 오류가 발생했습니다.');
+          return diaryInstance;
         }
-        return diaryInstance;
-      } else {
-        Fluttertoast.showToast(msg: '불러오는중 오류가 발생했습니다.');
-        return diaryInstance;
       }
     }
     return diaryInstance;

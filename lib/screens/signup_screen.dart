@@ -174,7 +174,7 @@ class _signUppageState extends State<signUpPage> {
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: () =>
-                                    Navigator.pushNamed(context, '/sginup/sec'),
+                                    Navigator.pushNamed(context, '/signup/sec'),
                                 child: const Text('다음'),
                               ),
                             ),
@@ -248,31 +248,29 @@ class _emailTextboxState extends State<emailTextbox> {
   @override
   Widget build(BuildContext context) {
     String email = '${emailController.text}@$_selectedValue';
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom:
-                  BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          const Icon(Icons.email_outlined),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.3,
-            child: TextFormField(
-              controller: emailController,
-              inputFormatters: [
-                FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
-              ],
-              decoration: const InputDecoration(
-                  hintText: '이메일', border: InputBorder.none, labelText: '이메일'),
+    return TextFormField(
+      controller: emailController,
+      inputFormatters: [
+        FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
+      ],
+      decoration: InputDecoration(
+        hintText: '이메일',
+        labelText: '이메일',
+        prefixIcon: const Icon(
+          Icons.email_outlined,
+          color: Colors.black,
+        ),
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.alternate_email_rounded,
+              color: Colors.black,
             ),
-          ),
-          const Icon(Icons.alternate_email),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.3,
-            child: DropdownButton(
-              isExpanded: true,
+            const SizedBox(
+              width: 8,
+            ),
+            DropdownButton(
               underline: const SizedBox.shrink(),
               value: _selectedValue,
               items: _emailList.map((value) {
@@ -288,8 +286,8 @@ class _emailTextboxState extends State<emailTextbox> {
                 });
               },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -307,27 +305,19 @@ class phoneTextbox extends StatefulWidget {
 class _phoneTextboxState extends State<phoneTextbox> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom:
-                  BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const Icon(Icons.phone_android_rounded),
-          Flexible(
-              child: TextField(
-            controller: widget.phoneController,
-            inputFormatters: [
-              MultiMaskedTextInputFormatter(
-                  masks: ['xxx-xxxx-xxxx', 'xxx-xxx-xxxx'], separator: '-'),
-            ],
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-                labelText: '휴대전화', border: InputBorder.none),
-          )),
-        ],
+    return TextField(
+      controller: widget.phoneController,
+      inputFormatters: [
+        MultiMaskedTextInputFormatter(
+            masks: ['xxx-xxxx-xxxx', 'xxx-xxx-xxxx'], separator: '-'),
+      ],
+      keyboardType: TextInputType.number,
+      decoration: const InputDecoration(
+        labelText: '휴대전화',
+        prefixIcon: Icon(
+          Icons.phone_android_rounded,
+          color: Colors.black,
+        ),
       ),
     );
   }
@@ -584,7 +574,9 @@ class _secondPageState extends State<secondPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
                                     child: const Icon(Icons.arrow_back_ios)),
                                 Text(
                                   '회원가입',
