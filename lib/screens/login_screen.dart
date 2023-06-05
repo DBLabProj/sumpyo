@@ -40,6 +40,9 @@ class _loginScreenState extends State<loginScreen> {
     userInfo = await storage.read(key: 'login');
     // user의 정보가 있다면 로그인 후 들어가는 첫 페이지로 넘어가게 합니다.
     if (userInfo != null) {
+      setState(() {
+        rememberMe = true;
+      });
       var user = jsonDecode(userInfo);
       idController.text = user['user_id'];
       pwController.text = user['user_passwd'];
@@ -66,7 +69,6 @@ class _loginScreenState extends State<loginScreen> {
               });
               await storage.write(key: 'login', value: account);
             }
-            print(resSignup['userName']);
             var loginInfo = jsonEncode({
               'user_id': idController.text,
               'user_name': resSignup['userName'],

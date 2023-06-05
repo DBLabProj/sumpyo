@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sumpyo/screens/edit_account_info.dart';
+import 'package:sumpyo/screens/home_screen.dart';
 import 'package:sumpyo/screens/manageData.dart';
 
 class myPage extends StatefulWidget {
@@ -15,30 +14,12 @@ class myPage extends StatefulWidget {
 }
 
 class _mypage_screState extends State<myPage> {
-  dynamic userInfo = '';
-  var userName = '';
-  final storage = const FlutterSecureStorage();
-  _asyncMethod() async {
-    // read 함수로 key값에 맞는 정보를 불러오고 데이터타입은 String 타입
-    // 데이터가 없을때는 null을 반환
-    userInfo = await storage.read(key: 'account');
-    // user의 정보가 있다면 로그인 후 들어가는 첫 페이지로 넘어가게 합니다.
-    if (userInfo != null) {
-      var user = jsonDecode(userInfo);
-      setState(() {
-        userName = user['user_name']!;
-      });
-    } else {
-      print('로그인이 필요합니다');
-    }
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _asyncMethod();
+      // _asyncMethod();
     });
   }
 
@@ -54,6 +35,7 @@ class _mypage_screState extends State<myPage> {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: Stack(
             children: [
               Container(
@@ -89,7 +71,7 @@ class _mypage_screState extends State<myPage> {
                             child: Column(
                               children: [
                                 Text(
-                                  '$userName님은',
+                                  '${user['user_name']}님은',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 22,
@@ -114,16 +96,16 @@ class _mypage_screState extends State<myPage> {
                       child: Row(
                         children: [
                           recordInfo(
-                            cnt: 52,
+                            cnt: postedDiarys.length,
                             title: '총 일기',
                           ),
                           recordInfo(
                             cnt: 7,
-                            title: '더미 1',
+                            title: '최근 감정',
                           ),
                           recordInfo(
                             cnt: 10,
-                            title: '더미 2',
+                            title: '최빈 감정',
                             isRight: true,
                           ),
                         ],

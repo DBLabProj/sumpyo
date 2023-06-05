@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -44,28 +46,8 @@ class signUpPage extends StatefulWidget {
 class _signUppageState extends State<signUpPage> {
   var formKey = GlobalKey<FormState>();
   bool isSecondPage = false;
-
   checkUsername() async {
     saveInfo();
-    // try {
-    //   var response = await http.post(Uri.parse(API.validateName),
-    //       body: {'user_name': userNameController.text.trim()});
-
-    //   if (response.statusCode == 200) {
-    //     var responseBody = jsonDecode(response.body);
-
-    //     if (responseBody['existName'] == true) {
-    //       Fluttertoast.showToast(
-    //         msg: "이미 존재하는 사용자 이름입니다.",
-    //       );
-    //     } else {
-    //       saveInfo();
-    //     }
-    //   }
-    // } catch (e) {
-    //   print(e.toString());
-    //   Fluttertoast.showToast(msg: e.toString());
-    // }
   }
 
   saveInfo() async {
@@ -111,6 +93,19 @@ class _signUppageState extends State<signUpPage> {
       print(e.toString());
       Fluttertoast.showToast(msg: e.toString());
     }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    userIdController.clear();
+    emailController.clear();
+    phoneController.clear();
+    nicknameController.clear();
+    pwController.clear();
+    pwCheckController.clear();
+    birthdayController = DateTime.now();
+    super.dispose();
   }
 
   @override
@@ -197,6 +192,9 @@ class _signUppageState extends State<signUpPage> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStatePropertyAll(
+                                        Theme.of(context).primaryColor)),
                                 onPressed: () =>
                                     Navigator.pushNamed(context, '/signup/sec'),
                                 child: const Text('다음'),
@@ -272,31 +270,29 @@ class _emailTextboxState extends State<emailTextbox> {
   @override
   Widget build(BuildContext context) {
     String email = '${emailController.text}@$_selectedValue';
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom:
-                  BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          const Icon(Icons.email_outlined),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.3,
-            child: TextFormField(
-              controller: emailController,
-              inputFormatters: [
-                FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
-              ],
-              decoration: const InputDecoration(
-                  hintText: '이메일', border: InputBorder.none, labelText: '이메일'),
+    return TextFormField(
+      controller: emailController,
+      inputFormatters: [
+        FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
+      ],
+      decoration: InputDecoration(
+        hintText: '이메일',
+        labelText: '이메일',
+        prefixIcon: const Icon(
+          Icons.email_outlined,
+          color: Colors.black,
+        ),
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.alternate_email_rounded,
+              color: Colors.black,
             ),
-          ),
-          const Icon(Icons.alternate_email),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.3,
-            child: DropdownButton(
-              isExpanded: true,
+            const SizedBox(
+              width: 8,
+            ),
+            DropdownButton(
               underline: const SizedBox.shrink(),
               value: _selectedValue,
               items: _emailList.map((value) {
@@ -312,8 +308,8 @@ class _emailTextboxState extends State<emailTextbox> {
                 });
               },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -331,27 +327,19 @@ class phoneTextbox extends StatefulWidget {
 class _phoneTextboxState extends State<phoneTextbox> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom:
-                  BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const Icon(Icons.phone_android_rounded),
-          Flexible(
-              child: TextField(
-            controller: widget.phoneController,
-            inputFormatters: [
-              MultiMaskedTextInputFormatter(
-                  masks: ['xxx-xxxx-xxxx', 'xxx-xxx-xxxx'], separator: '-'),
-            ],
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-                labelText: '휴대전화', border: InputBorder.none),
-          )),
-        ],
+    return TextField(
+      controller: widget.phoneController,
+      inputFormatters: [
+        MultiMaskedTextInputFormatter(
+            masks: ['xxx-xxxx-xxxx', 'xxx-xxx-xxxx'], separator: '-'),
+      ],
+      keyboardType: TextInputType.number,
+      decoration: const InputDecoration(
+        labelText: '휴대전화',
+        prefixIcon: Icon(
+          Icons.phone_android_rounded,
+          color: Colors.black,
+        ),
       ),
     );
   }
@@ -528,30 +516,6 @@ class _brithdaySelectorState extends State<brithdaySelector> {
   }
 }
 
-class firstPage extends StatefulWidget {
-  // Function changePage;
-  // TextEditingController idController;
-  // TextEditingController pwController;
-  // TextEditingController pwCheckController;
-  const firstPage({
-    super.key,
-    // required this.changePage,
-    // required this.idController,
-    // required this.pwController,
-    // required this.pwCheckController,
-  });
-
-  @override
-  State<firstPage> createState() => _firstPageState();
-}
-
-class _firstPageState extends State<firstPage> {
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold();
-  }
-}
-
 // 다음 화면(두번째)
 class secondPage extends StatefulWidget {
   // String domain;
@@ -608,7 +572,9 @@ class _secondPageState extends State<secondPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
                                     child: const Icon(Icons.arrow_back_ios)),
                                 Text(
                                   '회원가입',
@@ -682,7 +648,7 @@ class _secondPageState extends State<secondPage> {
 }
 
 // 회원가입 아이디
-class signupIdBox extends StatefulWidget {
+class signupIdBox extends StatelessWidget {
   Icon icon;
   TextEditingController controller;
   signupIdBox({
@@ -690,35 +656,48 @@ class signupIdBox extends StatefulWidget {
     this.icon = const Icon(Icons.account_circle_outlined),
     required this.controller,
   });
+  checkIdExist(String id) async {
+    var res = await http.post(Uri.parse(RestAPI.checkUserExist),
+        body: jsonEncode({'user_id': id}),
+        headers: {'Content-Type': 'application/json'});
+    if (res.statusCode == 200) {
+      var data = jsonDecode(res.body);
+      if (data['result'] == 'Able') {
+        Fluttertoast.showToast(msg: '사용 가능한 아이디입니다.');
+      } else if (data['result'] == 'Unable') {
+        Fluttertoast.showToast(msg: '이미 사용중인 아이디입니다.');
+      } else {
+        Fluttertoast.showToast(msg: '통신중 오류가 발생하였습니다.');
+      }
+    } else {
+      Fluttertoast.showToast(msg: '통신중 오류가 발생하였습니다.');
+    }
+  }
 
-  @override
-  State<signupIdBox> createState() => _signupIdBoxState();
-}
-
-class _signupIdBoxState extends State<signupIdBox> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: widget.controller,
+      enabled: false,
+      controller: controller,
       inputFormatters: [
         FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
       ],
       decoration: InputDecoration(
         labelText: '아이디',
-        prefixIcon: widget.icon,
+        prefixIcon: icon,
         suffixIcon: Column(
           children: [
             TextButton(
-              onPressed: () {},
               style: ButtonStyle(
-                padding: const MaterialStatePropertyAll(EdgeInsets.zero),
-                backgroundColor:
-                    MaterialStatePropertyAll(Theme.of(context).primaryColor),
-              ),
+                  backgroundColor:
+                      MaterialStatePropertyAll(Theme.of(context).primaryColor)),
               child: const Text(
                 '중복 확인',
                 style: TextStyle(color: Colors.white),
               ),
+              onPressed: () {
+                checkIdExist(controller.text);
+              },
             ),
           ],
         ),

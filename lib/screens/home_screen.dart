@@ -12,6 +12,9 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_core/src/slider_controller.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+Map<String, Diary> postedDiarys = {};
+var user;
+
 class HomeScreen extends StatefulWidget {
   DateTime? selectedDate;
   HomeScreen({
@@ -29,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> ableDiaryDays = [];
   dynamic userInfo = '';
   String userName = '';
-  Map<String, Diary> _diarys = {};
 
   static const storage = FlutterSecureStorage();
   @override
@@ -38,9 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await _asyncMethod();
-      _diarys = await getDiary({'userId': userName});
+      postedDiarys = await getDiary({'userId': userName});
       setState(() {
-        ableDiaryDays = _diarys.keys.toList();
+        ableDiaryDays = postedDiarys.keys.toList();
       });
     });
   }
@@ -48,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
   _asyncMethod() async {
     userInfo = await storage.read(key: 'account');
     if (userInfo != null) {
-      var user = jsonDecode(userInfo);
+      user = jsonDecode(userInfo);
       userName = user['user_id'];
     } else {
       print('로그인이 필요합니다');
@@ -58,24 +60,26 @@ class _HomeScreenState extends State<HomeScreen> {
   static Future<Map<String, Diary>> getDiary(
       Map<String, String> userNameInfo) async {
     Map<String, Diary> diaryInstance = {};
-    var res = await http.post(Uri.parse(RestAPI.getDiary),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(userNameInfo));
-    if (res.statusCode == 200) {
-      var resDiary = jsonDecode(utf8.decode(res.bodyBytes));
-      if (resDiary['result'] == 'Success') {
-        Fluttertoast.showToast(msg: '성공적으로 불러왔습니다.');
-        final List<dynamic> diarys = resDiary['diarys'];
-        for (var diary in diarys) {
-          final instance = Diary.fromJson(diary);
-          String diaryDate =
-              DateFormat('yyyy-MM-dd').format(instance.diary_date);
-          diaryInstance.addAll({diaryDate: instance});
+    if (userNameInfo['userId'] != '') {
+      var res = await http.post(Uri.parse(RestAPI.getDiary),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(userNameInfo));
+      if (res.statusCode == 200) {
+        var resDiary = jsonDecode(utf8.decode(res.bodyBytes));
+        if (resDiary['result'] == 'Success') {
+          Fluttertoast.showToast(msg: '성공적으로 불러왔습니다.');
+          final List<dynamic> diarys = resDiary['diarys'];
+          for (var diary in diarys) {
+            final instance = Diary.fromJson(diary);
+            String diaryDate =
+                DateFormat('yyyy-MM-dd').format(instance.diary_date);
+            diaryInstance.addAll({diaryDate: instance});
+          }
+          return diaryInstance;
+        } else {
+          Fluttertoast.showToast(msg: '불러오는중 오류가 발생했습니다.');
+          return diaryInstance;
         }
-        return diaryInstance;
-      } else {
-        Fluttertoast.showToast(msg: '불러오는중 오류가 발생했습니다.');
-        return diaryInstance;
       }
     }
     return diaryInstance;
@@ -153,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   isExpanded: isExpanded,
                   calendarDate:
                       DateFormat("yyyy-MM-dd").format(widget.selectedDate!),
-                  diarys: _diarys,
+                  diarys: postedDiarys,
                 ),
               ),
             ),

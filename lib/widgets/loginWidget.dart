@@ -40,7 +40,7 @@ class loginBackground extends StatelessWidget {
 }
 
 // ------------------------------------입력 상자 -------------------------------------------------
-class loginTextbox extends StatefulWidget {
+class loginTextbox extends StatelessWidget {
   Icon icon;
   String dataType;
   TextEditingController controller;
@@ -51,31 +51,11 @@ class loginTextbox extends StatefulWidget {
       required this.controller});
 
   @override
-  State<loginTextbox> createState() => _loginTextboxState();
-}
-
-class _loginTextboxState extends State<loginTextbox> {
-  @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom:
-                  BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          widget.icon,
-          Flexible(
-            child: TextFormField(
-              controller: widget.controller,
-              obscureText: widget.dataType != '아이디' ? true : false,
-              decoration: InputDecoration(
-                  labelText: widget.dataType, border: InputBorder.none),
-            ),
-          ),
-        ],
-      ),
+    return TextFormField(
+      controller: controller,
+      obscureText: dataType != '아이디' ? true : false,
+      decoration: InputDecoration(labelText: dataType, prefixIcon: icon),
     );
   }
 }
