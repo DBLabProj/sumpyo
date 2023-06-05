@@ -6,6 +6,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sumpyo/notification.dart';
 import 'package:sumpyo/screens/intro_screen.dart';
 import 'package:sumpyo/screens/analysis_screen.dart';
+import 'package:sumpyo/screens/login_screen.dart';
 import 'package:sumpyo/screens/signup_screen.dart';
 import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/home_screen.dart';
@@ -111,8 +112,8 @@ class _AppState extends State<App> {
       initialRoute: '/splash',
       routes: {
         '/': (context) => appFrame(),
-        '/login': (context) => const App(),
-        '/splash': (context) => introScreen(),
+        '/login': (context) => const loginScreen(),
+        '/splash': (context) => const introScreen(),
         '/writeDiary': (context) => const writeDiaryScreen(),
         '/mypage': (context) => const myPage(),
         '/notice': (context) => noticeScreen(),

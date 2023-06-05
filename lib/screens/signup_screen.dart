@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -44,28 +46,8 @@ class signUpPage extends StatefulWidget {
 class _signUppageState extends State<signUpPage> {
   var formKey = GlobalKey<FormState>();
   bool isSecondPage = false;
-
   checkUsername() async {
     saveInfo();
-    // try {
-    //   var response = await http.post(Uri.parse(API.validateName),
-    //       body: {'user_name': userNameController.text.trim()});
-
-    //   if (response.statusCode == 200) {
-    //     var responseBody = jsonDecode(response.body);
-
-    //     if (responseBody['existName'] == true) {
-    //       Fluttertoast.showToast(
-    //         msg: "이미 존재하는 사용자 이름입니다.",
-    //       );
-    //     } else {
-    //       saveInfo();
-    //     }
-    //   }
-    // } catch (e) {
-    //   print(e.toString());
-    //   Fluttertoast.showToast(msg: e.toString());
-    // }
   }
 
   saveInfo() async {
@@ -111,6 +93,19 @@ class _signUppageState extends State<signUpPage> {
       print(e.toString());
       Fluttertoast.showToast(msg: e.toString());
     }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    userIdController.clear();
+    emailController.clear();
+    phoneController.clear();
+    nicknameController.clear();
+    pwController.clear();
+    pwCheckController.clear();
+    birthdayController = DateTime.now();
+    super.dispose();
   }
 
   @override
@@ -173,6 +168,9 @@ class _signUppageState extends State<signUpPage> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStatePropertyAll(
+                                        Theme.of(context).primaryColor)),
                                 onPressed: () =>
                                     Navigator.pushNamed(context, '/signup/sec'),
                                 child: const Text('다음'),
@@ -494,30 +492,6 @@ class _brithdaySelectorState extends State<brithdaySelector> {
   }
 }
 
-class firstPage extends StatefulWidget {
-  // Function changePage;
-  // TextEditingController idController;
-  // TextEditingController pwController;
-  // TextEditingController pwCheckController;
-  const firstPage({
-    super.key,
-    // required this.changePage,
-    // required this.idController,
-    // required this.pwController,
-    // required this.pwCheckController,
-  });
-
-  @override
-  State<firstPage> createState() => _firstPageState();
-}
-
-class _firstPageState extends State<firstPage> {
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold();
-  }
-}
-
 // 다음 화면(두번째)
 class secondPage extends StatefulWidget {
   // String domain;
@@ -637,7 +611,7 @@ class _secondPageState extends State<secondPage> {
 }
 
 // 회원가입 아이디
-class signupIdBox extends StatefulWidget {
+class signupIdBox extends StatelessWidget {
   Icon icon;
   TextEditingController controller;
   signupIdBox({
@@ -645,30 +619,52 @@ class signupIdBox extends StatefulWidget {
     this.icon = const Icon(Icons.account_circle_outlined),
     required this.controller,
   });
+  checkIdExist(String id) async {
+    var res = await http.post(Uri.parse(RestAPI.checkUserExist),
+        body: jsonEncode({'user_id': id}),
+        headers: {'Content-Type': 'application/json'});
+    if (res.statusCode == 200) {
+      var data = jsonDecode(res.body);
+      if (data['result'] == 'Able') {
+        Fluttertoast.showToast(msg: '사용 가능한 아이디입니다.');
+      } else if (data['result'] == 'Unable') {
+        Fluttertoast.showToast(msg: '이미 사용중인 아이디입니다.');
+      } else {
+        Fluttertoast.showToast(msg: '통신중 오류가 발생하였습니다.');
+      }
+    } else {
+      Fluttertoast.showToast(msg: '통신중 오류가 발생하였습니다.');
+    }
+  }
 
-  @override
-  State<signupIdBox> createState() => _signupIdBoxState();
-}
-
-class _signupIdBoxState extends State<signupIdBox> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: widget.controller,
+      enabled: false,
+      controller: controller,
       inputFormatters: [
         FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
       ],
       decoration: InputDecoration(
-          labelText: '아이디',
-          prefixIcon: widget.icon,
-          suffixIcon: ElevatedButton(
-            onPressed: () {},
-            style: ButtonStyle(
-              backgroundColor:
-                  MaterialStatePropertyAll(Theme.of(context).primaryColor),
+        labelText: '아이디',
+        prefixIcon: icon,
+        suffixIcon: Column(
+          children: [
+            TextButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStatePropertyAll(Theme.of(context).primaryColor)),
+              child: const Text(
+                '중복 확인',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                checkIdExist(controller.text);
+              },
             ),
-            child: const Text('중복 확인'),
-          )),
+          ],
+        ),
+      ),
     );
   }
 }

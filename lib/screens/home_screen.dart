@@ -12,6 +12,9 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_core/src/slider_controller.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+Map<String, Diary> postedDiarys = {};
+var user;
+
 class HomeScreen extends StatefulWidget {
   DateTime? selectedDate;
   HomeScreen({
@@ -29,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> ableDiaryDays = [];
   dynamic userInfo = '';
   String userName = '';
-  Map<String, Diary> _diarys = {};
 
   static const storage = FlutterSecureStorage();
   @override
@@ -38,9 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await _asyncMethod();
-      _diarys = await getDiary({'userId': userName});
+      postedDiarys = await getDiary({'userId': userName});
       setState(() {
-        ableDiaryDays = _diarys.keys.toList();
+        ableDiaryDays = postedDiarys.keys.toList();
       });
     });
   }
@@ -48,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
   _asyncMethod() async {
     userInfo = await storage.read(key: 'account');
     if (userInfo != null) {
-      var user = jsonDecode(userInfo);
+      user = jsonDecode(userInfo);
       userName = user['user_id'];
     } else {
       print('로그인이 필요합니다');
@@ -155,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   isExpanded: isExpanded,
                   calendarDate:
                       DateFormat("yyyy-MM-dd").format(widget.selectedDate!),
-                  diarys: _diarys,
+                  diarys: postedDiarys,
                 ),
               ),
             ),

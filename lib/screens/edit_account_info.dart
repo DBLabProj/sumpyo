@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sumpyo/apis/api.dart';
+import 'package:sumpyo/screens/home_screen.dart';
 import 'package:sumpyo/screens/signup_screen.dart';
 import 'package:http/http.dart' as http;
 
@@ -406,7 +407,7 @@ class _newInfoState extends State<newInfo> {
   }
 }
 
-class existingInfo extends StatelessWidget {
+class existingInfo extends StatefulWidget {
   String title;
   existingInfo({
     super.key,
@@ -414,7 +415,32 @@ class existingInfo extends StatelessWidget {
   });
 
   @override
+  State<existingInfo> createState() => _existingInfoState();
+}
+
+class _existingInfoState extends State<existingInfo> {
+  TextEditingController existingPw = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
+    String colName;
+    switch (widget.title) {
+      case '닉네임':
+        colName = 'user_name';
+        break;
+      case '이메일':
+        colName = 'user_email';
+        break;
+      case '휴대폰번호':
+        colName = 'user_phone';
+        break;
+      case '비밀번호':
+        colName = 'user_passwd';
+        break;
+      default:
+        colName = 'error';
+        break;
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 20,
@@ -423,18 +449,41 @@ class existingInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "기존 $title",
+            "기존 ${widget.title}",
             style: const TextStyle(
               fontSize: 16,
             ),
           ),
-          const Text(
-            "샤프",
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 20,
-            ),
-          ),
+          widget.title != '패스워드'
+              ? Text(
+                  "${user[colName]}",
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 20,
+                  ),
+                )
+              : TextFormField(
+                  obscureText: true,
+                  controller: existingPw,
+                  decoration: InputDecoration(
+                    labelText: '기존 비밀번호',
+                    suffixIcon: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton(
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStatePropertyAll(
+                                    Theme.of(context).primaryColor)),
+                            child: const Text(
+                              '비밀번호 확인',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onPressed: () {},
+                          )
+                        ]),
+                    prefixIcon: Image.asset('assets/pwImage.png'),
+                  ),
+                )
         ],
       ),
     );
