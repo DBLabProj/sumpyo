@@ -124,7 +124,7 @@ class _loginScreenState extends State<loginScreen> {
               color: Colors.white,
               child: GestureDetector(
                 child: Padding(
-                  padding: const EdgeInsets.all(15.0),
+                  padding: const EdgeInsets.all(25.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -255,7 +255,7 @@ class _loginButtonState extends State<loginButton> {
               backgroundColor: const MaterialStatePropertyAll(Colors.white),
             ),
             onPressed: () {
-              Navigator.pushNamed(context, '/sginup');
+              Navigator.pushNamed(context, '/signup');
             },
             child: Text(
               '회원가입',

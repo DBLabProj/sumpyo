@@ -148,33 +148,57 @@ class _signUppageState extends State<signUpPage> {
                     color: Colors.white,
                     child: GestureDetector(
                       child: Padding(
-                        padding: const EdgeInsets.all(15.0),
+                        padding: const EdgeInsets.all(25.0),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              '회원가입',
-                              style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w300,
-                                  color: Theme.of(context).primaryColor),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                    onTap: () {},
+                                    child: const Icon(Icons.arrow_back_ios)),
+                                Text(
+                                  '회원가입',
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w300,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                                const Text(
+                                  '  ',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                  ),
+                                ),
+                              ],
                             ),
-                            signupIdBox(
-                              icon: const Icon(Icons.account_circle_outlined),
-                              controller: userIdController,
-                            ),
-                            signupNickBox(
-                              controller: nicknameController,
-                            ),
-                            signupPwBox(
-                              pwController: pwController,
-                              pwCheckController: pwCheckController,
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.4,
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  signupIdBox(
+                                    icon: const Icon(
+                                        Icons.account_circle_outlined),
+                                    controller: userIdController,
+                                  ),
+                                  signupNickBox(
+                                    controller: nicknameController,
+                                  ),
+                                  signupPwBox(
+                                    pwController: pwController,
+                                    pwCheckController: pwCheckController,
+                                  ),
+                                ],
+                              ),
                             ),
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: () =>
-                                    Navigator.pushNamed(context, '/sginup/sec'),
+                                    Navigator.pushNamed(context, '/signup/sec'),
                                 child: const Text('다음'),
                               ),
                             ),
@@ -576,7 +600,7 @@ class _secondPageState extends State<secondPage> {
                     color: Colors.white,
                     child: GestureDetector(
                       child: Padding(
-                        padding: const EdgeInsets.all(15.0),
+                        padding: const EdgeInsets.all(25.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -601,30 +625,43 @@ class _secondPageState extends State<secondPage> {
                                 ),
                               ],
                             ),
-                            const emailTextbox(
-                                // emailController: emailController,
-                                // changeDomain: changeDomain,
-                                ),
-                            phoneTextbox(
-                              phoneController: phoneController,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.4,
-                                  child: const genderSelectButton(
-                                      // genderChange: widget.changeGender,
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.4,
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  const emailTextbox(
+                                      // emailController: emailController,
+                                      // changeDomain: changeDomain,
                                       ),
-                                ),
-                                SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.4,
-                                    child: const brithdaySelector(
-                                        // changeBrithday: widget.changeBrithday,
-                                        )),
-                              ],
+                                  phoneTextbox(
+                                    phoneController: phoneController,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.4,
+                                        child: const genderSelectButton(
+                                            // genderChange: widget.changeGender,
+                                            ),
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.4,
+                                        child: const brithdaySelector(
+                                            // changeBrithday: widget.changeBrithday,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                             const submitSignUp(
                                 // checkUsername: widget.checkUsername,
@@ -667,16 +704,25 @@ class _signupIdBoxState extends State<signupIdBox> {
         FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
       ],
       decoration: InputDecoration(
-          labelText: '아이디',
-          prefixIcon: widget.icon,
-          suffixIcon: ElevatedButton(
-            onPressed: () {},
-            style: ButtonStyle(
-              backgroundColor:
-                  MaterialStatePropertyAll(Theme.of(context).primaryColor),
+        labelText: '아이디',
+        prefixIcon: widget.icon,
+        suffixIcon: Column(
+          children: [
+            TextButton(
+              onPressed: () {},
+              style: ButtonStyle(
+                padding: const MaterialStatePropertyAll(EdgeInsets.zero),
+                backgroundColor:
+                    MaterialStatePropertyAll(Theme.of(context).primaryColor),
+              ),
+              child: const Text(
+                '중복 확인',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-            child: const Text('중복 확인'),
-          )),
+          ],
+        ),
+      ),
     );
   }
 }
