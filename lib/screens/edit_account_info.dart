@@ -346,7 +346,7 @@ class _newInfoState extends State<newInfo> {
   dataSet(String title) {
     if (title == "이메일") {
       setState(() {
-        inputBox = const emailTextbox(
+        inputBox = emailTextbox(
             // emailController: emailController,
             // changeDomain: changeDomain
             );

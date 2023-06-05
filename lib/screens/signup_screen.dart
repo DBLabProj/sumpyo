@@ -24,6 +24,7 @@ var pwController = TextEditingController();
 var pwCheckController = TextEditingController();
 var birthdayController = DateTime.now();
 var genderController = '';
+bool passwdMatched = false;
 changeBrithday(DateTime birthday) {
   birthdayController = birthday;
 }
@@ -46,54 +47,6 @@ class signUpPage extends StatefulWidget {
 class _signUppageState extends State<signUpPage> {
   var formKey = GlobalKey<FormState>();
   bool isSecondPage = false;
-  checkUsername() async {
-    saveInfo();
-  }
-
-  saveInfo() async {
-    SignupUser userModel = SignupUser(
-      1,
-      userIdController.text.trim(),
-      userIdController.text.trim(),
-      '${emailController.text.trim()}@${domainName.trim()}',
-      phoneController.text.trim(),
-      pwController.text.trim(),
-      genderController,
-      birthdayController,
-    );
-    print(userModel.toJson());
-    try {
-      var res = await http.post(Uri.parse(RestAPI.signup),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(userModel.toJson()));
-      if (res.statusCode == 200) {
-        var resSignup = jsonDecode(res.body);
-        if (resSignup['result'] == 'Success') {
-          Fluttertoast.showToast(msg: 'Signup successfully');
-          setState(() {
-            userIdController.clear();
-            emailController.clear();
-            pwController.clear();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => signupSuccessScreen(),
-              ),
-            );
-          });
-        } else {
-          if (resSignup['result'] == 'Already') {
-            Fluttertoast.showToast(msg: '이미 존재하는 사용자명입니다.');
-          } else {
-            Fluttertoast.showToast(msg: 'Error occurred. Please try again');
-          }
-        }
-      }
-    } catch (e) {
-      print(e.toString());
-      Fluttertoast.showToast(msg: e.toString());
-    }
-  }
 
   @override
   void dispose() {
@@ -105,6 +58,7 @@ class _signUppageState extends State<signUpPage> {
     pwController.clear();
     pwCheckController.clear();
     birthdayController = DateTime.now();
+    passwdMatched = false;
     super.dispose();
   }
 
@@ -171,8 +125,15 @@ class _signUppageState extends State<signUpPage> {
                                 style: ButtonStyle(
                                     backgroundColor: MaterialStatePropertyAll(
                                         Theme.of(context).primaryColor)),
-                                onPressed: () =>
-                                    Navigator.pushNamed(context, '/signup/sec'),
+                                onPressed: () {
+                                  print(passwdMatched);
+                                  if (passwdMatched) {
+                                    Navigator.pushNamed(context, '/signup/sec');
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: '비밀번호를 확인 해주세요.');
+                                  }
+                                },
                                 child: const Text('다음'),
                               ),
                             ),
@@ -192,14 +153,65 @@ class _signUppageState extends State<signUpPage> {
 }
 
 // 회원가입 제출
-class submitSignUp extends StatelessWidget {
-  // String domain;
-  // Function checkUsername;
+class submitSignUp extends StatefulWidget {
   const submitSignUp({
     super.key,
-    // required this.domain,
-    // required this.checkUsername,
   });
+
+  @override
+  State<submitSignUp> createState() => _submitSignUpState();
+}
+
+class _submitSignUpState extends State<submitSignUp> {
+  checkUsername() async {
+    print(emailController.text);
+    // saveInfo();
+  }
+
+  saveInfo() async {
+    SignupUser userModel = SignupUser(
+      1,
+      userIdController.text.trim(),
+      userIdController.text.trim(),
+      '${emailController.text.trim()}@${domainName.trim()}',
+      phoneController.text.trim(),
+      pwController.text.trim(),
+      genderController,
+      birthdayController,
+    );
+    print(userModel.toJson());
+    try {
+      var res = await http.post(Uri.parse(RestAPI.signup),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(userModel.toJson()));
+      if (res.statusCode == 200) {
+        var resSignup = jsonDecode(res.body);
+        if (resSignup['result'] == 'Success') {
+          Fluttertoast.showToast(msg: 'Signup successfully');
+          setState(() {
+            userIdController.clear();
+            emailController.clear();
+            pwController.clear();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => signupSuccessScreen(),
+              ),
+            );
+          });
+        } else {
+          if (resSignup['result'] == 'Already') {
+            Fluttertoast.showToast(msg: '이미 존재하는 사용자명입니다.');
+          } else {
+            Fluttertoast.showToast(msg: 'Error occurred. Please try again');
+          }
+        }
+      }
+    } catch (e) {
+      print(e.toString());
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +226,7 @@ class submitSignUp extends StatelessWidget {
         backgroundColor: const MaterialStatePropertyAll(Colors.white),
       ),
       onPressed: () {
-        // checkUsername();
+        checkUsername();
       },
       child: Text(
         '회원가입',
@@ -228,13 +240,11 @@ class submitSignUp extends StatelessWidget {
 
 // 이메일
 class emailTextbox extends StatefulWidget {
-  // var emailController;
-  // Function changeDomain;
-  const emailTextbox({
+  TextEditingController controller;
+  emailTextbox({
     super.key,
-    // required this.emailController,
-    // required this.changeDomain,
-  });
+    controller,
+  }) : controller = (controller ?? emailController);
 
   @override
   State<emailTextbox> createState() => _emailTextboxState();
@@ -242,17 +252,20 @@ class emailTextbox extends StatefulWidget {
 
 class _emailTextboxState extends State<emailTextbox> {
   final List<String> _emailList = ['google.com', 'naver.com', 'hanmail.net'];
+  TextEditingController emailId = TextEditingController();
   String _selectedValue = 'google.com';
+
   @override
   Widget build(BuildContext context) {
-    String email = '${emailController.text}@$_selectedValue';
     return TextFormField(
-      controller: emailController,
+      onChanged: (value) {
+        widget.controller.text = '${emailId.text}@$_selectedValue';
+      },
+      controller: emailId,
       inputFormatters: [
         FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
       ],
       decoration: InputDecoration(
-        hintText: '이메일',
         labelText: '이메일',
         prefixIcon: const Icon(
           Icons.email_outlined,
@@ -279,8 +292,8 @@ class _emailTextboxState extends State<emailTextbox> {
               }).toList(),
               onChanged: (value) {
                 setState(() {
-                  _selectedValue = value!;
-                  changeDomain(value);
+                  widget.controller.text = '${emailId.text}@${value!}';
+                  _selectedValue = value;
                 });
               },
             ),
@@ -387,10 +400,8 @@ class brithdaySelector extends StatefulWidget {
 }
 
 class _brithdaySelectorState extends State<brithdaySelector> {
-  final TextEditingController _BirthdayController =
-      TextEditingController(text: DateTime.now().toString());
+  final TextEditingController _BirthdayController = TextEditingController();
   DateTime brithday = DateTime.now();
-  // String _selectedDate = '';
   DateTime? tempPickedDate;
   DateTime _selectedDate = DateTime.now();
   _selectDate() async {
@@ -467,35 +478,32 @@ class _brithdaySelectorState extends State<brithdaySelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Icon(Icons.calendar_month),
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.3,
-          child: GestureDetector(
-            onTap: () {
-              HapticFeedback.mediumImpact();
-              _selectDate();
-            },
-            child: TextFormField(
-              enabled: false,
-              decoration: const InputDecoration(
-                isDense: true,
-              ),
-              controller: _BirthdayController,
-              style: const TextStyle(fontSize: 20),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.3,
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.mediumImpact();
+          _selectDate();
+        },
+        child: TextFormField(
+          enabled: true,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(
+              Icons.calendar_month_outlined,
+              color: Colors.black,
             ),
+            hintText: '생일',
           ),
+          controller: _BirthdayController,
+          style: const TextStyle(fontSize: 20),
         ),
-      ],
+      ),
     );
   }
 }
 
 // 다음 화면(두번째)
 class secondPage extends StatefulWidget {
-  // String domain;
-
   const secondPage({
     super.key,
   });
@@ -522,6 +530,7 @@ class _secondPageState extends State<secondPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: SizedBox(
             height: contentHeight,
             child: Stack(
@@ -567,7 +576,7 @@ class _secondPageState extends State<secondPage> {
                                 ),
                               ],
                             ),
-                            const emailTextbox(
+                            emailTextbox(
                                 // emailController: emailController,
                                 // changeDomain: changeDomain,
                                 ),
@@ -611,7 +620,7 @@ class _secondPageState extends State<secondPage> {
 }
 
 // 회원가입 아이디
-class signupIdBox extends StatelessWidget {
+class signupIdBox extends StatefulWidget {
   Icon icon;
   TextEditingController controller;
   signupIdBox({
@@ -619,7 +628,15 @@ class signupIdBox extends StatelessWidget {
     this.icon = const Icon(Icons.account_circle_outlined),
     required this.controller,
   });
-  checkIdExist(String id) async {
+
+  @override
+  State<signupIdBox> createState() => _signupIdBoxState();
+}
+
+class _signupIdBoxState extends State<signupIdBox> {
+  bool editId = true;
+
+  Future<String> checkIdExist(String id) async {
     var res = await http.post(Uri.parse(RestAPI.checkUserExist),
         body: jsonEncode({'user_id': id}),
         headers: {'Content-Type': 'application/json'});
@@ -627,27 +644,31 @@ class signupIdBox extends StatelessWidget {
       var data = jsonDecode(res.body);
       if (data['result'] == 'Able') {
         Fluttertoast.showToast(msg: '사용 가능한 아이디입니다.');
+        return 'Able';
       } else if (data['result'] == 'Unable') {
         Fluttertoast.showToast(msg: '이미 사용중인 아이디입니다.');
+        return 'Unable';
       } else {
         Fluttertoast.showToast(msg: '통신중 오류가 발생하였습니다.');
+        return 'Unable';
       }
     } else {
       Fluttertoast.showToast(msg: '통신중 오류가 발생하였습니다.');
+      return 'Unable';
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      enabled: false,
-      controller: controller,
+      enabled: editId,
+      controller: widget.controller,
       inputFormatters: [
         FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
       ],
       decoration: InputDecoration(
         labelText: '아이디',
-        prefixIcon: icon,
+        prefixIcon: widget.icon,
         suffixIcon: Column(
           children: [
             TextButton(
@@ -658,8 +679,45 @@ class signupIdBox extends StatelessWidget {
                 '중복 확인',
                 style: TextStyle(color: Colors.white),
               ),
-              onPressed: () {
-                checkIdExist(controller.text);
+              onPressed: () async {
+                if (await checkIdExist(widget.controller.text) == 'Able') {
+                  showDialog(
+                      context: (context),
+                      barrierDismissible: true, // 바깥 영역 터치시 닫을지 여부
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          content: Row(children: [
+                            Text(
+                              '"${widget.controller.text}"',
+                              style: const TextStyle(color: Colors.amber),
+                            ),
+                            const Text('를 정말 사용하시겠습니까?')
+                          ]),
+                          insetPadding: const EdgeInsets.fromLTRB(0, 80, 0, 80),
+                          actions: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        editId = false;
+                                      });
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('사용')),
+                                TextButton(
+                                  child: const Text('취소'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      });
+                }
               },
             ),
           ],
@@ -684,7 +742,6 @@ class signupPwBox extends StatefulWidget {
 }
 
 class _signupPwBoxState extends State<signupPwBox> {
-  bool isDiff = true;
   Image keyImg = Image.asset('assets/pwImage.png');
   @override
   Widget build(BuildContext context) {
@@ -695,6 +752,19 @@ class _signupPwBoxState extends State<signupPwBox> {
           obscureText: true,
           controller: widget.pwController,
           decoration: InputDecoration(prefixIcon: keyImg, labelText: '비밀번호'),
+          onChanged: (value) {
+            if (widget.pwCheckController.text != widget.pwController.text) {
+              setState(() {
+                passwdMatched = true;
+              });
+            } else {
+              setState(
+                () {
+                  passwdMatched = false;
+                },
+              );
+            }
+          },
         ),
         TextFormField(
             obscureText: true,
@@ -704,23 +774,23 @@ class _signupPwBoxState extends State<signupPwBox> {
             onChanged: (value) {
               if (widget.pwCheckController.text != widget.pwController.text) {
                 setState(() {
-                  isDiff = true;
+                  passwdMatched = false;
                 });
               } else {
                 setState(
                   () {
-                    isDiff = false;
+                    passwdMatched = true;
                   },
                 );
               }
             }),
-        isDiff
-            ? const Text(
+        passwdMatched
+            ? const Text('')
+            : const Text(
                 '* 비밀번호가 일치하지 않습니다',
                 style: TextStyle(color: Colors.red),
                 textAlign: TextAlign.end,
-              )
-            : const Text(''),
+              ),
       ],
     );
   }
@@ -735,7 +805,6 @@ class signupNickBox extends StatelessWidget {
     return TextFormField(
       decoration: const InputDecoration(
         prefixIcon: Icon(Icons.admin_panel_settings_rounded),
-        // hintText: '닉네임',
         labelText: '닉네임',
       ),
       controller: controller,
