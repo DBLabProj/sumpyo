@@ -363,19 +363,16 @@ class _genderSelectButtonState extends State<genderSelectButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom:
-                  BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Icon(Icons.wc),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.34,
-            child: DropdownButton(
+            width: MediaQuery.of(context).size.width * 0.3,
+            child: DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.wc),
+              ),
               isExpanded: true,
-              underline: const SizedBox.shrink(),
               value: _selectedValue,
               hint: const Text('성별'),
               items: _genderList.map((value) {
@@ -493,9 +490,8 @@ class _brithdaySelectorState extends State<brithdaySelector> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Icon(Icons.calendar_month),
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.3,
+          width: MediaQuery.of(context).size.width * 0.4,
           child: GestureDetector(
             onTap: () {
               HapticFeedback.mediumImpact();
@@ -505,9 +501,16 @@ class _brithdaySelectorState extends State<brithdaySelector> {
               enabled: false,
               decoration: const InputDecoration(
                 isDense: true,
+                prefixIcon: Icon(
+                  Icons.calendar_month_outlined,
+                  color: Colors.black,
+                ),
+                hintText: '생일',
               ),
               controller: _BirthdayController,
-              style: const TextStyle(fontSize: 20),
+              style: const TextStyle(
+                fontSize: 17,
+              ),
             ),
           ),
         ),
@@ -607,20 +610,16 @@ class _secondPageState extends State<secondPage> {
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.4,
-                                        child: const genderSelectButton(
+                                    children: const [
+                                      Expanded(
+                                        flex: 3,
+                                        child: genderSelectButton(
                                             // genderChange: widget.changeGender,
                                             ),
                                       ),
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.4,
-                                        child: const brithdaySelector(
+                                      Expanded(
+                                        flex: 4,
+                                        child: brithdaySelector(
                                             // changeBrithday: widget.changeBrithday,
                                             ),
                                       ),
@@ -677,7 +676,7 @@ class signupIdBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      enabled: false,
+      enabled: true,
       controller: controller,
       inputFormatters: [
         FilteringTextInputFormatter(RegExp("[a-z|0-9]"), allow: true),
