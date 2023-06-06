@@ -38,18 +38,9 @@ class _appFrameState extends State<appFrame> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
-  // final screens = [
-  //   //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
-  //   HomeScreen(),
-  //   const noticeScreen(),
-  //   const writeDiaryScreen(),
-  //   const analysisScreen(),
-  //   const myPage(),
-  // ];
   @override
   Widget build(BuildContext context) {
     viewDiary(DateTime date) {

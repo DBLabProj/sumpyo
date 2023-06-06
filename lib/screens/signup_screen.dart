@@ -379,7 +379,7 @@ class _genderSelectButtonState extends State<genderSelectButton> {
   Widget build(BuildContext context) {
     return Container(
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.3,
@@ -801,7 +801,7 @@ class _signupPwBoxState extends State<signupPwBox> {
           onChanged: (value) {
             if (widget.pwCheckController.text != widget.pwController.text) {
               setState(() {
-                passwdMatched = true;
+                passwdMatched = false;
               });
             } else {
               setState(

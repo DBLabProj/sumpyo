@@ -33,54 +33,52 @@ class _editAccountState extends State<editAccount> {
         toolbarHeight: 0,
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.all(30),
-              decoration: const BoxDecoration(),
-              child: Column(
-                children: const [
-                  Icon(
-                    Icons.account_circle,
+      body: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.all(30),
+            decoration: const BoxDecoration(),
+            child: Column(
+              children: const [
+                Icon(
+                  Icons.account_circle,
+                  color: Colors.white,
+                  size: 50,
+                ),
+                Text(
+                  '샤프',
+                  style: TextStyle(
                     color: Colors.white,
-                    size: 50,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w400,
                   ),
-                  Text(
-                    '샤프',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 5.0,
+                    spreadRadius: 1,
+                    offset: const Offset(0, -1),
+                  )
                 ],
               ),
-            ),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 5.0,
-                      spreadRadius: 1,
-                      offset: const Offset(0, -1),
-                    )
-                  ],
-                ),
-                child: editInfoWidget(
-                  dataType: widget.dataType,
-                ),
+              child: editInfoWidget(
+                dataType: widget.dataType,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -420,6 +418,34 @@ class existingInfo extends StatefulWidget {
 
 class _existingInfoState extends State<existingInfo> {
   TextEditingController existingPw = TextEditingController();
+  bool passWdChecked = false;
+  checkExistPasswd(String passwd) async {
+    if (passwd.isEmpty) {
+      Fluttertoast.showToast(msg: '패스워드를 입력해주세요.');
+      return;
+    }
+    var res = await http.post(
+      Uri.parse(RestAPI.checkPasswd),
+      body: jsonEncode({"user_id": user['user_id'], "user_passwd": passwd}),
+      headers: {"Content-Type": "application/json"},
+    );
+    if (res.statusCode == 200) {
+      var resBody = jsonDecode(res.body);
+      print(resBody['result']);
+      if (resBody['result'] == 'Correct') {
+        Fluttertoast.showToast(msg: '패스워드 확인이 완료 되었습니다.');
+        setState(() {
+          passWdChecked = true;
+        });
+      } else if (resBody['result'] == 'Incorrect') {
+        Fluttertoast.showToast(msg: '패스워드 확인해주세요.');
+      } else {
+        Fluttertoast.showToast(msg: '요청 처리중 오류가 발생했습니다.');
+      }
+    } else {
+      Fluttertoast.showToast(msg: '서버와의 통신 중 오류가 발생했습니다.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -463,6 +489,7 @@ class _existingInfoState extends State<existingInfo> {
                   ),
                 )
               : TextFormField(
+                  enabled: !passWdChecked,
                   obscureText: true,
                   controller: existingPw,
                   decoration: InputDecoration(
@@ -478,7 +505,9 @@ class _existingInfoState extends State<existingInfo> {
                               '비밀번호 확인',
                               style: TextStyle(color: Colors.white),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              checkExistPasswd(existingPw.text);
+                            },
                           )
                         ]),
                     prefixIcon: Image.asset('assets/pwImage.png'),
