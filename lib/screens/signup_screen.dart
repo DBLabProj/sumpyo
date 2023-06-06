@@ -97,7 +97,7 @@ class _signUppageState extends State<signUpPage> {
                     color: Colors.white,
                     child: GestureDetector(
                       child: Padding(
-                        padding: const EdgeInsets.all(25.0),
+                        padding: const EdgeInsets.all(35.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -105,7 +105,9 @@ class _signUppageState extends State<signUpPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
                                     child: const Icon(Icons.arrow_back_ios)),
                                 Text(
                                   '회원가입',
@@ -383,11 +385,19 @@ class _genderSelectButtonState extends State<genderSelectButton> {
             width: MediaQuery.of(context).size.width * 0.3,
             child: DropdownButtonFormField<String>(
               decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.wc),
+                prefixIcon: Icon(
+                  Icons.wc,
+                  color: Colors.black,
+                ),
               ),
               isExpanded: true,
               value: _selectedValue,
-              hint: const Text('성별'),
+              hint: const Text(
+                '성별',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
               items: _genderList.map((value) {
                 return DropdownMenuItem(
                   value: value,
@@ -507,16 +517,22 @@ class _brithdaySelectorState extends State<brithdaySelector> {
           _selectDate();
         },
         child: TextFormField(
-          enabled: true,
+          enabled: false,
           decoration: const InputDecoration(
             prefixIcon: Icon(
               Icons.calendar_month_outlined,
               color: Colors.black,
             ),
             hintText: '생일',
+            disabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: Color(0xFFA6A6A6),
+                width: 1.0,
+              ),
+            ),
           ),
           controller: _BirthdayController,
-          style: const TextStyle(fontSize: 20),
+          style: const TextStyle(fontSize: 17),
         ),
       ),
     );
@@ -570,7 +586,7 @@ class _secondPageState extends State<secondPage> {
                     color: Colors.white,
                     child: GestureDetector(
                       child: Padding(
-                        padding: const EdgeInsets.all(25.0),
+                        padding: const EdgeInsets.all(35.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -615,13 +631,13 @@ class _secondPageState extends State<secondPage> {
                                         MainAxisAlignment.spaceBetween,
                                     children: const [
                                       Expanded(
-                                        flex: 3,
+                                        flex: 4,
                                         child: genderSelectButton(
                                             // genderChange: widget.changeGender,
                                             ),
                                       ),
                                       Expanded(
-                                        flex: 4,
+                                        flex: 5,
                                         child: brithdaySelector(
                                             // changeBrithday: widget.changeBrithday,
                                             ),
