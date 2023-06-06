@@ -64,11 +64,6 @@ class _signUppageState extends State<signUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.white,
-    ));
     double contentHeight =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     return Scaffold(
@@ -79,6 +74,7 @@ class _signUppageState extends State<signUpPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
           child: SizedBox(
             height: contentHeight,
             child: Stack(
@@ -95,76 +91,72 @@ class _signUppageState extends State<signUpPage> {
                       borderRadius: BorderRadius.circular(25),
                     ),
                     color: Colors.white,
-                    child: GestureDetector(
-                      child: Padding(
-                        padding: const EdgeInsets.all(35.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                GestureDetector(
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Icon(Icons.arrow_back_ios)),
-                                Text(
-                                  '회원가입',
-                                  style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w300,
-                                      color: Theme.of(context).primaryColor),
-                                ),
-                                const Text(
-                                  '  ',
-                                  style: TextStyle(
+                    child: Padding(
+                      padding: const EdgeInsets.all(35.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Icon(Icons.arrow_back_ios)),
+                              Text(
+                                '회원가입',
+                                style: TextStyle(
                                     fontSize: 30,
-                                  ),
+                                    fontWeight: FontWeight.w300,
+                                    color: Theme.of(context).primaryColor),
+                              ),
+                              const Text(
+                                '  ',
+                                style: TextStyle(
+                                  fontSize: 30,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.4,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                signupIdBox(
+                                  icon:
+                                      const Icon(Icons.account_circle_outlined),
+                                  controller: userIdController,
+                                ),
+                                signupNickBox(
+                                  controller: nicknameController,
+                                ),
+                                signupPwBox(
+                                  pwController: pwController,
+                                  pwCheckController: pwCheckController,
                                 ),
                               ],
                             ),
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.4,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  signupIdBox(
-                                    icon: const Icon(
-                                        Icons.account_circle_outlined),
-                                    controller: userIdController,
-                                  ),
-                                  signupNickBox(
-                                    controller: nicknameController,
-                                  ),
-                                  signupPwBox(
-                                    pwController: pwController,
-                                    pwCheckController: pwCheckController,
-                                  ),
-                                ],
-                              ),
+                          ),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll(
+                                      Theme.of(context).primaryColor)),
+                              onPressed: () {
+                                print(passwdMatched);
+                                if (passwdMatched) {
+                                  Navigator.pushNamed(context, '/signup/sec');
+                                } else {
+                                  Fluttertoast.showToast(msg: '비밀번호를 확인 해주세요.');
+                                }
+                              },
+                              child: const Text('다음'),
                             ),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                style: ButtonStyle(
-                                    backgroundColor: MaterialStatePropertyAll(
-                                        Theme.of(context).primaryColor)),
-                                onPressed: () {
-                                  print(passwdMatched);
-                                  if (passwdMatched) {
-                                    Navigator.pushNamed(context, '/signup/sec');
-                                  } else {
-                                    Fluttertoast.showToast(
-                                        msg: '비밀번호를 확인 해주세요.');
-                                  }
-                                },
-                                child: const Text('다음'),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -552,11 +544,6 @@ class secondPage extends StatefulWidget {
 class _secondPageState extends State<secondPage> {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.white,
-    ));
     double contentHeight =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     return Scaffold(
@@ -567,7 +554,7 @@ class _secondPageState extends State<secondPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const ClampingScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           child: SizedBox(
             height: contentHeight,
             child: Stack(
@@ -586,7 +573,7 @@ class _secondPageState extends State<secondPage> {
                     color: Colors.white,
                     child: GestureDetector(
                       child: Padding(
-                        padding: const EdgeInsets.all(35.0),
+                        padding: const EdgeInsets.all(25.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -631,13 +618,13 @@ class _secondPageState extends State<secondPage> {
                                         MainAxisAlignment.spaceBetween,
                                     children: const [
                                       Expanded(
-                                        flex: 4,
+                                        flex: 3,
                                         child: genderSelectButton(
                                             // genderChange: widget.changeGender,
                                             ),
                                       ),
                                       Expanded(
-                                        flex: 5,
+                                        flex: 4,
                                         child: brithdaySelector(
                                             // changeBrithday: widget.changeBrithday,
                                             ),
