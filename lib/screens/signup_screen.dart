@@ -378,19 +378,16 @@ class _genderSelectButtonState extends State<genderSelectButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom:
-                  BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          const Icon(Icons.wc),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.30,
-            child: DropdownButton(
+            width: MediaQuery.of(context).size.width * 0.3,
+            child: DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.wc),
+              ),
               isExpanded: true,
-              underline: const SizedBox.shrink(),
               value: _selectedValue,
               hint: const Text('성별'),
               items: _genderList.map((value) {
@@ -505,7 +502,7 @@ class _brithdaySelectorState extends State<brithdaySelector> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.3,
+      width: MediaQuery.of(context).size.width * 0.4,
       child: GestureDetector(
         onTap: () {
           HapticFeedback.mediumImpact();
@@ -618,20 +615,16 @@ class _secondPageState extends State<secondPage> {
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.36,
-                                        child: const genderSelectButton(
+                                    children: const [
+                                      Expanded(
+                                        flex: 3,
+                                        child: genderSelectButton(
                                             // genderChange: widget.changeGender,
                                             ),
                                       ),
-                                      SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.36,
-                                        child: const brithdaySelector(
+                                      Expanded(
+                                        flex: 36,
+                                        child: brithdaySelector(
                                             // changeBrithday: widget.changeBrithday,
                                             ),
                                       ),
