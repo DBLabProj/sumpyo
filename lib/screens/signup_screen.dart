@@ -105,7 +105,9 @@ class _signUppageState extends State<signUpPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
                                     child: const Icon(Icons.arrow_back_ios)),
                                 Text(
                                   '회원가입',
@@ -381,11 +383,11 @@ class _genderSelectButtonState extends State<genderSelectButton> {
               bottom:
                   BorderSide(width: 1.5, color: Colors.grey.withOpacity(0.4)))),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           const Icon(Icons.wc),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.34,
+            width: MediaQuery.of(context).size.width * 0.30,
             child: DropdownButton(
               isExpanded: true,
               underline: const SizedBox.shrink(),
@@ -620,7 +622,7 @@ class _secondPageState extends State<secondPage> {
                                       SizedBox(
                                         width:
                                             MediaQuery.of(context).size.width *
-                                                0.4,
+                                                0.36,
                                         child: const genderSelectButton(
                                             // genderChange: widget.changeGender,
                                             ),
@@ -628,7 +630,7 @@ class _secondPageState extends State<secondPage> {
                                       SizedBox(
                                         width:
                                             MediaQuery.of(context).size.width *
-                                                0.4,
+                                                0.36,
                                         child: const brithdaySelector(
                                             // changeBrithday: widget.changeBrithday,
                                             ),
@@ -792,12 +794,12 @@ class _signupPwBoxState extends State<signupPwBox> {
           onChanged: (value) {
             if (widget.pwCheckController.text != widget.pwController.text) {
               setState(() {
-                passwdMatched = true;
+                passwdMatched = false;
               });
             } else {
               setState(
                 () {
-                  passwdMatched = false;
+                  passwdMatched = true;
                 },
               );
             }

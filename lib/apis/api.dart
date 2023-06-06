@@ -15,4 +15,5 @@ class RestAPI {
   static const getAnalysis = "$hostConnect/getAnalysisDemo/";
   static const changeUserInfo = "$hostConnect/changeInfo/";
   static const checkUserExist = "$hostConnect/getIdExist/";
+  static const checkPasswd = "$hostConnect/checkPasswd/";
 }
