@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:sumpyo/screens/login_screen.dart';
+import 'package:transition/transition.dart';
 
 class introScreen extends StatefulWidget {
   const introScreen({super.key});
@@ -15,7 +17,14 @@ class _introScreenState extends State<introScreen> {
     // TODO: implement initState
     super.initState();
     Timer(const Duration(milliseconds: 3000), () {
-      Navigator.pushNamedAndRemoveUntil((context), '/login', (route) => false);
+      Navigator.push(
+        context,
+        Transition(
+          child: const loginScreen(),
+          transitionEffect: TransitionEffect.FADE,
+          curve: Curves.easeIn,
+        ),
+      );
     });
   }
 

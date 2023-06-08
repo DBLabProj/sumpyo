@@ -233,23 +233,26 @@ class _submitSignUpState extends State<submitSignUp> {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ButtonStyle(
-        shape: MaterialStatePropertyAll(
-          RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side:
-                  BorderSide(color: Theme.of(context).primaryColor, width: 2)),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ButtonStyle(
+          shape: MaterialStatePropertyAll(
+            RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(
+                    color: Theme.of(context).primaryColor, width: 2)),
+          ),
+          backgroundColor: const MaterialStatePropertyAll(Colors.white),
         ),
-        backgroundColor: const MaterialStatePropertyAll(Colors.white),
-      ),
-      onPressed: () {
-        checkUsername();
-      },
-      child: Text(
-        '회원가입',
-        style: TextStyle(
-          color: Theme.of(context).primaryColor,
+        onPressed: () {
+          checkUsername();
+        },
+        child: Text(
+          '회원가입',
+          style: TextStyle(
+            color: Theme.of(context).primaryColor,
+          ),
         ),
       ),
     );

@@ -124,40 +124,38 @@ class _loginScreenState extends State<loginScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25)),
               color: Colors.white,
-              child: GestureDetector(
-                child: Padding(
-                  padding: const EdgeInsets.all(25.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '로그인',
-                        style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w300,
-                            color: Theme.of(context).primaryColor),
-                      ),
-                      loginTextbox(
-                        icon: const Icon(Icons.account_circle_outlined),
-                        dataType: '아이디',
-                        controller: idController,
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      loginTextbox(
-                        icon: const Icon(Icons.key),
-                        dataType: '비밀번호',
-                        controller: pwController,
-                      ),
-                      const loginToolBox(),
-                      loginButton(
-                        login: login,
-                        parentWidth: areaWidth,
-                      ),
-                    ],
-                  ),
+              child: Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '로그인',
+                      style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w300,
+                          color: Theme.of(context).primaryColor),
+                    ),
+                    loginTextbox(
+                      icon: const Icon(Icons.account_circle_outlined),
+                      dataType: '아이디',
+                      controller: idController,
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    loginTextbox(
+                      icon: const Icon(Icons.key),
+                      dataType: '비밀번호',
+                      controller: pwController,
+                    ),
+                    const loginToolBox(),
+                    loginButton(
+                      login: login,
+                      parentWidth: areaWidth,
+                    ),
+                  ],
                 ),
               ),
             ),
