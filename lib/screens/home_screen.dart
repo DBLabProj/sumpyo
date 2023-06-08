@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           return diaryInstance;
         } else {
-          Fluttertoast.showToast(msg: '불러오는중 오류가 발생했습니다.');
+          Fluttertoast.showToast(msg: '불러오는 중 오류가 발생했습니다.');
           return diaryInstance;
         }
       }
@@ -549,23 +549,36 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
               ),
               Container(
                 padding: const EdgeInsets.fromLTRB(10, 0, 0, 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "오늘의 하루는 '",
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                    ),
-                    Text(
-                      todayDiary.diary_emotion,
-                      style: const TextStyle(color: Colors.blue),
-                    ),
-                    const Text(
-                      "'이에요.",
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                    )
-                  ],
-                ),
+                child: widget.diarys[widget.selectedDate] != null
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "오늘의 하루는 '",
+                            style: TextStyle(fontSize: 16, color: Colors.black),
+                          ),
+                          Text(
+                            todayDiary.diary_emotion,
+                            style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).primaryColor),
+                          ),
+                          const Text(
+                            "'이에요.",
+                            style: TextStyle(fontSize: 16, color: Colors.black),
+                          )
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: const [
+                          Text(
+                            '아직 일기를 작성하지 않았어요.',
+                            style: TextStyle(fontSize: 16, color: Colors.black),
+                          ),
+                        ],
+                      ),
               ),
               Container(
                 child: Column(

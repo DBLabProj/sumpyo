@@ -268,7 +268,7 @@ class writeDiaryState extends State<writeDiary> {
             borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
         padding: EdgeInsets.fromLTRB(
             10,
-            MediaQuery.of(context).size.width * 0.035,
+            MediaQuery.of(context).size.height * 0.035,
             MediaQuery.of(context).size.width * 0.035,
             0),
         child: SizedBox(
@@ -278,13 +278,13 @@ class writeDiaryState extends State<writeDiary> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.885,
+                width: MediaQuery.of(context).size.width * 0.8,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       alignment: Alignment.centerLeft,
-                      height: titleFontSize * 2,
+                      height: MediaQuery.of(context).size.height * 0.035,
                       child: Text(
                         'Title',
                         style: TextStyle(
@@ -307,12 +307,15 @@ class writeDiaryState extends State<writeDiary> {
                 ),
               ),
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.885,
+                height: MediaQuery.of(context).size.width * 0.03,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
                 child: Column(
                   children: [
                     Container(
                       alignment: Alignment.centerLeft,
-                      height: titleFontSize * 2,
+                      height: MediaQuery.of(context).size.height * 0.035,
                       child: Text(
                         'Story',
                         textAlign: TextAlign.center,
