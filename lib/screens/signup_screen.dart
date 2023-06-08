@@ -92,7 +92,7 @@ class _signUppageState extends State<signUpPage> {
                     ),
                     color: Colors.white,
                     child: Padding(
-                      padding: const EdgeInsets.all(25.0),
+                      padding: const EdgeInsets.all(35.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -380,11 +380,19 @@ class _genderSelectButtonState extends State<genderSelectButton> {
             width: MediaQuery.of(context).size.width * 0.3,
             child: DropdownButtonFormField<String>(
               decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.wc),
+                prefixIcon: Icon(
+                  Icons.wc,
+                  color: Colors.black,
+                ),
               ),
               isExpanded: true,
               value: _selectedValue,
-              hint: const Text('성별'),
+              hint: const Text(
+                '성별',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
               items: _genderList.map((value) {
                 return DropdownMenuItem(
                   value: value,
@@ -511,9 +519,15 @@ class _brithdaySelectorState extends State<brithdaySelector> {
               color: Colors.black,
             ),
             hintText: '생일',
+            disabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: Color(0xFFA6A6A6),
+                width: 1.0,
+              ),
+            ),
           ),
           controller: _BirthdayController,
-          style: const TextStyle(fontSize: 20),
+          style: const TextStyle(fontSize: 17),
         ),
       ),
     );
@@ -560,71 +574,74 @@ class _secondPageState extends State<secondPage> {
                       borderRadius: BorderRadius.circular(25),
                     ),
                     color: Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.all(25.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Icon(Icons.arrow_back_ios)),
-                              Text(
-                                '회원가입',
-                                style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w300,
-                                    color: Theme.of(context).primaryColor),
-                              ),
-                              const Text(
-                                '  ',
-                                style: TextStyle(
-                                  fontSize: 30,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.4,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    child: GestureDetector(
+                      child: Padding(
+                        padding: const EdgeInsets.all(25.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                emailTextbox(
-                                    // emailController: emailController,
-                                    // changeDomain: changeDomain,
-                                    ),
-                                phoneTextbox(
-                                  phoneController: phoneController,
+                                GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Icon(Icons.arrow_back_ios)),
+                                Text(
+                                  '회원가입',
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w300,
+                                      color: Theme.of(context).primaryColor),
                                 ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: const [
-                                    Expanded(
-                                      flex: 3,
-                                      child: genderSelectButton(
-                                          // genderChange: widget.changeGender,
-                                          ),
-                                    ),
-                                    Expanded(
-                                      flex: 4,
-                                      child: brithdaySelector(
-                                          // changeBrithday: widget.changeBrithday,
-                                          ),
-                                    ),
-                                  ],
+                                const Text(
+                                  '  ',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                          const submitSignUp(
-                              // checkUsername: widget.checkUsername,
-                              )
-                        ],
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.4,
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  emailTextbox(
+                                      // emailController: emailController,
+                                      // changeDomain: changeDomain,
+                                      ),
+                                  phoneTextbox(
+                                    phoneController: phoneController,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: const [
+                                      Expanded(
+                                        flex: 3,
+                                        child: genderSelectButton(
+                                            // genderChange: widget.changeGender,
+                                            ),
+                                      ),
+                                      Expanded(
+                                        flex: 4,
+                                        child: brithdaySelector(
+                                            // changeBrithday: widget.changeBrithday,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const submitSignUp(
+                                // checkUsername: widget.checkUsername,
+                                )
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -779,7 +796,7 @@ class _signupPwBoxState extends State<signupPwBox> {
             } else {
               setState(
                 () {
-                  passwdMatched = true;
+                  passwdMatched = false;
                 },
               );
             }
