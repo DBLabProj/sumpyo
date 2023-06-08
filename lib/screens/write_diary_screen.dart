@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:sumpyo/apis/api.dart';
 import 'package:sumpyo/models/diary.dart';
+import 'package:sumpyo/screens/home_screen.dart';
 
 class writeDiaryScreen extends StatefulWidget {
   const writeDiaryScreen({super.key});
@@ -24,26 +24,6 @@ class _writeDiaryScreenState extends State<writeDiaryScreen> {
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
   DateTime diaryDate = DateTime.now();
-  dynamic userInfo = '';
-  String userId = '';
-  static const storage = FlutterSecureStorage();
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _asyncMethod();
-    });
-  }
-
-  _asyncMethod() async {
-    userInfo = await storage.read(key: 'login');
-    if (userInfo != null) {
-      var user = jsonDecode(userInfo);
-      userId = user['user_id'];
-    }
-  }
-
   upLoadDiary() async {
     if (contentController.text != "") {
       if (titleController.text == "") {
@@ -51,7 +31,7 @@ class _writeDiaryScreenState extends State<writeDiaryScreen> {
       }
       uploadDiary diary = uploadDiary(
         1,
-        userId,
+        user['user_id'],
         titleController.text,
         contentController.text,
         diaryDate,
