@@ -413,7 +413,8 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
   late List<emotionData> yesterdayData;
   late List<emotionData> beforeYesterdayData;
 
-  Diary todayDiary = Diary(0, '', '', '', DateTime.now(), '', 0, 0, 0, 0, 0);
+  Diary todayDiary =
+      Diary(0, '', '', '', DateTime.now(), '', 0, 0, 0, 0, 0, '', '');
   String yesterdayDate = '';
   String beforeYesterdayDate = '';
   late SelectionBehavior _toDaySelection;

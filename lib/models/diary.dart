@@ -12,6 +12,8 @@ class Diary {
   int diary_disgust;
   int diary_embarrassment;
   int diary_anger;
+  String diary_leisure;
+  String leisure_ment;
   // String diary_recommend;
   // int diary_stress;
 
@@ -27,6 +29,8 @@ class Diary {
     this.diary_disgust,
     this.diary_embarrassment,
     this.diary_anger,
+    this.diary_leisure,
+    this.leisure_ment,
     // this.diary_recommend,
     // this.diary_stress,
   );
@@ -42,7 +46,9 @@ class Diary {
         diary_sadness = json['diary_sadness'],
         diary_disgust = json['diary_disgust'],
         diary_embarrassment = json['diary_embarrassment'],
-        diary_anger = json['diary_anger'];
+        diary_anger = json['diary_anger'],
+        diary_leisure = json['diary_leisure'],
+        leisure_ment = json['leisure_ment'];
 
   Map<String, dynamic> toJson() => {
         'diary_id': diary_id.toString(),

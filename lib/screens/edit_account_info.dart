@@ -213,8 +213,40 @@ class _editInfoWidgetState extends State<editInfoWidget> {
       if (res.statusCode == 200) {
         var re = jsonDecode(res.body);
         if (re['result'] == 'Success') {
-          Fluttertoast.showToast(msg: '닉네임이 "$value"로 성공적으로 변경되었습니다.');
-          Navigator.pop(context);
+          var changedCol = '';
+          var loginInfo = {
+            'user_id': user['user_id'],
+            'user_name': user['user_name'],
+            'user_phone': user['user_phone'],
+            'user_email': user['user_email'],
+            'user_gender': user['user_gender'],
+            'user_birth': user['user_birth'],
+          };
+          switch (colName) {
+            case 'user_nickname':
+              changedCol = 'user_nickname';
+              loginInfo['user_name'] = value;
+              break;
+            case 'user_email':
+              changedCol = '이메일';
+              loginInfo['user_email'] = value;
+              break;
+            case 'user_phone':
+              changedCol = '휴대폰번호';
+              loginInfo['user_phone'] = value;
+              break;
+            case 'user_passwd':
+              changedCol = '패스워드';
+              break;
+            default:
+              break;
+          }
+          await storage.write(key: 'account', value: jsonEncode(loginInfo));
+          var account = await storage.read(key: 'account');
+          user = jsonDecode(account!);
+          Fluttertoast.showToast(
+              msg: '$changedCol이(가) "$value"로 성공적으로 변경되었습니다.');
+          Navigator.pop((context));
         }
       }
     }
@@ -345,9 +377,8 @@ class _newInfoState extends State<newInfo> {
     if (title == "이메일") {
       setState(() {
         inputBox = emailTextbox(
-            // emailController: emailController,
-            // changeDomain: changeDomain
-            );
+          controller: widget.controller,
+        );
       });
     } else if (title == "닉네임") {
       setState(() {

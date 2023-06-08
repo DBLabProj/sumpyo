@@ -40,6 +40,7 @@ dependencies:
   flutter_local_notifications:
   syncfusion_flutter_charts: ^21.2.4
   flutter_card_swiper: ^5.0.1
+  transition:
   flutter_localizations:
     sdk: flutter
   # The following adds the Cupertino Icons font to your application.

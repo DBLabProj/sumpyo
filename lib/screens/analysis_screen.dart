@@ -18,7 +18,8 @@ class analysisScreen extends StatefulWidget {
 
 class _analysisScreenState extends State<analysisScreen> {
   List<String> formatValues = ['일주일', '월간', '연간'];
-  String userName = '';
+  String duration = 'week';
+  bool showMarker = true;
   DateTime now = DateTime.now();
   List<int> happinessData = [];
   List<int> angerData = [];
@@ -49,7 +50,6 @@ class _analysisScreenState extends State<analysisScreen> {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      loadAccount();
       loadEmotion();
     });
   }
@@ -85,17 +85,23 @@ class _analysisScreenState extends State<analysisScreen> {
   changeIndex(int index) {
     setState(() {
       selectIndex = index;
+      showMarker = index == 0 ? true : false;
+      duration = index == 0
+          ? 'week'
+          : index == 1
+              ? 'month'
+              : 'year';
+      loadEmotion();
     });
   }
 
   loadEmotion() async {
-    sendUser userId = sendUser(userName);
+    sendUser userId = sendUser(user['user_id']);
     var res = await http.post(Uri.parse(RestAPI.getAnalysis),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode(userId.toJson()));
+        body: jsonEncode({'userId': user['user_id'], 'duration': duration}));
     if (res.statusCode == 200) {
       var data = jsonDecode(res.body);
-
       happinessData = (data["happiness"] as List).map((e) => e as int).toList();
       sadnessData = (data["sadness"] as List).map((e) => e as int).toList();
       angerData = (data["anger"] as List).map((e) => e as int).toList();
@@ -105,20 +111,8 @@ class _analysisScreenState extends State<analysisScreen> {
     }
   }
 
-  loadAccount() async {
-    var acc = await storage.read(key: 'login');
-    if (acc != null) {
-      var user = jsonDecode(acc);
-      userName = user['user_id'];
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      loadEmotion();
-    });
-
     List<EmotionData> happyData = [];
     List<EmotionData> sadData = [];
     List<EmotionData> angryData = [];
@@ -259,8 +253,8 @@ class _analysisScreenState extends State<analysisScreen> {
                                     sales.date,
                                 yValueMapper: (EmotionData sales, _) =>
                                     sales.count,
-                                markerSettings: const MarkerSettings(
-                                  isVisible: true,
+                                markerSettings: MarkerSettings(
+                                  isVisible: showMarker,
                                   shape: DataMarkerType.circle,
                                   height: 5,
                                   width: 5,
@@ -274,8 +268,8 @@ class _analysisScreenState extends State<analysisScreen> {
                                     sales.date,
                                 yValueMapper: (EmotionData sales, _) =>
                                     sales.count,
-                                markerSettings: const MarkerSettings(
-                                  isVisible: true,
+                                markerSettings: MarkerSettings(
+                                  isVisible: showMarker,
                                   shape: DataMarkerType.circle,
                                   height: 5,
                                   width: 5,
@@ -289,8 +283,8 @@ class _analysisScreenState extends State<analysisScreen> {
                                     sales.date,
                                 yValueMapper: (EmotionData sales, _) =>
                                     sales.count,
-                                markerSettings: const MarkerSettings(
-                                  isVisible: true,
+                                markerSettings: MarkerSettings(
+                                  isVisible: showMarker,
                                   shape: DataMarkerType.circle,
                                   height: 5,
                                   width: 5,
@@ -304,8 +298,8 @@ class _analysisScreenState extends State<analysisScreen> {
                                     sales.date,
                                 yValueMapper: (EmotionData sales, _) =>
                                     sales.count,
-                                markerSettings: const MarkerSettings(
-                                  isVisible: true,
+                                markerSettings: MarkerSettings(
+                                  isVisible: showMarker,
                                   shape: DataMarkerType.circle,
                                   height: 5,
                                   width: 5,
@@ -319,8 +313,8 @@ class _analysisScreenState extends State<analysisScreen> {
                                     sales.date,
                                 yValueMapper: (EmotionData sales, _) =>
                                     sales.count,
-                                markerSettings: const MarkerSettings(
-                                  isVisible: true,
+                                markerSettings: MarkerSettings(
+                                  isVisible: showMarker,
                                   shape: DataMarkerType.circle,
                                   height: 5,
                                   width: 5,

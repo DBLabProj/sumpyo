@@ -9,10 +9,11 @@ class API {
 class RestAPI {
   static const hostConnect = "http://203.252.240.80:8888";
   static const login = "$hostConnect/login/";
+  static const imgPath = "$hostConnect/static/img/";
   static const signup = "$hostConnect/signup/";
   static const uploadDiary = "$hostConnect/uploadDiary/";
   static const getDiary = "$hostConnect/getDiary/";
-  static const getAnalysis = "$hostConnect/getAnalysisDemo/";
+  static const getAnalysis = "$hostConnect/getAnalysis/";
   static const changeUserInfo = "$hostConnect/changeInfo/";
   static const checkUserExist = "$hostConnect/getIdExist/";
   static const checkPasswd = "$hostConnect/checkPasswd/";
