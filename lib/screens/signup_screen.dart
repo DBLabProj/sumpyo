@@ -183,15 +183,15 @@ class submitSignUp extends StatefulWidget {
 class _submitSignUpState extends State<submitSignUp> {
   checkUsername() async {
     print(emailController.text);
-    // saveInfo();
+    saveInfo();
   }
 
   saveInfo() async {
     SignupUser userModel = SignupUser(
       1,
       userIdController.text.trim(),
-      userIdController.text.trim(),
-      '${emailController.text.trim()}@${domainName.trim()}',
+      nicknameController.text.trim(),
+      emailController.text.trim(),
       phoneController.text.trim(),
       pwController.text.trim(),
       genderController,
@@ -716,6 +716,7 @@ class _signupIdBoxState extends State<signupIdBox> {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () async {
+                FocusManager.instance.primaryFocus?.unfocus();
                 if (await checkIdExist(widget.controller.text) == 'Able') {
                   showDialog(
                       context: (context),

@@ -11,7 +11,8 @@ import 'package:sumpyo/models/diary.dart';
 import 'package:sumpyo/screens/home_screen.dart';
 
 class writeDiaryScreen extends StatefulWidget {
-  const writeDiaryScreen({super.key});
+  Function viewDiary;
+  writeDiaryScreen({super.key, viewDiary}) : viewDiary = (viewDiary ?? () {});
 
   @override
   State<writeDiaryScreen> createState() => _writeDiaryScreenState();
@@ -45,8 +46,14 @@ class _writeDiaryScreenState extends State<writeDiaryScreen> {
           var resDiary = jsonDecode(res.body);
           if (resDiary['result'] == 'Success') {
             Fluttertoast.showToast(msg: '일기가 성공적으로 등록되었습니다.');
+            Future.delayed(const Duration(milliseconds: 500), () {
+              widget.viewDiary(_selectedDate);
+            });
           } else if (resDiary['result'] == 'Updated') {
             Fluttertoast.showToast(msg: '일기가 성공적으로 갱신되었습니다.');
+            Future.delayed(const Duration(milliseconds: 500), () {
+              widget.viewDiary(_selectedDate);
+            });
           } else {
             Fluttertoast.showToast(msg: '일기 등록 중 오류가 발생했습니다.');
           }
@@ -205,6 +212,7 @@ class _writeDiaryScreenState extends State<writeDiaryScreen> {
               backgroundColor:
                   MaterialStatePropertyAll(Theme.of(context).primaryColor)),
           onPressed: () {
+            FocusManager.instance.primaryFocus?.unfocus();
             upLoadDiary();
           },
           child: const Text(

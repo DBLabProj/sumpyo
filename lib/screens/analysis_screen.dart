@@ -82,6 +82,15 @@ class _analysisScreenState extends State<analysisScreen> {
     }
   }
 
+  resetButton() {
+    happyBtnIsPushed = false;
+    sadnessBtnIsPushed = false;
+    scaredBtnIsPushed = false;
+    angerBtnIsPushed = false;
+    disgustBtnIsPushed = false;
+    embarrassedBtnIsPushed = false;
+  }
+
   changeIndex(int index) {
     setState(() {
       selectIndex = index;

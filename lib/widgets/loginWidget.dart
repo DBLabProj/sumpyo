@@ -53,9 +53,13 @@ class loginTextbox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
-      obscureText: dataType != '아이디' ? true : false,
-      decoration: InputDecoration(labelText: dataType, prefixIcon: icon),
-    );
+        controller: controller,
+        obscureText: dataType != '아이디' ? true : false,
+        decoration: InputDecoration(
+          labelText: dataType,
+          prefixIcon: icon,
+          // enabledBorder: UnderlineInputBorder(
+          //     borderSide: BorderSide(color: Theme.of(context).primaryColor)),
+        ));
   }
 }

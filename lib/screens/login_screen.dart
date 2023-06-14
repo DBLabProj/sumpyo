@@ -182,6 +182,10 @@ class _loginToolBoxState extends State<loginToolBox> {
         Row(
           children: [
             Checkbox(
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              fillColor:
+                  MaterialStatePropertyAll(Theme.of(context).primaryColor),
               value: rememberMe,
               onChanged: ((value) {
                 setState(() {

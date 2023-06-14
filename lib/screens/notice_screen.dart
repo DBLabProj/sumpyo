@@ -18,11 +18,17 @@ class _noticeScreenState extends State<noticeScreen> {
   double titleFontSize = 20.0;
   double containerHeight = 100.0;
   double screenSize = 0.0;
+  String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  String TopTitle = '아직 오늘 일기가 없어요!\n일기를 작성해보세요!';
 
   @override
   void initState() {
     super.initState();
-
+    if (postedDiarys.containsKey(today)) {
+      // setState(() {
+      TopTitle = '오늘의 분석이\n완료되었습니다!';
+      // });
+    }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
         containerHeight = getRecommendCardSize();
@@ -59,7 +65,7 @@ class _noticeScreenState extends State<noticeScreen> {
                 alignment: Alignment.bottomLeft,
                 height: titleFontSize * 4,
                 child: Text(
-                  '오늘의 분석이\n완료되었어요!',
+                  TopTitle,
                   style: TextStyle(
                       fontSize: titleFontSize,
                       fontWeight: FontWeight.bold,
@@ -121,11 +127,13 @@ class _noticeScreenState extends State<noticeScreen> {
                                 ),
                               ),
                               recommendCard(
+                                  emotion: target.diary_emotion,
                                   leisureName: target.diary_leisure,
                                   leisureDescription: target.leisure_ment,
                                   targetDate: target.diary_date,
                                   viewDiary: widget.viewDiary,
-                                  titleFontSize: titleFontSize),
+                                  titleFontSize: titleFontSize,
+                                  img_path: target.img_path),
                             ],
                           );
                         },
@@ -145,24 +153,48 @@ class _noticeScreenState extends State<noticeScreen> {
 class recommendCard extends StatelessWidget {
   recommendCard(
       {super.key,
+      required this.emotion,
       required this.titleFontSize,
       this.leisureName = '하리보 전시회',
       this.leisureDescription = '대충 하리보 전시회 설명',
-      this.annotation = '스트레스가 어쩌구\n관리가 필요한 머쩌구',
+      // this.annotation = '스트레스가 어쩌/구\n관리가 필요한 머쩌구',
       this.imageLocation = 'assets/Haribo.png',
+      this.img_path = 'default.png',
       this.viewDiary = garbage,
       targetDate})
       : targetDate = (targetDate ?? DateTime.now());
+  String img_path;
   Function viewDiary;
   final double titleFontSize;
   String leisureName;
   String leisureDescription;
-  String annotation;
   String imageLocation;
   DateTime targetDate;
+  String emotion;
+  String annotation = '';
+  setAnnotation() {
+    switch (emotion) {
+      case '행복':
+        annotation = '행복이 느껴지는 하루에요!\n$leisureName을 해보는 거 어때요?';
+        break;
+      case '슬픔':
+        annotation = '슬픔이 느껴지는 하루에요!\n$leisureName을 해보는 거 어때요?';
+        break;
+      case '분노':
+        annotation = '분노가 느껴지는 하루에요!\n$leisureName을 해보는 거 어때요?';
+        break;
+      case '당황':
+        annotation = '당황이 느껴지는 하루에요!\n$leisureName을 해보는 거 어때요?';
+        break;
+      case '혐오':
+        annotation = '혐오가 느껴지는 하루에요!\n$leisureName을 해보는 거 어때요?';
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    setAnnotation();
     return Padding(
       padding: EdgeInsets.symmetric(
         vertical: titleFontSize,
@@ -207,13 +239,8 @@ class recommendCard extends StatelessWidget {
                 padding: EdgeInsets.all(titleFontSize),
                 child: Row(
                   children: [
-                    // Image.asset(
-                    //   imageLocation,
-                    //   width: 84,
-                    //   height: 118,
-                    // ),
                     Image.network(
-                      '${RestAPI.imgPath}garden.jpg',
+                      '${RestAPI.imgPath}$img_path',
                       width: 84,
                       height: 118,
                       fit: BoxFit.fill,

@@ -11,6 +11,11 @@ class signupSuccessScreen extends StatelessWidget {
     cardHeight = MediaQuery.of(context).size.height * 0.69;
     cardWidth = MediaQuery.of(context).size.width * 0.82;
     return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 0,
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: Stack(
           children: [
@@ -35,7 +40,7 @@ class signupSuccessScreen extends StatelessWidget {
                           width: MediaQuery.of(context).size.width * 0.8,
                           height: cardHeight * 0.15,
                           child: Container(
-                            alignment: Alignment.centerLeft,
+                            alignment: Alignment.center,
                             decoration: BoxDecoration(
                                 border: Border(
                                     bottom: BorderSide(
@@ -53,10 +58,14 @@ class signupSuccessScreen extends StatelessWidget {
                         ),
                         const Text('회원가입이 완료되었습니다.'),
                         SizedBox(
-                          width: cardWidth * 0.9,
+                          width: cardWidth * 0.95,
                           child: ElevatedButton(
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStatePropertyAll(
+                                    Theme.of(context).primaryColor)),
                             onPressed: () {
-                              Navigator.pop(context);
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context, '/login', (route) => false);
                             },
                             child: const Text('완료'),
                           ),

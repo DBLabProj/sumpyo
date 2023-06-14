@@ -14,6 +14,7 @@ class Diary {
   int diary_anger;
   String diary_leisure;
   String leisure_ment;
+  String img_path;
   // String diary_recommend;
   // int diary_stress;
 
@@ -31,6 +32,7 @@ class Diary {
     this.diary_anger,
     this.diary_leisure,
     this.leisure_ment,
+    this.img_path,
     // this.diary_recommend,
     // this.diary_stress,
   );
@@ -48,7 +50,8 @@ class Diary {
         diary_embarrassment = json['diary_embarrassment'],
         diary_anger = json['diary_anger'],
         diary_leisure = json['diary_leisure'],
-        leisure_ment = json['leisure_ment'];
+        leisure_ment = json['leisure_ment'],
+        img_path = json['img_path'];
 
   Map<String, dynamic> toJson() => {
         'diary_id': diary_id.toString(),

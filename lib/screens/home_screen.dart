@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (res.statusCode == 200) {
         var resDiary = jsonDecode(utf8.decode(res.bodyBytes));
         if (resDiary['result'] == 'Success') {
-          Fluttertoast.showToast(msg: '성공적으로 불러왔습니다.');
+          // Fluttertoast.showToast(msg: '성공적으로 불러왔습니다.');
           final List<dynamic> diarys = resDiary['diarys'];
           for (var diary in diarys) {
             final instance = Diary.fromJson(diary);
@@ -222,7 +222,7 @@ class _mainCalendarState extends State<mainCalendar> {
     return TableCalendar(
       locale: 'ko',
       focusedDay: widget.focusedDay,
-      firstDay: DateTime.utc(2000, 1, 1),
+      firstDay: DateTime.utc(1900, 1, 1),
       lastDay: DateTime.utc(2050, 12, 31),
       calendarFormat: widget.calendarFormat,
       eventLoader: (day) {
@@ -413,8 +413,8 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
   late List<emotionData> yesterdayData;
   late List<emotionData> beforeYesterdayData;
 
-  Diary todayDiary =
-      Diary(0, '', '', '', DateTime.now(), '', 0, 0, 0, 0, 0, '', '');
+  Diary todayDiary = Diary(
+      0, '', '', '', DateTime.now(), '', 0, 0, 0, 0, 0, '', '', 'default.png');
   String yesterdayDate = '';
   String beforeYesterdayDate = '';
   late SelectionBehavior _toDaySelection;
@@ -450,11 +450,11 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
 
   List<emotionData> dailyDateInit() {
     return [
-      emotionData('기쁨', 0),
+      emotionData('행복', 0),
       emotionData('분노', 0),
       emotionData('슬픔', 0),
       emotionData('당황', 0),
-      emotionData('역겨움', 0)
+      emotionData('혐오', 0)
     ];
   }
 
@@ -469,17 +469,16 @@ class _diaryAlysisChartState extends State<diaryAlysisChart> {
 
   List<emotionData> getEmotionData(Diary targetDiary) {
     return [
-      emotionData('기쁨', targetDiary.diary_happiness.toDouble()),
+      emotionData('행복', targetDiary.diary_happiness.toDouble()),
       emotionData('분노', targetDiary.diary_anger.toDouble()),
       emotionData('슬픔', targetDiary.diary_sadness.toDouble()),
       emotionData('당황', targetDiary.diary_embarrassment.toDouble()),
-      emotionData('역겨움', targetDiary.diary_disgust.toDouble())
+      emotionData('혐오', targetDiary.diary_disgust.toDouble())
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    print('컨테이너: ${widget.isExpanded.toString()}');
     if (widget.diarys.containsKey(widget.selectedDate)) {
       todayDiary = widget.diarys[widget.selectedDate] as Diary;
       todayData = getEmotionData(todayDiary);
@@ -804,38 +803,37 @@ Widget makeContainer(Diary? diary) {
   if (diary != null) {
     return Padding(
       padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 일기 일자
-          Text(
-            DateFormat('yyyy년 MM월 dd일').format(diary.diary_date),
-            style: const TextStyle(
-              color: Colors.black54,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 일기 일자
+            Text(
+              DateFormat('yyyy년 MM월 dd일').format(diary.diary_date),
+              style: const TextStyle(
+                color: Colors.black54,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          // 일기 제목
+            const SizedBox(
+              height: 20,
+            ),
+            // 일기 제목
 
-          Text(
-            diary.diary_title,
-            style: const TextStyle(
-              color: Color(0xFF1E1E1E),
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+            Text(
+              diary.diary_title,
+              style: const TextStyle(
+                color: Color(0xFF1E1E1E),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          // 일기 내용
-          Flexible(
-            flex: 1,
-            child: Text(
+            const SizedBox(
+              height: 20,
+            ),
+            // 일기 내용
+            Text(
               diary.diary_content,
               overflow: TextOverflow.clip,
               style: const TextStyle(
@@ -843,8 +841,8 @@ Widget makeContainer(Diary? diary) {
                 fontSize: 14,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   } else {

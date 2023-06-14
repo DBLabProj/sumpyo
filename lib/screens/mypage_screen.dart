@@ -96,15 +96,15 @@ class _mypage_screState extends State<myPage> {
                       child: Row(
                         children: [
                           recordInfo(
-                            cnt: postedDiarys.length,
+                            cnt: postedDiarys.length.toString(),
                             title: '총 일기',
                           ),
                           recordInfo(
-                            cnt: 7,
+                            cnt: '당황',
                             title: '최근 감정',
                           ),
                           recordInfo(
-                            cnt: 10,
+                            cnt: '행복',
                             title: '최빈 감정',
                             isRight: true,
                           ),
@@ -238,6 +238,11 @@ class logout extends StatelessWidget {
         storage.deleteAll();
         Navigator.pushNamedAndRemoveUntil(
             (context), '/login', (route) => false);
+        // Navigator.push(context, MaterialPageRoute(
+        //   builder: (context) {
+        //     return const signupFailScreen();
+        //   },
+        // ));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -275,7 +280,7 @@ class logout extends StatelessWidget {
 }
 
 class recordInfo extends StatelessWidget {
-  final int cnt;
+  final String cnt;
   final String title;
   bool isRight;
   recordInfo({
@@ -300,7 +305,7 @@ class recordInfo extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              '$cnt',
+              cnt,
               style: const TextStyle(
                 color: Color.fromRGBO(124, 124, 124, 1),
                 fontSize: 20,

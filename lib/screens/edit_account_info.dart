@@ -39,15 +39,15 @@ class _editAccountState extends State<editAccount> {
             margin: const EdgeInsets.all(30),
             decoration: const BoxDecoration(),
             child: Column(
-              children: const [
-                Icon(
+              children: [
+                const Icon(
                   Icons.account_circle,
                   color: Colors.white,
                   size: 50,
                 ),
                 Text(
-                  '샤프',
-                  style: TextStyle(
+                  user['user_name'],
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,
                     fontWeight: FontWeight.w400,
@@ -222,6 +222,7 @@ class _editInfoWidgetState extends State<editInfoWidget> {
             'user_gender': user['user_gender'],
             'user_birth': user['user_birth'],
           };
+          String changedName = '';
           switch (colName) {
             case 'user_nickname':
               changedCol = 'user_nickname';

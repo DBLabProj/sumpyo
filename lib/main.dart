@@ -1,8 +1,14 @@
+import 'dart:convert';
+
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
+import 'package:sumpyo/apis/api.dart';
 import 'package:sumpyo/l10n/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:sumpyo/models/diary.dart';
 import 'package:sumpyo/notification.dart';
 import 'package:sumpyo/screens/intro_screen.dart';
 import 'package:sumpyo/screens/analysis_screen.dart';
@@ -12,6 +18,7 @@ import 'package:sumpyo/screens/write_diary_screen.dart';
 import 'package:sumpyo/screens/home_screen.dart';
 import 'package:sumpyo/screens/mypage_screen.dart';
 import 'package:sumpyo/screens/notice_screen.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const App());
@@ -41,9 +48,38 @@ class _appFrameState extends State<appFrame> {
     super.dispose();
   }
 
+  static Future<Map<String, Diary>> getDiary(
+      Map<String, String> userNameInfo) async {
+    Map<String, Diary> diaryInstance = {};
+    if (userNameInfo['userId'] != '') {
+      var res = await http.post(Uri.parse(RestAPI.getDiary),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(userNameInfo));
+      if (res.statusCode == 200) {
+        var resDiary = jsonDecode(utf8.decode(res.bodyBytes));
+        if (resDiary['result'] == 'Success') {
+          // Fluttertoast.showToast(msg: '성공적으로 불러왔습니다.');
+          final List<dynamic> diarys = resDiary['diarys'];
+          for (var diary in diarys) {
+            final instance = Diary.fromJson(diary);
+            String diaryDate =
+                DateFormat('yyyy-MM-dd').format(instance.diary_date);
+            diaryInstance.addAll({diaryDate: instance});
+          }
+          return diaryInstance;
+        } else {
+          Fluttertoast.showToast(msg: '불러오는 중 오류가 발생했습니다.');
+          return diaryInstance;
+        }
+      }
+    }
+    return diaryInstance;
+  }
+
   @override
   Widget build(BuildContext context) {
-    viewDiary(DateTime date) {
+    viewDiary(DateTime date) async {
+      postedDiarys = await getDiary({'userId': user['user_id']});
       setState(() {
         widget.visit = 0;
         widget.selectedDate = date;
@@ -54,7 +90,9 @@ class _appFrameState extends State<appFrame> {
       //이게 하나하나의 화면이되고, Text등을 사용하거나, dart파일에 있는 class를 넣는다.
       HomeScreen(selectedDate: widget.selectedDate),
       noticeScreen(viewDiary: viewDiary),
-      const writeDiaryScreen(),
+      writeDiaryScreen(
+        viewDiary: viewDiary,
+      ),
       const analysisScreen(),
       const myPage(),
     ];
@@ -105,7 +143,7 @@ class _AppState extends State<App> {
         '/': (context) => appFrame(),
         '/login': (context) => const loginScreen(),
         '/splash': (context) => const introScreen(),
-        '/writeDiary': (context) => const writeDiaryScreen(),
+        '/writeDiary': (context) => writeDiaryScreen(),
         '/mypage': (context) => const myPage(),
         '/notice': (context) => noticeScreen(),
         '/analysis': (context) => const analysisScreen(),
